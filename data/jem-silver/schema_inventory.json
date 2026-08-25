@@ -1,0 +1,287 @@
+[
+  {
+    "path": "E:\\jem\\web\\data\\causa.parquet",
+    "status": "ok",
+    "engine": "pyarrow",
+    "row_count": 1669,
+    "num_columns": 9,
+    "columns": [
+      {
+        "name": "causa_id",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "number",
+        "type": "int64",
+        "nullable": true
+      },
+      {
+        "name": "suffix",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "year",
+        "type": "int64",
+        "nullable": true
+      },
+      {
+        "name": "caratula",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "objeto",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "first_action",
+        "type": "date32[day]",
+        "nullable": true
+      },
+      {
+        "name": "last_action",
+        "type": "date32[day]",
+        "nullable": true
+      },
+      {
+        "name": "documents",
+        "type": "int64",
+        "nullable": true
+      }
+    ],
+    "error": null,
+    "relative_path": "data/causa.parquet",
+    "size_bytes": 95546
+  },
+  {
+    "path": "E:\\jem\\web\\data\\document.parquet",
+    "status": "ok",
+    "engine": "pyarrow",
+    "row_count": 3964,
+    "num_columns": 12,
+    "columns": [
+      {
+        "name": "hf_oid",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "kind",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "is_signed",
+        "type": "bool",
+        "nullable": true
+      },
+      {
+        "name": "number",
+        "type": "int64",
+        "nullable": true
+      },
+      {
+        "name": "year",
+        "type": "int64",
+        "nullable": true
+      },
+      {
+        "name": "issued_on",
+        "type": "date32[day]",
+        "nullable": true
+      },
+      {
+        "name": "causa_id",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "caratula",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "objeto",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "body",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "body_source",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "body_quality",
+        "type": "double",
+        "nullable": true
+      }
+    ],
+    "error": null,
+    "relative_path": "data/document.parquet",
+    "size_bytes": 12105823
+  },
+  {
+    "path": "E:\\jem\\web\\data\\link.parquet",
+    "status": "ok",
+    "engine": "pyarrow",
+    "row_count": 1039,
+    "num_columns": 4,
+    "columns": [
+      {
+        "name": "draft_oid",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "signed_oid",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "evidence",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "similarity",
+        "type": "double",
+        "nullable": true
+      }
+    ],
+    "error": null,
+    "relative_path": "data/link.parquet",
+    "size_bytes": 55161
+  },
+  {
+    "path": "E:\\jem\\web\\data\\party.parquet",
+    "status": "ok",
+    "engine": "pyarrow",
+    "row_count": 6347,
+    "num_columns": 15,
+    "columns": [
+      {
+        "name": "party_id",
+        "type": "int64",
+        "nullable": true
+      },
+      {
+        "name": "hf_oid",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "causa_id",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "role",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "position",
+        "type": "int64",
+        "nullable": true
+      },
+      {
+        "name": "raw_name",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "name_key",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "treatment",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "cargo",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "oficio",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "fuero",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "instancia",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "unit",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "locality",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "circunscripcion",
+        "type": "string",
+        "nullable": true
+      }
+    ],
+    "error": null,
+    "relative_path": "data/party.parquet",
+    "size_bytes": 273894
+  },
+  {
+    "path": "E:\\jem\\web\\data\\party_conflict.parquet",
+    "status": "ok",
+    "engine": "pyarrow",
+    "row_count": 554,
+    "num_columns": 5,
+    "columns": [
+      {
+        "name": "variant_a",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "variant_b",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "role",
+        "type": "string",
+        "nullable": true
+      },
+      {
+        "name": "similarity",
+        "type": "double",
+        "nullable": true
+      },
+      {
+        "name": "state",
+        "type": "string",
+        "nullable": true
+      }
+    ],
+    "error": null,
+    "relative_path": "data/party_conflict.parquet",
+    "size_bytes": 15305
+  }
+]

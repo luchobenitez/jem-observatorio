@@ -1,0 +1,805 @@
+{
+  "metadata": {
+    "title": "Informe empírico independiente: actuaciones de Hernán David Rivas Román en el JEM",
+    "analysis_date": "2026-08-24",
+    "status": "LIMITADO_PARA_INFERENCIA_SUSTANTIVA",
+    "classification": "estudio exploratorio con resultados parciales y límites documentales explícitos",
+    "source_report": "docs/informes/rivas_jem_20260824/INFORME_INDEPENDIENTE_HERNAN_RIVAS_JEM.md",
+    "source_findings": "docs/informes/rivas_jem_20260824/HALLAZGOS_TECNICOS.json",
+    "source_review_queue": "docs/informes/rivas_jem_20260824/review_queue.csv",
+    "source_decisiveness_cards": "docs/informes/rivas_jem_20260824/FICHAS_CASOS_DECISIVIDAD.md",
+    "note": "Los valores describen el snapshot analizado por el informe independiente. No deben confundirse con una validación jurídica integral de cada actuación."
+  },
+  "corpus": {
+    "documents": 3964,
+    "documents_with_nonempty_text": 3963,
+    "cases": 1669,
+    "signed_decisions": 1853,
+    "vote_rows": 8355,
+    "dictamenes": 528,
+    "documents_without_valid_case": 427,
+    "body_quality_missing": 2878
+  },
+  "document_types": [
+    {
+      "label": "Autos interlocutorios firmados",
+      "value": 1702
+    },
+    {
+      "label": "Proyectos de resolución",
+      "value": 1166
+    },
+    {
+      "label": "Dictámenes",
+      "value": 528
+    },
+    {
+      "label": "Sentencias definitivas firmadas",
+      "value": 151
+    },
+    {
+      "label": "Órdenes del día",
+      "value": 146
+    },
+    {
+      "label": "Otros",
+      "value": 106
+    },
+    {
+      "label": "Antecedentes",
+      "value": 88
+    },
+    {
+      "label": "Actas de sesión",
+      "value": 77
+    }
+  ],
+  "rivas": {
+    "action_rows": 1232,
+    "distinct_decision_ids": 1232,
+    "actions_with_valid_case": 1217,
+    "distinct_valid_case_ids": 1064,
+    "actions_without_valid_case": 15,
+    "actions_missing_year": 21,
+    "verified_explicit_dissents_minimum": 1,
+    "total_identifiable_votes": "NO_DETERMINABLE",
+    "agreement_with_majority_rate": "NO_DETERMINABLE",
+    "dissent_rate": "NO_DETERMINABLE",
+    "abstention_rate": "NO_DETERMINABLE",
+    "total_pivotal_votes": "NO_DETERMINABLE",
+    "pivotal_vote_rate": "NO_DETERMINABLE"
+  },
+  "roles": [
+    {
+      "role": "Adherente",
+      "action": "Voto adherido",
+      "rows": 1008,
+      "percent": 81.82
+    },
+    {
+      "role": "Presente sin voto individualizado",
+      "action": "Firma de resolución",
+      "rows": 183,
+      "percent": 14.85
+    },
+    {
+      "role": "Preopinante",
+      "action": "Voto o exposición propia",
+      "rows": 22,
+      "percent": 1.79
+    },
+    {
+      "role": "Firma colectiva",
+      "action": "Voto no individualizable",
+      "rows": 14,
+      "percent": 1.14
+    },
+    {
+      "role": "Presidente",
+      "action": "Presidencia o firma como autoridad",
+      "rows": 3,
+      "percent": 0.24
+    },
+    {
+      "role": "Inhibido",
+      "action": "Inhibición o recusación",
+      "rows": 2,
+      "percent": 0.16
+    }
+  ],
+  "rivas_actions_by_year": [
+    {
+      "year": "2019",
+      "value": 1
+    },
+    {
+      "year": "2020",
+      "value": 222
+    },
+    {
+      "year": "2021",
+      "value": 620
+    },
+    {
+      "year": "2022",
+      "value": 294
+    },
+    {
+      "year": "2023",
+      "value": 74
+    },
+    {
+      "year": "Sin año",
+      "value": 21
+    }
+  ],
+  "vote_extraction": {
+    "rows_a_favor_majority": 8217,
+    "rows_no_determinable": 138,
+    "rows_marked_dissent": 0,
+    "decisions_with_dissent_language": 40,
+    "decisions_with_explicit_rivas_speaking_turn": 147,
+    "explicit_rivas_turns_with_vote_row": 26,
+    "explicit_rivas_turns_without_vote_row": 121,
+    "decision_vote_count_mismatches": 103
+  },
+  "verified_cases": {
+    "dissent": {
+      "decision": "AI 738/2021",
+      "case_id": "94/2020",
+      "finding": "Disidencia explícita verificable de Rivas: votó por el inicio del enjuiciamiento, mientras la resolución rechazó el enjuiciamiento de oficio.",
+      "classification": "DISIDENCIA_VERIFICADA"
+    },
+    "split_vote": {
+      "decision": "SD 35/2022",
+      "case_id": "311/2021",
+      "finding": "El texto registra a Rivas adhiriendo a la absolución en una votación dividida; la tabla derivada no reconstruye adecuadamente esa intervención.",
+      "classification": "VOTACION_DIVIDIDA_REQUIERE_RECONSTRUCCION"
+    }
+  },
+  "decisiveness_cases": [
+    {
+      "decision": "AI 592/2021",
+      "case_id": "181/2020",
+      "aligned_votes": "Al menos 7",
+      "without_rivas": "Al menos 6",
+      "rule": "Ley 3759/2009: cinco votos coincidentes",
+      "classification": "NO_DECISIVO"
+    },
+    {
+      "decision": "AI 710/2021",
+      "case_id": "148/1/2016",
+      "aligned_votes": "6",
+      "without_rivas": "5",
+      "rule": "Ley 3759/2009 por régimen transitorio",
+      "classification": "NO_DECISIVO"
+    },
+    {
+      "decision": "AI 402/2022",
+      "case_id": "81/2022",
+      "aligned_votes": "6",
+      "without_rivas": "5",
+      "rule": "Ley 6814/2021: mayoría simple",
+      "classification": "NO_DECISIVO"
+    },
+    {
+      "decision": "AI 5/2023",
+      "case_id": "122/2022",
+      "aligned_votes": "6",
+      "without_rivas": "5",
+      "rule": "Ley 6814/2021: mayoría simple",
+      "classification": "NO_DECISIVO"
+    }
+  ],
+  "organ_and_quorum": {
+    "decisions_with_present_members_below_votes_cast": 1370,
+    "decisions_marked_quorum_invalid": 1852,
+    "total_signed_decisions": 1853,
+    "same_person_president_and_vicepresident": 706,
+    "interpretation": "Los campos derivados no permiten reconstruir de forma confiable la integración, ausencias ni quórum."
+  },
+  "dictamenes": {
+    "total": 528,
+    "without_valid_case": 11,
+    "recommendations": [
+      {
+        "label": "Otro",
+        "value": 326
+      },
+      {
+        "label": "Apercibimiento",
+        "value": 82
+      },
+      {
+        "label": "Desestimación",
+        "value": 45
+      },
+      {
+        "label": "Archivamiento",
+        "value": 31
+      },
+      {
+        "label": "Rechazo in límine",
+        "value": 20
+      },
+      {
+        "label": "Absolución",
+        "value": 17
+      },
+      {
+        "label": "Apertura de enjuiciamiento",
+        "value": 7
+      }
+    ],
+    "link_rows": 748,
+    "distinct_dictamenes_linked": 439,
+    "distinct_decisions_linked": 404,
+    "distinct_cases_linked": 305,
+    "comparable_rows_in_derived_model": 223,
+    "distinct_dictamenes_in_comparable_rows": 158,
+    "distinct_cases_in_comparable_rows": 139,
+    "links_failing_strict_temporal_or_date_control": 198,
+    "concordance_rate": "NO_DETERMINABLE"
+  },
+  "traceability": {
+    "documents_without_original_file_path_in_report_snapshot": 3964,
+    "evidence_spans": 8217,
+    "evidence_spans_without_file_path": 8217,
+    "evidence_quotes_not_exact_substrings": 8217,
+    "evidence_char_span_mismatches": 8217,
+    "note": "Estas limitaciones corresponden al snapshot analítico examinado. El catálogo público del portal es una capa posterior e independiente y no debe considerarse, por sí solo, una corrección de los spans probatorios."
+  },
+  "non_determinable_metrics": [
+    "total_votos_identificables",
+    "total_votos_mayoria",
+    "total_votos_minoria",
+    "total_disidencias (mínimo verificado: 1)",
+    "total_abstenciones",
+    "total_ausencias",
+    "agreement_with_majority_rate",
+    "dissent_rate",
+    "abstention_rate",
+    "total_votos_pivotal",
+    "pivotal_vote_rate",
+    "concordance_rate dictamen-resolución"
+  ],
+  "conclusions": [
+    "El informe describe una presencia documental extensa de Rivas y una clasificación automatizada dominada por adhesiones.",
+    "La extracción automatizada de votos es incompleta y no permite estimar tasas globales de mayoría, disidencia, ausencia, abstención o pivotalidad.",
+    "Existe al menos una disidencia explícita verificable.",
+    "En las cuatro decisiones examinadas individualmente por posible decisividad, el voto de Rivas fue clasificado NO_DECISIVO.",
+    "Las métricas de coalición y concordancia dictamen-resolución permanecen NO_DETERMINABLE hasta una reconstrucción documental más precisa."
+  ],
+  "review_queue": [
+    {
+      "priority": "P0_BLOCKER",
+      "category": "SYSTEMIC_TRACEABILITY_FAILURE",
+      "case_id": "",
+      "decision_id": "",
+      "document_id": "",
+      "page": "",
+      "risk_reason": "All 8,217 evidence spans have invalid exact-offset traceability; all file_path values are empty.",
+      "evidence_quote": ""
+    },
+    {
+      "priority": "P0_BLOCKER",
+      "category": "SYSTEMIC_ORIGINAL_FILE_LINKAGE_FAILURE",
+      "case_id": "",
+      "decision_id": "",
+      "document_id": "",
+      "page": "",
+      "risk_reason": "All 3,964 original_file_path values are the literal string None.",
+      "evidence_quote": ""
+    },
+    {
+      "priority": "P0_BLOCKER",
+      "category": "SYSTEMIC_VOTE_EXTRACTION_FAILURE",
+      "case_id": "",
+      "decision_id": "",
+      "document_id": "",
+      "page": "",
+      "risk_reason": "All 8,217 identifiable vote rows are labeled majority/A_FAVOR; 40 decision texts contain dissent language but zero dissent rows were extracted.",
+      "evidence_quote": ""
+    },
+    {
+      "priority": "P0_BLOCKER",
+      "category": "SYSTEMIC_ORGAN_RECONSTRUCTION_FAILURE",
+      "case_id": "",
+      "decision_id": "",
+      "document_id": "",
+      "page": "",
+      "risk_reason": "1,370 decisions report fewer present members than votes cast; 1,852 of 1,853 decisions are marked quorum invalid.",
+      "evidence_quote": ""
+    },
+    {
+      "priority": "P0_BLOCKER",
+      "category": "SYSTEMIC_DICTAMEN_LINK_FAILURE",
+      "case_id": "",
+      "decision_id": "",
+      "document_id": "",
+      "page": "",
+      "risk_reason": "198 of 748 links are prior-dated or malformed; existing links are many-to-many same-case pairings, not verified subsequent resolution links.",
+      "evidence_quote": ""
+    },
+    {
+      "priority": "P0_BLOCKER",
+      "category": "REPRODUCIBILITY_FAILURE",
+      "case_id": "",
+      "decision_id": "",
+      "document_id": "",
+      "page": "",
+      "risk_reason": "No generation pipeline, dependency lock, or executable analysis script accompanies the derived artifacts.",
+      "evidence_quote": ""
+    },
+    {
+      "priority": "P0_CRITICAL",
+      "category": "DECISIVENESS_CASE_REQUIRES_SOURCE_RECONSTRUCTION",
+      "case_id": "181/2020",
+      "decision_id": "DEC_AU_592_2021_48fe8ea5",
+      "document_id": "48fe8ea5d26d91e9df96da3b8b304f0c4ba00720",
+      "page": "",
+      "risk_reason": "Text identifies at least seven aligned voters; removing Rivas still leaves at least six, above the five-vote threshold under Law 3759/2009.",
+      "evidence_quote": ""
+    },
+    {
+      "priority": "P0_CRITICAL",
+      "category": "DECISIVENESS_CASE_REQUIRES_SOURCE_RECONSTRUCTION",
+      "case_id": "148/1/2016",
+      "decision_id": "DEC_AU_710_2021_a50d7c40",
+      "document_id": "a50d7c40a0354665dda5c56bb1a72ba25ecc2931",
+      "page": "",
+      "risk_reason": "Text identifies Ramirez Candia plus five adherents (six aligned voters); removing Rivas leaves five.",
+      "evidence_quote": ""
+    },
+    {
+      "priority": "P0_CRITICAL",
+      "category": "DECISIVENESS_CASE_REQUIRES_SOURCE_RECONSTRUCTION",
+      "case_id": "81/2022",
+      "decision_id": "DEC_AU_402_2022_e2758b35",
+      "document_id": "e2758b35f6d2459250e7d607939bcc41661710f5",
+      "page": "",
+      "risk_reason": "Signed PDF and text identify six aligned voters; Law 6814/2021 applies simple majority to non-final resolutions.",
+      "evidence_quote": ""
+    },
+    {
+      "priority": "P0_CRITICAL",
+      "category": "DECISIVENESS_CASE_REQUIRES_SOURCE_RECONSTRUCTION",
+      "case_id": "122/2022",
+      "decision_id": "DEC_AU_5_2023_df6f449a",
+      "document_id": "df6f449a2ec06133935f5f7404a566416ec3f4bd",
+      "page": "",
+      "risk_reason": "Signed PDF and text identify six aligned voters; Law 6814/2021 applies simple majority to non-final resolutions.",
+      "evidence_quote": ""
+    },
+    {
+      "priority": "P0_CRITICAL",
+      "category": "EXPLICIT_RIVAS_VOTE_MISSING_FROM_DERIVED_DATA",
+      "case_id": "311/2021",
+      "decision_id": "DEC_SE_35_2022_89bc46b9",
+      "document_id": "89bc46b9aa5a2dae524d887964f33fafcedff5e1",
+      "page": "",
+      "risk_reason": "The text explicitly records Rivas voting for absolution, while the dataset labels his vote NO_DETERMINABLE and records only one vote cast.",
+      "evidence_quote": "A su turno, el Miembro Hernán David Rivas dijo: Yo me adhiero al voto del\npreopinante en este caso a la preopinión del senador Fernando Silva, por la absolución.\nES MI VOTO.\nA su turno, el Miembro Oscar Paciello dijo: Me"
+    },
+    {
+      "priority": "P2_HIGH",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "2/2/2016",
+      "decision_id": "DEC_SE_8_2020_44d87493",
+      "document_id": "44d874939076c179436bd21c7dcab11f19b30b13",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "que se halla prevista en el artícuło 693 del Código Procesal Civil, dictando el A.I. N° 09 del 23 de diciembre de , que conjuntamente con la Magistrada Carmen Chavez y con voto en disidencia del Abg. Juan Vera Zarate, ordenando la suspensión del acto administrativo del 19 de diciembre de 2015 emanado de la Municipalidad de Ciudad del Este por el cual se destituye del cargo de Secretario General de dicho órgano legislativo municipal. pe la lectura det A.I. mencionado, no se observan ningún señala"
+    },
+    {
+      "priority": "P2_HIGH",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "55/1/2012",
+      "decision_id": "DEC_SE_13_2020_ce8353ef",
+      "document_id": "ce8353efaeda0fa7b92c6a8ec7a340680865cc60",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "urno, la Miembro Gladys Bareiro de Módica dice: A pesar de las enjundiosas expresiones jurídicas dadas por mi ilustre colega el Miembro Eusebio Alvarenga, me permito manifestar mi disidencia en esta causa y voy a expresar los motivos: resumiendo los hechos atribuidos al Miembro del Tribunal de Sentencia, Santiago Trinidad Núñez, fue el de haber condenado solo a la pena de cinco (5) años a los señores Benito Chamorro, Edgar Salvador Carballo y Nelson Ramón Sánchez López, y, no haber utilizado el"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "153/1/2016",
+      "decision_id": "DEC_SE_27_2020_3879e609",
+      "document_id": "3879e6094475139f47f0f64e98d11907eae5959c",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "su turno, el Miembro Eusebio Alvarenga dice: Para aclarar, en primer lugar, que, dentro de este proceso, de manera unánime se ha resuelto iniciar el enjuiciamiento, ni un voto en disidencia hubo, primera cuestión. Segunda cuestión, se habla que este Miembro del Jurado, con intención revanchista, no salió de este proceso. Debo aclarar en ese sentido que el Agente Fiscal Aldo Cantero, hace cuatro (4) años, estuvo en un proceso que, a partir de un accidente de ttánsito que protagonicé donde ya era"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "352/2019",
+      "decision_id": "DEC_SE_29_2020_9d4d22f8",
+      "document_id": "9d4d22f8d7232f3a16c6a4da855e0efff235209c",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "a la sanción aplicable, considero procedente la destitución, remoción de Aniceto Aníbal Amarilla e Isidro González. Sánchez y el apercibimiento de Myrian Meza que había votado en disidencia en la primera resolución cuestionada, y en la segunda, su posición fue la tercera adhiriéndose a la mayoría. ES MI VOTO. A su turno, el Miembro Eusebio Alvarenga dijo: Anticipo mi voto en el mismo sentido en que lo hiciera el Miembro Manuel Ramírez Candia. Los argumentos ahora paso a exponer: en primer lugar"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "526/2018",
+      "decision_id": "DEC_AU_209_2020_c15305b5",
+      "document_id": "c15305b5be60e7e4d5d7fe9cd5431e7d6d3b21e7",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "por lo que voto por el rechazo de la investigación preliminar y el archivo de la presente causa. ES MI VOTO. A su turno, la Miembro Gladys Bareiro de Módica dijo: Lamento salir en disidencia en este punto. Quiero recordar un poco lo que ocurrió: la señora Francisca Delgado de Borja formuló denuncia contra su marido Epifanio Borja por el hecho punible de \"Violencia familiar\" el 02 de agosto del 2017. Como consecuencia de ello, la Policía Nacional remitió la denuncia al Juzgado de Paz, tomando int"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "62/1/2017",
+      "decision_id": "DEC_AU_237_2020_fcb6840e",
+      "document_id": "fcb6840e63f8b7728b790bfc1fb0cb66b12312fe",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "ida favorablemente, pero también se nota de que el Tribunal ha fundamentado con votos coincidentes entre el Dr. Rodriguez Elizaur y el Dr. Carlos Guillermo Rehnfeldt y con voto en disidencia -pero también un voto fundamentado- del entonces integrante de este Tribunal, el Dr. Luciano Marecos. Pero, en este sentido, conviene traer a colación el instituto de por sí de la caducidad es bastante complicado, es unos de los institutos en que existe la mayor cantidad de debates jurisprudenciales y doctri"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "254/2018",
+      "decision_id": "DEC_AU_245_2020_f585cd2a",
+      "document_id": "f585cd2a95cc1542ce2e5d9ea8e41b70af3ef11f",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "lcar Marecos, adelanto mi voto que es el no enjuiciamiento y el archivo de la causa también. ES MI VOTO. A su turno, el Miembro Manuel Ramírez Candia dijo: Voy a emitir mi voto en disidencia en este caso y lo hago en el sentido siguiente. Se atribuye en primer lugar all Magistrado Amílcar Marecos, siete (7) motivos que constituirían supuesto mal esempeño de funciones en el marco de un proceso constitucional de amparo. Considero que sí existen algunos supuestos que justifican el inicio de la inve"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "1/1/2017",
+      "decision_id": "DEC_AU_286_2020_58f32154",
+      "document_id": "58f3215490bcf6721f598245ab1db43906fdb8b4",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "onducta se encuadrarían en las causales de \"mal desempeño de funciones\" dispuesta a través de los incisos b) y g) del artículo 14 de la Ley N° 3759/2009. Que conste que mi voto en disidencia. ES MI VOTO. A su turno, los Miembros Manuel Ramírez Candia, Cristian Kriskovich, Gladys Bareiro de Módica, y el Vicepresidente Adrián Salas Coronel se adhieren al voto del Miembro Hernán David Rivas. Por tanto, con base en las consideraciones que anteceden, EL JURADO DE ENJUICIAMIENTO DE MAGISTRADOS RESUELV"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "8/2020",
+      "decision_id": "DEC_SE_41_2020_7d83c0b8",
+      "document_id": "7d83c0b861e48f55cf5d903abf9e84fdcd978b90",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "cuanto a la otra actuación también de los otros Magistrados, fundamentalmente aquí ya hay que separar la cuestión porque, en primer lugar, hay tres (3) votos, pero hay un voto en disidencia en relación a la medición de pena, y hay que por supuesto entonces analizar la actuación que corresponde a los tres integrantes del Tribunal de Sentencia. ¿Cuál es la causal de irregularidad funcional que se le atribuye a los Miembros del Tribunal de Sentencia en el dictado de la S.D. N° 63 de fecha 26 de di"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "292/2020",
+      "decision_id": "DEC_AU_338_2020_0eb0006d",
+      "document_id": "0eb0006d066b16795abbafe6239f817873e67329",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "Porque el voto emitido por el Juez. Juan Carlos Bordón Barton, como Miembro del colegiado, no incidió en el resultado final para la emisión de la resolución porque fue un voto en disidencia, es decir, no tuvo relevancia de tener entidad como para generar gravamen. De ahí, reitero, cuanto menos debe llamarnos la atención la actitud de una parte o de un profesional que a cuatro días del dictado de una resolución, presenta una denuncia argumentando que se produjo agravio, a unos días nomas desiste"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "523/2018",
+      "decision_id": "DEC_AU_352_2020_132c5eba",
+      "document_id": "132c5eba88f2f8a152be1a2ea4be8116ed8da6e3",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "utado. Así tenemos que la defensa técnica apeló la decisión de la Jueza Nidia Leticia Paredes y, en segunda instancia, el Tribunal de Alzada, por mayoría de votos, hubo un voto en disidencia, resolvió revocar el auto recurrido y declarar operada la prescripción del hecho punible. En esencia, la cuestión que se debatió en este expediente si se cuenta con cierta discrecionalidad en lo que respecta a la interpretación de las normas por parte de los juzgadores, es decir, si bien la Jueza Nidia Pared"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "346/2018",
+      "decision_id": "DEC_SE_3_2021_cedda41b",
+      "document_id": "cedda41b4f0eff55f5441c1e56ba440b77adb5cc",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "nstitución Nacional, al exponer de manera previa y detallada el motivo del enjuiciamiento del Juez Blas Salvador Zorrilla, que se menciona a continuación: Haber emitido su voto en disidencia a favor de la absolución del acusado Félix Miranda Gamarra, además de haber solicitado la remisión de los antecedentes de la causa y las actuaciones del Agente Fiscal Rubén Moreno Diana a la Inspectoría General del Ministerio Público por cometer el hecho punible de \"Persecución de inocentes\". En ese orden de"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "336/2020",
+      "decision_id": "DEC_AU_46_2021_a26e0578",
+      "document_id": "a26e057818becfe4e663677c2f4cdc19e4ee871a",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "undada. El denunciante inadmitido hizo uso de los resortes procesales que hacen a su derecho, teniendo una acogida favorable cor JEM arantes de una justicia eficiente un voto en disidencia por parte del Tribunal de Apelación, ya que —por mayoría- el mismo resolvió conceder la medida del arresto domiciliario, y por lo tanto, ante esta situación, no encuentro una conducta irregular de la Magistrada. Por lo tanto, también al no encontrar esto, también mi voto es por el rechazo de la denuncia y el"
+    },
+    {
+      "priority": "P2_HIGH",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "342/2018",
+      "decision_id": "DEC_AU_105_2021_6c0f7189",
+      "document_id": "6c0f7189cf71468cfbae38a442935c929b058235",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "es así, que tampoco esto constituye motivo para el inicio de enjuiciamiento, tampoco podemos hablar de mal desempeño funcional, el básicamente al momento de argumentar su voto en disidencia, había tenido en cuenta el artículo primero de la ley procesal, que habla que toda condena tiene que ser resultado de un juicio en donde se aplique una ley anterior precisamente al juicio y en donde se tenga los principios de oralidad, inmediatez, publicidad, economía, concentración, etc., en fin, hizo refer"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "464/2019",
+      "decision_id": "DEC_AU_137_2021_27982ecb",
+      "document_id": "27982ecb034996d51b8180635191bec9c35aa681",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "os tampoco de la agente fiscal del caso, es mi voto. A su turno, la miembro Gladys Bareiro de Modica dijo: En todo me adhiero por lo expuesto por el preopinante, pero si tengo una disidencia en cuanto al sexto motivo atribuido a la fiscal Camila Rojas, para no abundar en todo lo demás puntos que el dijo que no ameritaba el enjuiciamiento, si yo en este punto quiero hacer mi disidencia y que por este punto si creo que esta debe ser investigada la agente fiscal Dionicia Camila Rojas y le voy a dec"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "449/2019",
+      "decision_id": "DEC_SE_19_2021_93ec1355",
+      "document_id": "93ec1355bad105ea8f620f667dba6d41bb136a57",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "preopinante Eusebio Alvarenga y en cuanto al segundo punto del presente estudio de sentencia, es que me permito observar en el mismo, elementos de convicción que me hacen estar en disidencia con lo expresado por el miembro Eusebio Alvarenga ya que en cuanto al punto de denuncia de la desestimación, resulta que el marco legal aplicable es de los artículos 301, 305, y 311 del Código Procesal Penal y acá resulta que se han realizado diligencias en el trascurso de la investigaci y en el mismo el tis"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "229/2020",
+      "decision_id": "DEC_AU_206_2021_90488f4f",
+      "document_id": "90488f4fc27f0352b97bbf14b16795b53e8d2473",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "iciar la investigación, para que el juez venga a explicar la situación que se ha dado, pero yo voto que sea sin suspensión. A su turno, el miembro Hernán David Rivas dijo: Voto en disidencia, por el archivo de la causa. A su turno, el miembro presidente Fernando Silva Facetti dijo: Me adhiero al voto del miembro Manuel De Jesús Ramírez Candia. A su turno, los miembros Mónica Seifart de Martínez, Gladys Bareiro de Módica se adhirieron al voto del miembro vicepresidente Jorge Bogarin Alfonso. Por"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "64/2020",
+      "decision_id": "DEC_SE_27_2021_ae33e24c",
+      "document_id": "ae33e24c61fec0a07df92fd5570b45785a5715f7",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "epresidente Jorge Bogarín por la absolución. A su turno, la Miembro Gladys Bareiro de Módica dijo: Con el debido respeto a los que me precedieron en la palabra, debo manifestar mi disidencia a lo manifestado ellos. constancia parte de responsabilidad del agente fiscal la que interesa en este caso, para mí se observa una falta de diligencia en los actos investigativos para la resolución del caso, poniendo en riesgo no solo el proceso judicial en sí sino los derechos que podría tener la víctima en"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "251/2020",
+      "decision_id": "DEC_AU_312_2021_4228cc35",
+      "document_id": "4228cc3587269233aa8c2d647c7d47b428751c19",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "iembre del 2016, motivo de la denuncia, dicho acuerdo resuelve en mayoría de los dos (2) miembros, revocar el fallo recurrido y reflejo de la opinión de la Jueza Fatima Pereira en disidencia, es decir emitiendo su voto a favor de la denunciante y proponiendo la confirmación de la sentencia cuestionada, favoreciendo la pretensión de la denuncia, posterior a eso de las constancias que se tiene a la vista, se desprende que la denunciante inadmitida ha promovido Acción de Inconstitucionalidad ante l"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "134/2/2017",
+      "decision_id": "DEC_AU_318_2021_e88ae6bb",
+      "document_id": "e88ae6bb12a2b3d22c918816c6daa9206f68e22b",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "itario y que por su parte el referido colega fue disidente por haber fallado por la confirmación de la resolución recurrida, ahora bien, también es importante destacar que la sola disidencia no constituye indicio de mal desempeño funcional, cuando que el voto emitido se encuentra fundado, en el sentido que la prisión preventiva a su criterio ya afectaba los principios de proporcionalidad, razonabilidad y excepcionalidad que hacen a medidas cautelares, por lo que estos argumentos no permiten visu"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "366/2020",
+      "decision_id": "DEC_AU_377_2021_23969ed8",
+      "document_id": "23969ed81dbe46cfec13a69e8f01f4b5faaa1598",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "uez. denunciado, interpretación que interpuso el recurso de apelación por el denunciante y que fue estudiada por la Cámara de Apelación de la Niñez y de la Adolescencia, el que en disidencia resolvió hacer lugar a la excepción de pago como parcial y no como pago total y modificó el monto por el que se ordenó llevar adelante la ejecución. Mi criterio es que no corresponde al Jurado el estudio de la denuncia presentada, ya que no se trata de una cuestión procesal, por eso la denuncia en ese sentid"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "383/2019",
+      "decision_id": "DEC_AU_445_2021_b5972fbb",
+      "document_id": "b5972fbb6fec078791267916f6e7c5ca1ec136cc",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "juiciamiento oficioso del Juez de Garantías de Ciudad del Este, Abg. Amilcar Marecos, es mi voto. A su turno, el miembro Manuel Dejesus Ramírez Candia dijo: Para emitir mi voto en disidencia y en forma testimonial. En el presente caso, el juez en el inicio de un proceso constitucional de habeas corpus genérico, ha dictado una medida cautelar urgente por la que prohíbe a las personas que cuestionaban la actuación de los magistrados, a manifestarse dentro de los trescientos metros de la residencia"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "249/2020",
+      "decision_id": "DEC_AU_436_2021_64dbdfc9",
+      "document_id": "64dbdfc90b64ce2208c38bece59564d8d004689c",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "tades o potestades para resolver apelaciones contra su propia decisión y hay que hacer una salvedad también, que hay un tercer miembro que es la magistrada Rosa Yambay que votó en disidencia y en su voto claramente quedó expuesto que el tribunal carece de competencia para determinar la admisibilidad del recurso de apelación interpuesto ante dicha alzada, así que también coincidentemente con el voto del ministro Manuel Ramírez, acompaño lo resuelto, el enjuiciamiento sin suspensión de ambos magis"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "11/2021",
+      "decision_id": "DEC_AU_655_2021_60c0969d",
+      "document_id": "60c0969d2496dde6d72fa1b9f2f425ca80a4e50d",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "por los incoados en la audiencia de la reposición interpuesta por la defensa. VOTACIÓN: A su turno, el Miembro Manuel Ramírez Candia dijo: Evidentemente es para emitir un voto en disidencia, con respecto a la verosimilitud y gravedad de la denuncia o de la acusación formulada contra la Magistrada. El contenido de la denuncia consta en dos (2) páginas y media, de los cuales, además de las cuestiones formales, lo esencial que agravia al acusador -en este caso- señala lo siguiente y leo textualmen"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "94/2020",
+      "decision_id": "DEC_AU_738_2021_e5656638",
+      "document_id": "e56566389f9ec49e6a0c296ff8aff157b429edf5",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "co Amarilla y Mónica Seifart de Martínez se adhirieron al voto del Vicepresidente Jorge Bogarín Alfonso. A su turno el miembro Hernán David Rivas dijo: En este caso, mi voto es en disidencia, yo voto por el inicio del enjuiciamiento. ES MI VOTO. Q3 JEM antes eptina wiste pre A su turno, el Miembro Enrique Bacchetta Chiriani dijo: La realidad es que estoy de acuerdo con la pre-opinión de los compañeros en el sentido jurídicamente estricto me parece de que, con respecto a la cuestión del mal dese"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "94/2020",
+      "decision_id": "DEC_AU_738_2021_f64e2c00",
+      "document_id": "f64e2c00b1d4955eabad95d13d3b8d1cddcfdf65",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "co Amarilla y Mónica Seifart de Martínez se adhirieron al voto del Vicepresidente Jorge Bogarín Alfonso. A su turno el miembro Hernán David Rivas dijo: En este caso, mi voto es en disidencia, yo voto por el inicio del enjuiciamiento. ES MI VOTO. A su turno, el Miembro Enrique Bacchetta Chiriani dijo: La realidad es que estoy de acuerdo con la pre-opinión de los compañeros en el sentido jurídicamente estricto me parece de que, con respecto a la cuestión del mal desempeño, creo que no hubo, pero"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "184/2021",
+      "decision_id": "DEC_AU_744_2021_1a889d89",
+      "document_id": "1a889d895b2538d40391bb097fb4481c179d4716",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "a nulidad de la resolución emanada del Tribunal de Apelación. Que, de la lectura de los antecedentes, se tienen que, en ambos juicios en alzada, el Magistrado Angel Cohene votó en disidencia en ese sentido, es el voto de los demás miembros lo que se dio en mayoría para llegar a la decisión, que finalmente fue objeto de recurso. Así las cosas, la presente investigación debería tener por objeto el análisis de las actuaciones de los demás Magistrados Dres. Marite Espínola, Rafael Cabrera y Con￾cepc"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "163/2019",
+      "decision_id": "DEC_AU_23_2022_15eb9f8f",
+      "document_id": "15eb9f8fd96bc5747764f12e35d1b117133173b3",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "nte por medio de la S.D. 47 del 22 de mayo del 2019, el Tribunal de Sentencia N° 03 de Alto Paraná, por voto de la mayoría de los Miembros Marino Méndez y Herminio Montiel, con la disidencia de Milciades Ovelar, resolvió absolver de culpa y pena al acusado Marcos Esteban Bogado Garmendia. Los mismos realizaron una valoración íntegra y armónica de las pruebas producidas en juicio, en especial, de las testificales de los señores Joel Jonatán Vera Areco, Lucas Samuel Nuñez Rótela, Nicolás Pereira,"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "249/2020",
+      "decision_id": "DEC_SE_4_2022_4ab75d97",
+      "document_id": "4ab75d97964a8e7fe6995932e13d9fb2d9aa320a",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "e lo que hace a la tramitación y resolución de un recurso de Apelación, no lo digo solamente yo, lo dice también la compañera de Sala de estos integrantes del Tribunal que votó en disidencia. En conclusión presidente, yo voto por la sanción de los Magistrados en grado de apercibimiento en razón de la incidencia o en razón de la proporcionalidad, es decir, el hecho y también el agravio causado. ES MI VOTO. A su turno, la Vicepresidenta 2º Mónica Seifart de Martínez se adhirió al voto del Miembro"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "159/2020",
+      "decision_id": "DEC_AU_80_2022_2ab105d9",
+      "document_id": "2ab105d9f1c8f4249fefd05bb502a0ed20410a26",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "Silva Facetti dijo: Con respecto al primer hecho, se tiene que por medio del A.I. Nº 34 del 14 de febrero del 2020, los Magistrados Linneo Ynsfrán y Neri Villalba, con el voto en disidencia de la Magistrada Buongermini, resolvieron revocar el A.I. Nº 1206 del 19 de julio del 2018, que rechazó el incidente de nulidad. De la lectura del interlocutorio que es objeto de la denuncia, surge que los Magistrados han realizado una interpretación de normas de la Ley orgánica del Banco Central y del Códig"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "186/2021",
+      "decision_id": "DEC_AU_426_2022_10302b39",
+      "document_id": "10302b398082488c900cf4c46197825148ca9de3",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "ulcación del ejercicio de la defensa en juicio o de las normas que rigen el debido proceso y de hecho que así lo entendió la Ministra Gladys Bareiro de Módica al fundar su voto en disidencia. Por último, se hace hincapié en el hecho de que los responsables de la acción de inconstitucionalidad basaron sus agravios, en descontento de valoración de pruebas e interpretación de normas, actuación que como es sabido, se encuentra reservada a los órganos jurisdiccionales naturales y que no puede ser obj"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "311/2021",
+      "decision_id": "DEC_SE_35_2022_89bc46b9",
+      "document_id": "89bc46b9aa5a2dae524d887964f33fafcedff5e1",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "n del senador Silva Faccetti y por los mismos argumentos, mi voto es por la absolución. ES MI VOTO. A su turno, el Miembro Manuel Ramírez Candia dijo: Me permito emitir mi voto en disidencia. Bueno, en primer lugar, en relación al primer hecho, el magistrado sostuvo que al presentarse la acción ante su juzgado, el recurrente ha optado por su juzgado, y el Código Procesal Civil admite la prórroga de la competencia territorial, por lo que en este caso, en relación a éste primer hecho no existe irr"
+    },
+    {
+      "priority": "P2_HIGH",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "13/2023",
+      "decision_id": "DEC_AU_58_2023_743b7989",
+      "document_id": "743b7989bfd57f417dae06f32a41e10880cdf387",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "er traslado a la magistrada afcctada para quc contcstc cuánto corresponda a sus dcrcchos. E§ MMTO. A su tumo, el Miembro Manuel Dejesús Ramlrez Candia dijo: Para emitir mi voto en disidencia en relación al voto emitido pot el Doctor Paciello, pues, en definitiva a mi modo de ver los dos hechos no constituyen causal paru el enfuiciamiento, y voy a parttt del antecedente efectivamente el tema es un supuesto hecho de violencia contra la mujer, que involucr^ ^ tres docentes de una institución educat"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "185/2019",
+      "decision_id": "DEC_AU_60_2023_13895409",
+      "document_id": "13895409ae90be593d96ee9f45d8e0609e32af50",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "constar un hecho falso, la misma en ningún momento adquirió calidad de parte\", lo mismo que viene diciendo. Entonces, Excelencia, esto termino con la remoción pese a que hubo una disidencia del Dr. Benitez Riera, Ministro de la Corte y de la miembros la Dra. Monica Seitart de Martinez, y también un apartamiento del voto del esta 1st Manuel Ramírez, que habló simplemente de una suerte de sanción menor del apercibimiento, pero finalmente se consiguieron los cinco votos, y aquí entra que por lo ge"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "20/2012",
+      "decision_id": "DEC_AU_67_2023_569f9e5b",
+      "document_id": "569f9e5ba882db6677c7df6ee99d51d202a260f4",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "Alberto Lezcano: \"Con Los votos del Vicepresidente 1º Rodrigo Blanco Amarilla y los Miembros Fernando Silva Facetti, Hernán David Rivas y Cesar Diesel, por la absolución, y con la disidencia del Presidente Jorge Bogarin Alfonso y los Miembros Manuel Ramírez Candia, Enrique Bacchetta y Oscar Paciello, el Jurado resolvió absolver al Magistrado Carlos Alberto Lezcano...\", hubo cuatro votos a favor de la absolución y cuatro votos en disidencia, se resolvió conforme a lo más favorable al enjuiciado."
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "78/2023",
+      "decision_id": "DEC_AU_102_2023_63140ebf",
+      "document_id": "63140ebf48f6b11bc54d90fcab362d1b0bf3424c",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "a, y si bien no da satisfacción a la interpretación taxativa a la norma, entiendo que eso impide el progreso de la presentación del acusador. Yo estoy, y es en esto, manifiesto mi disidencia por la admisión de la acusación, puesto que se ha hecho la presentación, pero como se necesitan seis votos, obviamente no tenemos ya los seis votos, pero lo mismo quiero dejar mi disidencia en cuanto a que acá sí se presentó el escrito en cumplimiento a la intimación dentro del plazo de Ley, y lo que a lo me"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "12/2022",
+      "decision_id": "DEC_SE_15_2023_3b859f88",
+      "document_id": "3b859f8800ec79d54ed84ed607cd585bfc0c210d",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "las investigaciones en las cuales él una sola convocó a prestar declaración indagatoria al imputado, en las demás fueron convocadas por el anterior Agente Fiscal, y aquí viene mi disidencia en cuanto a que se acreditó la omisión del Agente Fiscal Jorge Noguera, en cuanto a que él cuando toma la intervención como Agente Fiscal, cuatro años después en dos de ellas no realizo diligencias algunas y en las otras lo que hizo es continuar con diligencias ya realizadas. El problema es que se probó a tr"
+    },
+    {
+      "priority": "P1_URGENT",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "38/2023",
+      "decision_id": "DEC_AU_145_2023_949be315",
+      "document_id": "949be3156b89c8f5dd5cfb900c8286c30ff4121c",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "el Ramírez. Candia por la admisión formal de la acusación. En cuanto a la procedencia de la acusación, acompaño en lo esencial los argumentos esgrimidos por el preopinante con una disidencia que me permito señalar seguidamente: es con relación a la porción fáctica señalada al Abogado Juan Daniel Benítez, Agente Fiscal de la Unidad Penal N° 03, de Ciudad del Este, Sede Fiscal del Departamento de Alto Paraná, en el marco del cuaderno de investigación fiscal N° 3248/22, caratulada \"Ana Lidia Mora d"
+    },
+    {
+      "priority": "P2_HIGH",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "98/2022",
+      "decision_id": "DEC_AU_147_2023_87cc743d",
+      "document_id": "87cc743d90204ad2bf7709324b35566dee144242",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "01 a la 10, y las demás sean excluidas por exceder el número previsto en nuestra legislación. ES MI VOTO. A su turno, el Miembro Manuel Dejesús Ramírez Candia dijo: Para evitar la disidencia, me adhiero en esa parte a la propuesta del Dr. Kronawetter, es decir, que directamente procedamos a limitar a los 10 primeros los testigos que ofrece la enjuiciada. ES MI VOTO. A su turno, el Vicepresidente 2° Mario Alberto Varela dijo: En el mismo sentido del preopinante Ramírez Candia, más el agregado del"
+    },
+    {
+      "priority": "P2_HIGH",
+      "category": "DISSENT_TEXT_REQUIRES_REEXTRACTION",
+      "case_id": "",
+      "decision_id": "DEC_AU_301_2023_aa1fcb7a",
+      "document_id": "aa1fcb7a4beafd01b75f7371ab3ba76626afc852",
+      "page": "",
+      "risk_reason": "Decision text contains dissent language, but the vote table contains no dissent rows.",
+      "evidence_quote": "ución por A.I. número 177/2023 del Tribunal de Apelaciones, Segunda Sala, integrada por los camaristas Víctor Vega González, Cristino Yeza Araújo y Zulma Luna. Esta última votó en disidencia. Juan Augusto Roa Proceso por “tragada” en municipio encarnaceno camino al “oparei” - N... https://www.abc.com.py/nacionales/2023/12/11/proceso-por-tragada-e... 3 de 12 21/12/2023, 09:49 El 6 de diciembre último se debió realizar el juicio oral y público a la extesorera de la Municipalidad de Encarnación, Lo"
+    },
+    {
+      "priority": "P2_HIGH",
+      "category": "OCR_LOW_QUALITY",
+      "case_id": "188/2020",
+      "decision_id": "",
+      "document_id": "03eee3e426b06ac249158e4dd35a430e8bd5991e",
+      "page": "",
+      "risk_reason": "Document source is vision_ocr with estimated quality score 0.84",
+      "evidence_quote": ""
+    },
+    {
+      "priority": "P2_HIGH",
+      "category": "EMPTY_OR_TRUNCATED_TEXT",
+      "case_id": "",
+      "decision_id": "",
+      "document_id": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "page": "",
+      "risk_reason": "Document text is suspiciously short (0 characters)",
+      "evidence_quote": ""
+    }
+  ]
+}

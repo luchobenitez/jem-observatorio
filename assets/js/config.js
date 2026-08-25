@@ -1,0 +1,11 @@
+window.PORTAL_CONFIG=Object.freeze({
+  portalDataBase:'data/portal/',
+  jemSilverBase:'data/jem-silver/',
+  catalogBase:'data/catalog/',
+  analysisBase:'data/analysis/',
+  storageProvider:'huggingface',
+  documentsRepoId:'angatupyrytau/jem',
+  documentsRepoType:'dataset',
+  documentsRevision:'main',
+  documentsRepoUrl:'https://huggingface.co/datasets/angatupyrytau/jem'
+});

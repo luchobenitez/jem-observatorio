@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Repositorio público de autos interlocutorios, sentencias definitivas y dictámenes del JEM.">
+<title>Documentos · Observatorio Cívico JEM</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<nav class="site-nav" aria-label="Navegación principal">
+<a class="brand" href="index.html"><span class="brand-mark">JEM</span><span>Observatorio Cívico</span></a>
+<button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+<div class="nav-links">
+<a href="index.html">Inicio</a><a href="caso.html">El caso</a><a href="estadisticas.html">Estadísticas</a><a href="documentos.html">Documentos</a><a href="fuentes.html">Fuentes</a><a href="metodologia.html">Metodología</a>
+</div>
+</nav>
+
+<main>
+<header class="page-header">
+  <p class="eyebrow">Archivo documental</p>
+  <h1>Documentos del JEM</h1>
+  <p>Este repositorio permite buscar autos interlocutorios, sentencias definitivas y dictámenes del corpus.</p>
+  <p>Los archivos originales se alojan en Hugging Face. El portal conserva el catálogo y ofrece enlaces individuales para ver o descargar cada documento.</p>
+  <p><a class="btn secondary" href="https://huggingface.co/datasets/angatupyrytau/jem" target="_blank" rel="noopener">Abrir dataset documental en Hugging Face ↗</a></p>
+</header>
+
+<section class="section compact">
+  <div class="section-head">
+    <p class="eyebrow">Buscar en el archivo</p>
+    <h2>Encontrar un documento</h2>
+    <p>
+      Puede buscar por nombre, carátula, número de causa o identificador SHA-256.
+      Los filtros permiten reducir los resultados por año y tipo documental.
+    </p>
+    <p id="repoStatus" class="status-pill">Cargando catálogo…</p>
+    <p id="storageSyncMeta" class="hint"></p>
+  </div>
+
+  <div class="filter-bar">
+    <input id="repoSearch" type="search" placeholder="Buscar por carátula, nombre, causa o hash…">
+    <select id="repoYear"><option value="">Todos los años</option></select>
+    <select id="repoKind"><option value="">Todos los tipos</option></select>
+  </div>
+
+  <div id="repoCount" class="result-count"></div>
+  <div id="repoLimitHint" class="hint"></div>
+
+  <div class="table-wrap">
+    <table class="repo-table">
+      <thead>
+        <tr>
+          <th>Año</th>
+          <th>Tipo</th>
+          <th>Documento</th>
+          <th>Causa</th>
+          <th>Formato</th>
+          <th>Tamaño</th>
+          <th>Acceso</th>
+        </tr>
+      </thead>
+      <tbody id="repoRows"><tr><td colspan="7">Cargando…</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section muted">
+  <div class="section-head">
+    <p class="eyebrow">Cómo usar el repositorio</p>
+    <h2>Del dato al documento original</h2>
+  </div>
+
+  <div class="cards three">
+    <div class="card">
+      <span class="card-kicker">1</span>
+      <h3>Busque</h3>
+      <p>
+        Use palabras de la carátula, un apellido, el número de una causa o un año para reducir
+        el universo de documentos.
+      </p>
+    </div>
+
+    <div class="card">
+      <span class="card-kicker">2</span>
+      <h3>Revise</h3>
+      <p>
+        El resultado muestra el tipo de documento, la causa asociada, el formato y otros datos
+        que ayudan a identificarlo antes de abrirlo.
+      </p>
+    </div>
+
+    <div class="card">
+      <span class="card-kicker">3</span>
+      <h3>Abra la evidencia</h3>
+      <p>
+        Cuando el archivo está enlazado, los botones <strong>Ver</strong> y
+        <strong>Descargar</strong> llevan al documento almacenado en Hugging Face.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <p class="eyebrow">Integridad</p>
+    <h2>Cómo identificamos los archivos</h2>
+  </div>
+  <p>
+    El portal conserva la ruta lógica de cada documento y su huella SHA-256. Esa huella permite
+    identificar el contenido de un archivo aunque, con el tiempo, cambie el lugar donde está
+    alojado.
+  </p>
+  <p>
+    Si un registro aparece como pendiente de sincronización, significa que el catálogo todavía
+    no pudo asociarlo con un archivo individual de Hugging Face. En ese caso no se crea un enlace
+    aproximado ni se intenta adivinar cuál es el documento.
+  </p>
+  <p>
+    Las publicaciones oficiales, judiciales y periodísticas utilizadas para contextualizar el caso
+    están en la página de <a href="fuentes.html">Fuentes</a>.
+  </p>
+</section>
+</main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/documents.js"></script>
+
+<footer class="site-footer">
+  <div>
+    <strong>Observatorio Cívico JEM</strong>
+    <p>Portal orientado a transparencia, trazabilidad documental y análisis reproducible.</p>
+  </div>
+  <div>
+    <a href="fuentes.html">Fuentes</a><br>
+    <a href="metodologia.html">Metodología y advertencias</a>
+  </div>
+</footer>
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>

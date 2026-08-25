@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "provider": "huggingface",
+  "repo_id": "angatupyrytau/jem",
+  "repo_type": "dataset",
+  "revision": "main",
+  "repo_url": "https://huggingface.co/datasets/angatupyrytau/jem",
+  "public_read": true,
+  "documents_only": true,
+  "jem_silver": {
+    "hosted_in_huggingface": false,
+    "local_path": "data/jem-silver",
+    "published_with_github_pages": true
+  },
+  "accepted_document_roots": [
+    "autos_interlocutorios/",
+    "dictamenes/",
+    "sentencias_definitivas/",
+    "sentencia_definitiva/",
+    "documentos/autos_interlocutorios/",
+    "documentos/dictamenes/",
+    "documentos/sentencias_definitivas/",
+    "documentos/sentencia_definitiva/"
+  ]
+}

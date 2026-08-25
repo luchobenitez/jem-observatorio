@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Cómo funciona técnicamente el Observatorio Cívico JEM: datos, documentos, estadísticas, sincronización e integridad.">
+<title>Metodología · Observatorio Cívico JEM</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<nav class="site-nav" aria-label="Navegación principal">
+<a class="brand" href="index.html"><span class="brand-mark">JEM</span><span>Observatorio Cívico</span></a>
+<button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+<div class="nav-links">
+<a href="index.html">Inicio</a><a href="caso.html">El caso</a><a href="estadisticas.html">Estadísticas</a><a href="documentos.html">Documentos</a><a href="fuentes.html">Fuentes</a><a href="metodologia.html">Metodología</a>
+</div>
+</nav>
+
+<main>
+<header class="page-header">
+<p class="eyebrow">Cómo funciona el portal</p>
+<h1>Metodología técnica</h1>
+<p>El Observatorio Cívico JEM es un sitio estático preparado para GitHub Pages. La interfaz, los datos estadísticos y el repositorio de documentos se mantienen como capas independientes.</p>
+<p>Los Parquet de JEM Silver forman parte del propio sitio en <code>data/jem-silver/</code>. Hugging Face se utiliza únicamente para alojar los documentos originales.</p>
+</header>
+
+<section class="section compact"><div class="cards two">
+<div class="card"><h2>1. Arquitectura del sitio</h2><p>GitHub contiene el código, los datos del portal, los análisis y los archivos Parquet. GitHub Pages publica ese conjunto como sitio estático. No se requiere una base de datos de servidor para atender las consultas.</p></div>
+
+<div class="card"><h2>2. Separación de los datos</h2><p><code>data/portal/</code> contiene datos de navegación y contenido; <code>data/jem-silver/</code> contiene los Parquet; <code>data/catalog/</code> relaciona documentos y almacenamiento; <code>data/analysis/</code> conserva análisis derivados.</p></div>
+
+<div class="card"><h2>3. Documentos en Hugging Face</h2><p>Los PDF, DOC y DOCX no se publican en GitHub Pages. Se alojan en el dataset público <code>angatupyrytau/jem</code>. El catálogo conserva la ruta lógica del corpus y agrega <code>hf_path</code>, <code>view_url</code> y <code>download_url</code> cuando la ruta remota queda confirmada.</p></div>
+
+<div class="card"><h2>4. Sincronización del catálogo</h2><p><code>scripts/sync_huggingface.py</code> consulta el árbol de archivos del dataset y compara rutas exactas. No descarga documentos y no busca coincidencias aproximadas por nombre. El resultado queda registrado en <code>hf_snapshot.json</code>.</p></div>
+
+<div class="card"><h2>5. JEM Silver dentro del sitio</h2><p>Los archivos <code>causa.parquet</code>, <code>document.parquet</code>, <code>link.parquet</code>, <code>party.parquet</code> y <code>party_conflict.parquet</code> deben permanecer en <code>data/jem-silver/</code> dentro del repositorio GitHub. No se sincronizan desde Hugging Face.</p></div>
+
+<div class="card"><h2>6. Estadísticas en el navegador</h2><p><a href="estadisticas.html">Estadísticas</a> utiliza DuckDB-WASM para consultar los Parquet servidos por GitHub Pages. Al estar en el mismo sitio, las consultas no dependen de la disponibilidad o de las políticas HTTP de un almacenamiento externo.</p></div>
+
+<div class="card"><h2>7. Catálogo documental</h2><p><code>documents_manifest.json</code> es el puente entre las rutas históricas del corpus y Hugging Face. Si un mismo contenido aparece varias veces, el catálogo conserva una ruta canónica y puede registrar las demás como alias.</p></div>
+
+<div class="card"><h2>8. Identificación e integridad</h2><p>Los documentos del inventario se identifican mediante SHA-256. El proyecto también mantiene <code>MANIFEST.sha256</code> para registrar la integridad de los archivos que forman parte de una publicación del portal.</p></div>
+
+<div class="card"><h2>9. Relación con los Parquet</h2><p>Cuando <code>document.parquet.hf_oid</code> coincide exactamente con el SHA-256 del catálogo, puede generarse <code>document_public.parquet</code> con los enlaces del documento. Una coincidencia aproximada no se aplica automáticamente.</p></div>
+
+<div class="card"><h2>10. Publicación y actualización</h2><p>Antes de desplegar, GitHub Actions verifica el dataset de Hugging Face, actualiza el catálogo, comprueba que los Parquet locales estén presentes, genera el manifest de integridad y publica el sitio en GitHub Pages.</p></div>
+</div></section>
+
+<section class="section muted">
+<div class="section-head"><p class="eyebrow">Flujo de datos</p><h2>Cómo se relacionan las piezas</h2></div>
+<div class="timeline">
+<div class="timeline-item"><div class="time">1</div><div><h4>Documento original</h4><p>El archivo se publica en Hugging Face dentro de una carpeta documental del dataset.</p></div></div>
+<div class="timeline-item"><div class="time">2</div><div><h4>Verificación de ruta</h4><p>El sincronizador confirma que la ruta esperada existe y genera los enlaces de visualización y descarga.</p></div></div>
+<div class="timeline-item"><div class="time">3</div><div><h4>Catálogo</h4><p>La relación se guarda en <code>data/catalog/</code> sin modificar los Parquet originales.</p></div></div>
+<div class="timeline-item"><div class="time">4</div><div><h4>JEM Silver</h4><p>Los Parquet se publican directamente desde <code>data/jem-silver/</code> junto con GitHub Pages.</p></div></div>
+<div class="timeline-item"><div class="time">5</div><div><h4>Consulta pública</h4><p>Documentos abre Hugging Face; Estadísticas consulta los Parquet locales mediante DuckDB-WASM.</p></div></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-head"><p class="eyebrow">Alcance técnico</p><h2>Qué hace el portal y qué no hace</h2></div>
+<p>El portal organiza, relaciona y presenta datos. No modifica los documentos alojados en Hugging Face.</p>
+<p>Una asociación documental indica que el sistema confirmó una ruta remota prevista. Los datos extraídos por OCR o por procesamiento automático pueden requerir verificación contra el archivo original.</p>
+<p>Cuando una métrica no puede establecerse de forma confiable, la interfaz puede conservar valores como <code>NO_DETERMINABLE</code> en lugar de convertir la falta de información en cero.</p>
+</section>
+</main>
+
+<footer class="site-footer"><div><strong>Observatorio Cívico JEM</strong><p>Portal orientado a transparencia, trazabilidad documental y análisis reproducible.</p></div><div><a href="documentos.html">Documentos</a><br><a href="fuentes.html">Fuentes</a></div></footer>
+<script src="assets/js/site.js"></script>
+</body></html>

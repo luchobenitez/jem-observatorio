@@ -1,0 +1,23 @@
+{
+  "schema_version": "2.0",
+  "generated_at_utc": "2026-08-24T20:49:02.724113+00:00",
+  "path_source": "docs/inventario/documentos_rutas.csv",
+  "documents_dir": "documentos",
+  "download_mode": "relative",
+  "download_base_url": null,
+  "physical_files": 4051,
+  "unique_sha256": 3964,
+  "duplicate_copies": 87,
+  "categories": {
+    "autos_interlocutorios": 1766,
+    "dictamenes": 2134,
+    "sentencia_definitiva": 151
+  },
+  "silver_rows": null,
+  "exact_silver_matches": 0,
+  "prefix_candidates_not_applied": 0,
+  "unmatched_unique_files": 0,
+  "unmatched_silver_rows": 0,
+  "silver_load_error": "no existe data/jem-silver/document.parquet",
+  "document_public_parquet_written": false
+}

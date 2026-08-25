@@ -1,0 +1,53 @@
+{
+  "package": "Observatorio Cívico JEM v3",
+  "purpose": "Overlay/migration package for E:\\jem\\web",
+  "catalog": {
+    "physical_document_files_in_inventory": 4051,
+    "unique_sha256": 3964,
+    "duplicate_aliases": 87,
+    "relative_path_prefix": "documentos/"
+  },
+  "jem_silver_expected": [
+    "data/jem-silver/causa.parquet",
+    "data/jem-silver/document.parquet",
+    "data/jem-silver/link.parquet",
+    "data/jem-silver/party.parquet",
+    "data/jem-silver/party_conflict.parquet"
+  ],
+  "parquet_binaries_included": false,
+  "document_binaries_included": false,
+  "reason": "The uploaded materials contained inventories/schemas, not the 2.47 GB document archive or the Parquet binary files. The package preserves and indexes their verified existing relative paths and includes migration scripts.",
+  "apply_steps": [
+    "Extract over a backup copy of E:\\jem\\web",
+    "python scripts\\migrar_estructura.py .",
+    "python scripts\\migrar_estructura.py . --apply",
+    "python scripts\\generar_manifest.py .",
+    "python scripts\\validate_site.py --check-documents"
+  ],
+  "version": "6",
+  "updated_at_utc": "2026-08-25T12:09:00.105454+00:00",
+  "analysis_integration": {
+    "source": "informe_independiente_rivas_jem_20260824.zip",
+    "analysis_date": "2026-08-24",
+    "structured_data": "data/analysis/rivas_jem_20260824.json",
+    "source_directory": "docs/informes/rivas_jem_20260824"
+  },
+  "name": "web6",
+  "generated_at_utc": "2026-08-25T14:10:16.206580+00:00",
+  "storage_architecture": {
+    "portal": "github_pages",
+    "jem_silver": "github_pages:data/jem-silver",
+    "documents": "huggingface",
+    "documents_repo_id": "angatupyrytau/jem",
+    "documents_revision": "main",
+    "huggingface_contains_jem_silver": false
+  },
+  "navigation": [
+    "Inicio",
+    "El caso",
+    "Estadísticas",
+    "Documentos",
+    "Fuentes",
+    "Metodología"
+  ]
+}

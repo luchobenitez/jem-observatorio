@@ -1,0 +1,13 @@
+{
+  "parquet": {
+    "document": "data/document.parquet",
+    "causa": "data/causa.parquet",
+    "votacion": "data/votacion.parquet",
+    "miembro_voto": "data/miembro_voto.parquet"
+  },
+  "fallback": {
+    "sources": "data/sources.json",
+    "timeline": "data/timeline.json",
+    "exams": "data/exams.json"
+  }
+}

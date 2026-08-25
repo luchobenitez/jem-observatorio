@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Estadísticas documentales y análisis independiente de actuaciones de Hernán Rivas en el JEM.">
+<title>Estadísticas · Observatorio Cívico JEM</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<nav class="site-nav" aria-label="Navegación principal">
+<a class="brand" href="index.html"><span class="brand-mark">JEM</span><span>Observatorio Cívico</span></a>
+<button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+<div class="nav-links">
+<a href="index.html">Inicio</a><a href="caso.html">El caso</a><a href="estadisticas.html">Estadísticas</a><a href="documentos.html">Documentos</a><a href="fuentes.html">Fuentes</a><a href="metodologia.html">Metodología</a>
+</div>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+<main>
+<header class="page-header">
+<p class="eyebrow">Análisis reproducible y límites explícitos</p>
+<h1>Estadísticas y explorador documental</h1>
+<p>El portal separa el corpus documental, los datos editoriales del caso y un informe empírico independiente sobre las actuaciones de Hernán Rivas. Las métricas que el informe no puede establecer con rigor se muestran como <code>NO_DETERMINABLE</code>, no como cero.</p>
+<div id="engineStatus" class="status-pill">Inicializando…</div>
+</header>
+
+<section class="section compact">
+<div class="stats-tabs">
+<button class="tab active" data-tab="documental">Corpus documental</button>
+<button class="tab" data-tab="rivas">Datos del caso</button>
+<button class="tab" data-tab="independiente">Informe independiente</button>
+<button class="tab" data-tab="votaciones">Votos y decisividad</button>
+</div>
+
+<div id="tab-documental" class="tab-panel active">
+<div class="kpi-grid">
+<div class="kpi"><span id="kpiCausasLabel">Expedientes únicos</span><strong id="kpiCausas">—</strong></div>
+<div class="kpi"><span id="kpiDocsLabel">Documentos procesados</span><strong id="kpiDocs">—</strong></div>
+<div class="kpi"><span id="kpiOcrLabel">Calidad promedio OCR</span><strong id="kpiOcr">—</strong></div>
+<div class="kpi"><span>Documentos enlazables</span><strong id="kpiLinks">—</strong></div>
+</div>
+<div class="chart-grid"><div id="chartTypes" class="chart"></div><div id="chartYears" class="chart"></div></div>
+<div class="search-panel">
+<div class="filter-row"><input id="docSearch" type="search" placeholder="Ej.: Hernán Rivas, recusación, desempate…"><select id="yearFilter"><option value="">Todos los años</option></select><select id="typeFilter"><option value="">Todos los tipos</option></select></div>
+<p class="hint">Hasta 100 coincidencias. Cuando están publicados los Parquet de JEM Silver, DuckDB-WASM consulta el corpus directamente en el navegador.</p>
+<div class="table-wrap"><table><thead><tr><th>Año</th><th>Tipo</th><th>Carátula</th><th>Fragmento OCR</th><th>Calidad</th><th>Documento</th></tr></thead><tbody id="docRows"></tbody></table></div>
+</div>
+</div>
+
+<div id="tab-rivas" class="tab-panel">
+<div class="kpi-grid">
+<div class="kpi"><span>Fuentes citadas</span><strong id="caseSources">41</strong></div>
+<div class="kpi"><span>Hitos MEC estructurados</span><strong id="caseTimeline">5</strong></div>
+<div class="kpi"><span>Exámenes listados</span><strong id="caseExams">6</strong></div>
+<div class="kpi"><span>Módulos narrativos</span><strong>7</strong></div>
+</div>
+<div class="chart-grid"><div id="chartSourceDomains" class="chart"></div><div id="chartSourceYears" class="chart"></div></div>
+<div class="data-note">Estas métricas proceden del documento base del portal y su listado de fuentes. Son una capa editorial distinta del informe empírico independiente.</div>
+</div>
+
+<div id="tab-independiente" class="tab-panel">
+<div class="report-banner">
+<div>
+<span class="status-badge warning" id="indStatus">Cargando análisis…</span>
+<h2>Informe empírico independiente · 24/08/2026</h2>
+<p id="indNote">El panel conserva los límites del informe fuente.</p>
+</div>
+<div class="report-links">
+<a href="docs/informes/rivas_jem_20260824/INFORME_INDEPENDIENTE_HERNAN_RIVAS_JEM.md">Informe completo</a>
+<a href="docs/informes/rivas_jem_20260824/FICHAS_CASOS_DECISIVIDAD.md">Fichas de decisividad</a>
+<a href="data/analysis/review_queue.csv">Cola de revisión CSV</a>
+</div>
+</div>
+
+<div class="kpi-grid">
+<div class="kpi"><span>Actuaciones derivadas de Rivas</span><strong id="indActions">—</strong></div>
+<div class="kpi"><span>Casos válidos distintos</span><strong id="indCases">—</strong></div>
+<div class="kpi"><span>Turnos explícitos “Rivas dijo”</span><strong id="indTurns">—</strong></div>
+<div class="kpi"><span>Disidencias verificadas mínimas</span><strong id="indDissents">—</strong></div>
+</div>
+
+<div class="chart-grid">
+<div id="chartRivasRoles" class="chart"></div>
+<div id="chartRivasYears" class="chart"></div>
+</div>
+
+<div class="section-subhead">
+<h2>Cobertura de extracción de votos</h2>
+<p>El informe compara los turnos textuales explícitos de Rivas con las filas derivadas de la tabla de votos.</p>
+</div>
+<div class="chart-grid">
+<div id="chartVoteCoverage" class="chart"></div>
+<div class="metric-panel">
+<div class="metric-row"><span>Filas de votos del corpus</span><strong id="indVoteRows">—</strong></div>
+<div class="metric-row"><span>Decisiones con lenguaje de disidencia</span><strong id="indDissentLanguage">—</strong></div>
+<div class="metric-row"><span>Turnos explícitos con fila de voto</span><strong id="indTurnsCovered">—</strong></div>
+<div class="metric-row critical"><span>Turnos explícitos sin fila de voto</span><strong id="indTurnsMissing">—</strong></div>
+</div>
+</div>
+
+<div class="section-subhead">
+<h2>Calidad, integración y trazabilidad</h2>
+<p>Estos indicadores son alertas sobre los artefactos derivados; no son resultados jurídicos.</p>
+</div>
+<div class="finding-grid">
+<div class="finding-card"><span>Documentos sin caso válido</span><strong id="qMissingCase">—</strong><small>case_id = None en el snapshot examinado</small></div>
+<div class="finding-card"><span>Decisiones con presentes &lt; votos emitidos</span><strong id="qOrganMismatch">—</strong><small>requieren reconstrucción de integración</small></div>
+<div class="finding-card"><span>Decisiones marcadas quórum inválido</span><strong id="qQuorum">—</strong><small>sobre 1.853 decisiones firmadas</small></div>
+<div class="finding-card"><span>Spans probatorios sin ruta</span><strong id="qEvidencePath">—</strong><small>limitación del snapshot analítico</small></div>
+</div>
+
+<div class="section-subhead">
+<h2>Dictámenes y resoluciones</h2>
+</div>
+<div class="kpi-grid">
+<div class="kpi"><span>Dictámenes</span><strong id="dictTotal">—</strong></div>
+<div class="kpi"><span>Relaciones derivadas</span><strong id="dictLinks">—</strong></div>
+<div class="kpi"><span>Dictámenes vinculados distintos</span><strong id="dictLinked">—</strong></div>
+<div class="kpi"><span>Relaciones que fallan control estricto</span><strong id="dictTemporalFail">—</strong></div>
+</div>
+<div class="chart-grid">
+<div id="chartDictamenRecommendations" class="chart"></div>
+<div class="metric-panel">
+<h3>Concordancia jurídica</h3>
+<div class="nd-value">NO_DETERMINABLE</div>
+<p>El informe no considera válido calcular una tasa global por la cardinalidad muchos-a-muchos, problemas temporales y falta de trazabilidad integral.</p>
+</div>
+</div>
+
+<div class="section-subhead">
+<h2>Métricas que deben permanecer indeterminadas</h2>
+</div>
+<div id="ndMetrics" class="nd-grid"></div>
+
+<div class="section-subhead">
+<h2>Prioridades de revisión</h2>
+<p>Se muestran los bloqueadores y casos críticos de la cola de revisión incluida con el informe.</p>
+</div>
+<div class="table-wrap">
+<table><thead><tr><th>Prioridad</th><th>Categoría</th><th>Causa</th><th>Decisión</th><th>Motivo</th></tr></thead><tbody id="reviewRows"></tbody></table>
+</div>
+</div>
+
+<div id="tab-votaciones" class="tab-panel">
+<div class="report-banner compact-banner">
+<div><span class="status-badge neutral">Reconstrucción manual verificada</span><h2>Votos, disidencia y decisividad</h2><p>Esta sección presenta únicamente los casos que el informe examinó individualmente y separa esos hallazgos de las tasas globales no determinables.</p></div>
+</div>
+
+<div class="cards two">
+<div class="card evidence-card">
+<span class="card-kicker">Disidencia verificada</span>
+<h3 id="dissentDecision">AI 738/2021 · causa 94/2020</h3>
+<p id="dissentFinding">Cargando…</p>
+</div>
+<div class="card evidence-card">
+<span class="card-kicker">Votación dividida</span>
+<h3 id="splitDecision">SD 35/2022 · causa 311/2021</h3>
+<p id="splitFinding">Cargando…</p>
+</div>
+</div>
+
+<div class="section-subhead"><h2>Cuatro decisiones examinadas por posible decisividad</h2><p>En las cuatro, la clasificación independiente fue <code>NO_DECISIVO</code>. Esto no permite inferir que nunca existieron votos pivotales en el resto del corpus.</p></div>
+<div class="table-wrap"><table><thead><tr><th>Decisión</th><th>Causa</th><th>Votos concordantes</th><th>Sin Rivas</th><th>Regla aplicada</th><th>Clasificación</th></tr></thead><tbody id="decisivenessRows"></tbody></table></div>
+
+<div class="data-note strong-note">
+<strong>Resultado global:</strong> <code>total_votos_pivotal</code> y <code>pivotal_vote_rate</code> permanecen <code>NO_DETERMINABLE</code>. Para calcularlos habría que reconstruir votantes, posiciones, integración habilitada, recusaciones/sustituciones y la regla jurídica aplicable a cada decisión.
+</div>
+
+<div id="voteStatus" class="empty-state optional-layer">
+<h2>Capa Parquet futura</h2>
+<p>Si posteriormente se publican <code>data/jem-silver/votacion.parquet</code> y <code>data/jem-silver/miembro_voto.parquet</code>, el portal puede añadir una capa exploratoria adicional. Esa capa no sustituirá los controles metodológicos del informe independiente.</p>
+</div>
+<div id="voteDashboard" hidden>
+<div class="kpi-grid">
+<div class="kpi"><span>Decisiones analizadas</span><strong id="voteTotal">—</strong></div>
+<div class="kpi"><span>Votos decisivos de Rivas</span><strong id="voteDecisive">—</strong></div>
+<div class="kpi"><span>Empates/desempates</span><strong id="voteTies">—</strong></div>
+<div class="kpi"><span>Miembros con votos</span><strong id="voteMembers">—</strong></div>
+</div>
+<div class="chart-grid"><div id="chartOutcomes" class="chart"></div><div id="chartMargins" class="chart"></div></div>
+</div>
+</div>
+</section>
+</main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/stats.js"></script>
+<script src="assets/js/analysis.js"></script>
+<script type="module" src="assets/js/duckdb-stats.js"></script>
+
+<footer class="site-footer">
+<div><strong>Observatorio Cívico JEM</strong><p>Portal estático orientado a transparencia, trazabilidad documental y análisis reproducible.</p></div>
+<div><a href="metodologia.html">Metodología y advertencias</a><br><a href="docs/ARQUITECTURA_DATOS.md">Esquema de datos</a></div>
+</footer>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

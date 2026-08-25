@@ -1,0 +1,25 @@
+# Documentos originales: se alojan en Hugging Face
+/documentos/
+
+# Build
+/_site/
+
+# Credenciales locales, si alguna vez se utiliza un token
+.env
+*.token
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDE / sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# IMPORTANTE:
+# NO ignorar data/jem-silver/*.parquet.
+# Esos archivos forman parte de GitHub Pages en Web6.
