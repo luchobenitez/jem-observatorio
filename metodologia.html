@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="application-version" content="0.0.7">
 <meta name="description" content="Cómo funciona técnicamente el Observatorio Cívico JEM: datos, documentos, estadísticas, sincronización e integridad.">
 <title>Metodología · Observatorio Cívico JEM</title>
 <link rel="stylesheet" href="assets/css/styles.css">
@@ -41,7 +42,7 @@
 
 <div class="card"><h2>8. Identificación e integridad</h2><p>Los documentos del inventario se identifican mediante SHA-256. El proyecto también mantiene <code>MANIFEST.sha256</code> para registrar la integridad de los archivos que forman parte de una publicación del portal.</p></div>
 
-<div class="card"><h2>9. Relación con los Parquet</h2><p>Cuando <code>document.parquet.hf_oid</code> coincide exactamente con el SHA-256 del catálogo, puede generarse <code>document_public.parquet</code> con los enlaces del documento. Una coincidencia aproximada no se aplica automáticamente.</p></div>
+<div class="card"><h2>9. Relación entre Parquet y documentos</h2><p>En el corpus actual, <code>document.parquet.hf_oid</code> contiene identificadores hexadecimales de 40 caracteres y no coincide con el SHA-256 del catálogo. Por eso el portal no asume identidad entre ambos campos. Para enlazar un resultado estadístico con su archivo original debe existir una correspondencia verificada entre el <code>hf_oid</code> y la ruta documental del catálogo.</p></div>
 
 <div class="card"><h2>10. Publicación y actualización</h2><p>Antes de desplegar, GitHub Actions verifica el dataset de Hugging Face, actualiza el catálogo, comprueba que los Parquet locales estén presentes, genera el manifest de integridad y publica el sitio en GitHub Pages.</p></div>
 </div></section>
@@ -65,6 +66,6 @@
 </section>
 </main>
 
-<footer class="site-footer"><div><strong>Observatorio Cívico JEM</strong><p>Portal orientado a transparencia, trazabilidad documental y análisis reproducible.</p></div><div><a href="documentos.html">Documentos</a><br><a href="fuentes.html">Fuentes</a></div></footer>
+<footer class="site-footer"><div><strong>Observatorio Cívico JEM</strong><p>Portal orientado a transparencia, trazabilidad documental y análisis reproducible.</p></div><div><a href="documentos.html">Documentos</a><br><a href="fuentes.html">Fuentes</a><br><span>Versión 0.0.7</span></div></footer>
 <script src="assets/js/site.js"></script>
 </body></html>
