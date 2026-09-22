@@ -41,8 +41,15 @@ jobs:
             --repo-id "angatupyrytau/jem" \
             --revision "main"
 
+      # Se prueba el validador antes de confiar en él. Sin esto, un validador
+      # que dejara de comprobar seguiría dando verde y nadie lo notaría: es
+      # exactamente como convivieron siete rutas declaradas inexistentes con
+      # el CI en verde.
+      - name: Test the validator (negative tests)
+        run: python scripts/probar_validador.py .
+
       - name: Validate Web6 and local JEM Silver
-        run: python scripts/validate_web6.py .
+        run: python scripts/validate_web6.py . --verbose
 
       - name: Generate integrity manifest
         run: python scripts/generar_manifest_integridad.py .

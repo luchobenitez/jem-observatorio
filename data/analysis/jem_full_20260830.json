@@ -1,0 +1,296 @@
+{
+  "metadata": {
+    "titulo": "Snapshot del corpus y de la capa de conocimiento — corte vigente",
+    "corte": "corte-2026-08-30",
+    "fecha_analisis": "2026-09-22",
+    "generador": "exportar_observatorio/1.0",
+    "manifest_sha256": "5ec45cc3fd023ebedf7f464e7060a1d70b03aef0057c48dcb6086556cbc71626",
+    "esquema_base": 8,
+    "estado": "SIN_VALIDACION_HUMANA",
+    "advertencia": "Ninguna cifra de este snapshot fue validada por una persona. El indicador de validación humana del índice FAIR vale cero sobre 25,293 campos extraídos. Ninguna cifra sobre votos debe publicarse como resultado antes de completar la doble codificación."
+  },
+  "corpus": {
+    "archivos": 4715,
+    "documentos_unicos_sha256": 4627,
+    "copias_redundantes": 88,
+    "colecciones": {
+      "dictamenes": 2134,
+      "autos interlocutorios": 1766,
+      "orden del dia": 358,
+      "expedientes": 306,
+      "sentencia definitiva": 151
+    },
+    "bytes": 5359003873,
+    "paginas_pdf": 17241
+  },
+  "extraccion_de_texto": {
+    "documentos_con_texto": 4620,
+    "cobertura": 0.9985,
+    "por_motor": {
+      "mineru": 2385,
+      "native": 2217,
+      "word-com": 16,
+      "pymupdf": 2
+    },
+    "nota": "Los motores se registran por separado porque un documento con texto nativo no tiene error de OCR: mezclarlos haría ininterpretable el CER."
+  },
+  "trazabilidad": {
+    "paginas": 15908,
+    "paginas_ancladas_al_texto": 14573,
+    "por_banda_de_confianza": {
+      "alta": 8289,
+      "media": 3959,
+      "baja": 2737,
+      "sin_score": 746,
+      "muy_baja": 177
+    },
+    "paginas_ancladas_pct": 91.61,
+    "votos_citables_por_pagina": 9955,
+    "votos_citables_pct": 99.99,
+    "verificacion": {
+      "tipo": "comprobación puntual, no métrica viva",
+      "fecha": "2026-09-08",
+      "muestra": 500,
+      "coinciden": 499,
+      "descripcion": "Sobre muestra determinística de 500 votos, la evidencia aparece literalmente en la página asignada."
+    }
+  },
+  "reconstruccion_documental": {
+    "documentos_logicos": 4593,
+    "por_tipo": {
+      "DICTAMEN": 1794,
+      "AUTO_INTERLOCUTORIO": 1672,
+      "ORDEN_DEL_DIA": 321,
+      "EXPEDIENTE_CONTENEDOR": 305,
+      "METADATA_SESION": 180,
+      "SENTENCIA_DEFINITIVA": 149,
+      "ANTECEDENTES_SESION": 88,
+      "ACTA_SESION": 45,
+      "INFORME_SESION": 39
+    },
+    "causas": 2908,
+    "vinculos_causa_documento": 11145,
+    "por_metodo_de_vinculacion": {
+      "CAUSA_CUERPO": 6766,
+      "CAUSA_ENCABEZADO": 3623,
+      "EXPEDIENTE_CUERPO": 445,
+      "RUTA_EXPEDIENTE": 300,
+      "PATH_EXPEDIENTES": 5,
+      "EXPEDIENTE_ENCABEZADO": 5,
+      "SHA256+PATH_EXPEDIENTES": 1
+    },
+    "resoluciones": 1816,
+    "eventos_linea_de_tiempo": 10662,
+    "campos_con_evidencia": 25293,
+    "advertencia": "La precisión de los vínculos no ha sido medida (Fase 7)."
+  },
+  "votos": {
+    "total": 9956,
+    "integrantes": 118,
+    "formas_de_nombre": 309,
+    "por_sentido": {
+      "ADHESION": 6409,
+      "PONENTE": 3540,
+      "DISIDENCIA": 7
+    },
+    "por_determinacion": {
+      "CONFIRMADO": 9936,
+      "AMBIGUO": 13,
+      "PROBABLE": 7
+    },
+    "integrantes_mas_votos": [
+      {
+        "nombre": "FERNANDO ALBERTO SILVA FACETTI",
+        "votos": 1172
+      },
+      {
+        "nombre": "HERNAN DAVID RIVAS ROMAN",
+        "votos": 1070
+      },
+      {
+        "nombre": "JORGE LUIS BOGARIN ALFONSO",
+        "votos": 1011
+      },
+      {
+        "nombre": "MONICA MARIA SEIFART DE MARTINEZ",
+        "votos": 946
+      },
+      {
+        "nombre": "MANUEL DE JESUS RAMIREZ CANDIA",
+        "votos": 894
+      },
+      {
+        "nombre": "ENRIQUE FAUSTO BACCHETTA CHIRIANI",
+        "votos": 788
+      },
+      {
+        "nombre": "RODRIGO BLANCO AMARILLA",
+        "votos": 719
+      },
+      {
+        "nombre": "Gladys Bareiro de Módica",
+        "votos": 552
+      },
+      {
+        "nombre": "Manuel Dejesús Ramírez",
+        "votos": 442
+      },
+      {
+        "nombre": "Eusebio Alvarenga",
+        "votos": 442
+      },
+      {
+        "nombre": "Cristian Kriskovich",
+        "votos": 263
+      },
+      {
+        "nombre": "CESAR MANUEL DIESEL JUNGHANNS",
+        "votos": 250
+      },
+      {
+        "nombre": "Adrián Salas Coronel",
+        "votos": 223
+      },
+      {
+        "nombre": "LUIS MARIA BENITEZ RIERA",
+        "votos": 179
+      },
+      {
+        "nombre": "OSCAR PACIELLO",
+        "votos": 130
+      }
+    ]
+  },
+  "quorum_y_decision": {
+    "resoluciones_con_seccion_de_votacion": 1670,
+    "por_estado_de_quorum": {
+      "COMPLETO": 870,
+      "INCOMPLETO_POR_EXTRACCION": 655,
+      "sin_calcular": 146,
+      "NO_DETERMINABLE": 145
+    },
+    "por_sentido_de_decision": {
+      "UNANIME": 976,
+      "NO_DETERMINABLE": 578,
+      "sin_calcular": 146,
+      "VOTO_UNICO": 109,
+      "MAYORIA": 7
+    },
+    "verbos_resolutivos": {
+      "NO HACER LUGAR": 515,
+      "CANCELAR": 241,
+      "RECHAZAR": 107,
+      "TENER POR DESISTIDO": 71,
+      "ABSOLVER": 64,
+      "ADMITIR": 62,
+      "HACER LUGAR": 27,
+      "APERCIBIR": 22,
+      "REMOVER": 17,
+      "ARCHIVAR": 11,
+      "SUSPENDER": 1,
+      "SOBRESEER": 1
+    },
+    "nota": "Las resoluciones con quórum incompleto por extracción no pueden declararse unánimes: un quórum ilegible no autoriza a afirmar que nadie disintió."
+  },
+  "dictamen_resolucion": {
+    "relaciones": 2296,
+    "por_determinacion": {
+      "CONFIRMADO": 842,
+      "AMBIGUO": 660,
+      "SIN_CORRESPONDENCIA": 419,
+      "PROBABLE": 360,
+      "NO_DETERMINABLE": 15
+    },
+    "dictamenes": 1794,
+    "dictamenes_con_resolucion": 1120,
+    "cobertura_pct": 62.43
+  },
+  "procedencia": {
+    "documentos_con_registro": 4627,
+    "cobertura_pct": 100.0,
+    "por_persistencia_de_url": {
+      "SIN_URL": 2969,
+      "NO_DIRECTA": 1173,
+      "EFIMERA": 308,
+      "PERSISTENTE": 178
+    },
+    "hallazgo": "El Buscador de Resoluciones entrega por postback JSF: 1.229 resoluciones distintas comparten la misma URL. FAIR-F1 falla en el origen, antes que FAIR-A1.",
+    "cobertura_frente_al_catalogo": [
+      {
+        "fuente": "coleccion-interna-rivas",
+        "en_catalogo": 2145,
+        "en_corpus": 2134
+      },
+      {
+        "fuente": "buscadorResoluciones",
+        "en_catalogo": 1931,
+        "en_corpus": 1917
+      },
+      {
+        "fuente": "buscadorExpedientes",
+        "en_catalogo": 1260,
+        "en_corpus": 306
+      },
+      {
+        "fuente": "jem-gov-py",
+        "en_catalogo": 468,
+        "en_corpus": 178
+      }
+    ]
+  },
+  "indice_fair": {
+    "dimensiones": {
+      "Encontrable": 70.8,
+      "Accesible": 83.3,
+      "Interoperable": 83.3,
+      "Reutilizable": 75.0,
+      "Preservable": 91.7,
+      "Trazable": 83.3,
+      "Gobernable": 45.0,
+      "Preparado para IA": 59.4
+    },
+    "indicadores": 49,
+    "no_computables": 3,
+    "sensibilidad": {
+      "esquemas": {
+        "iguales": 74.0,
+        "prioridad_FAIR_clasico": 75.3,
+        "prioridad_preparacion_IA": 72.2,
+        "prioridad_gobernanza": 70.7
+      },
+      "minimo": 70.7,
+      "maximo": 75.3,
+      "amplitud": 4.6
+    },
+    "nota": "No se publica cifra agregada. Bajo cuatro ponderaciones distintas el índice se mueve 7,5 puntos, pero esa estabilidad promedia 46,7 puntos de dispersión entre dimensiones."
+  },
+  "rivas": {
+    "entidad": "HERNAN DAVID RIVAS ROMAN",
+    "votos_estructurados": 1070,
+    "por_sentido": {
+      "ADHESION": 928,
+      "PONENTE": 142
+    },
+    "ocurrencias_patron_textual": 182,
+    "documentos_con_patron": 165,
+    "cobertura_del_patron_pct": 17.01,
+    "mediana_votos_por_resolucion": 6,
+    "lectura": "El patrón «<Apellido> … dijo:» sólo identifica al ponente, uno por resolución, contra una mediana de 6 votos. No mide participación: mide cuántas veces le tocó redactar.",
+    "advertencia": "Cifra no publicable como resultado hasta completar la validación humana."
+  },
+  "validacion_pendiente": {
+    "campos_validados_por_humanos": 0,
+    "muestras_preparadas": {
+      "ocr_paginas": 375,
+      "asociaciones_vinculos": 372,
+      "votos": 367,
+      "margen": "±5,0 %",
+      "confianza": "95 %"
+    },
+    "esfuerzo_estimado_horas": {
+      "ocr": "50-75",
+      "asociaciones": "12-19",
+      "votos": "18-25 (2 personas)"
+    }
+  }
+}

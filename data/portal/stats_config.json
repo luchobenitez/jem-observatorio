@@ -1,13 +1,73 @@
 {
+  "_comentario": [
+    "Rutas de los conjuntos de datos que consume la página de estadísticas.",
+    "Cada entrada declara su estado: 'disponible' obliga a que el archivo exista",
+    "y scripts/validate_web6.py detiene el despliegue si no está; 'ausente' declara",
+    "un conjunto previsto que todavía no se publicó, y explica por qué.",
+    "Un conjunto ausente NO debe dibujarse como cero: la interfaz muestra su",
+    "estado, igual que el resto del proyecto trata NO_DETERMINABLE.",
+    "Antes de 2026-09-22 este archivo declaraba rutas como 'data/document.parquet',",
+    "que nunca existieron. Ningún script lo leía, así que el error era invisible."
+  ],
+  "version": 2,
+  "actualizado": "2026-09-22",
   "parquet": {
-    "document": "data/document.parquet",
-    "causa": "data/causa.parquet",
-    "votacion": "data/votacion.parquet",
-    "miembro_voto": "data/miembro_voto.parquet"
+    "document": {
+      "ruta": "data/jem-silver/document.parquet",
+      "estado": "disponible",
+      "filas": 3964
+    },
+    "causa": {
+      "ruta": "data/jem-silver/causa.parquet",
+      "estado": "disponible",
+      "filas": 1669
+    },
+    "link": {
+      "ruta": "data/jem-silver/link.parquet",
+      "estado": "disponible",
+      "filas": 1039
+    },
+    "party": {
+      "ruta": "data/jem-silver/party.parquet",
+      "estado": "disponible",
+      "filas": 6347
+    },
+    "party_conflict": {
+      "ruta": "data/jem-silver/party_conflict.parquet",
+      "estado": "disponible",
+      "filas": 554
+    },
+    "votacion": {
+      "ruta": "data/jem-silver/votacion.parquet",
+      "estado": "ausente",
+      "motivo": "Previsto. assets/js/duckdb-stats.js lo intenta y degrada al aviso «Capa Parquet futura» de estadisticas.html si falta."
+    },
+    "miembro_voto": {
+      "ruta": "data/jem-silver/miembro_voto.parquet",
+      "estado": "ausente",
+      "motivo": "Previsto, junto con votacion.parquet."
+    }
   },
-  "fallback": {
-    "sources": "data/sources.json",
-    "timeline": "data/timeline.json",
-    "exams": "data/exams.json"
+  "json": {
+    "sources": { "ruta": "data/portal/sources.json", "estado": "disponible" },
+    "timeline": { "ruta": "data/portal/timeline.json", "estado": "disponible" },
+    "exams": { "ruta": "data/portal/exams.json", "estado": "disponible" },
+    "document": { "ruta": "data/portal/document.json", "estado": "disponible" },
+    "causa": { "ruta": "data/portal/causa.json", "estado": "disponible" },
+    "curated_sources": { "ruta": "data/portal/curated_sources.json", "estado": "disponible" }
+  },
+  "analysis": {
+    "rivas_2026_08_24": {
+      "ruta": "data/analysis/rivas_jem_20260824.json",
+      "estado": "disponible"
+    },
+    "corte_2026_08_30": {
+      "ruta": "data/analysis/jem_full_20260830.json",
+      "estado": "disponible"
+    },
+    "comparacion": {
+      "ruta": "data/analysis/comparacion_snapshots.json",
+      "estado": "disponible"
+    }
   }
 }

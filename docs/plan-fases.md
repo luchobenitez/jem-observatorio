@@ -1,0 +1,250 @@
+# Plan por fases — del sitio actual a búsqueda recuperable sobre el archivo
+
+Fecha: 2026-09-22 · Corte de datos: `corte-2026-08-30`
+· `manifest.sha256` `5ec45cc3fd023ebe…`
+
+Documento de trabajo. Cada fase es entregable por separado y verificable sola.
+
+---
+
+## 0. Qué hay hoy, sin adornos
+
+La arquitectura es buena y hay que conservarla: sitio estático, sin framework,
+GPL-3.0, GitHub Pages con Actions, DuckDB-WASM consultando Parquet por rangos
+HTTP, documentos en HuggingFace. Todo libre, sin servidor, sin coste corriente.
+Es exactamente la base que hace falta para lo que sigue.
+
+Tres cosas están rotas ahora mismo:
+
+| Hallazgo | Comprobación |
+|---|---|
+| **7 de 7 rutas de `data/portal/stats_config.json` no existen** | Declara `data/document.parquet`; los Parquet viven en `data/jem-silver/` |
+| **`data/catalog/manifest_summary.json` está desactualizado** | Dice `"silver_load_error": "no existe data/jem-silver/document.parquet"`, y sí existe |
+| **`assets/js/site.js` está vacío** | 0 bytes, cargado por las páginas |
+
+Lo grave no es cada fallo: es que **`validate_web6.py` corre en CI y ninguno lo
+detiene**. El validador nombra «parquet» siete veces y no comprueba que ningún
+archivo exista. El CI está en verde sobre una página desconectada de sus datos.
+
+### El problema de fondo: dos linajes de datos
+
+En el repositorio conviven hoy dos mediciones del mismo archivo que no coinciden:
+
+| | Parquet en `data/jem-silver/` | Corte vigente |
+|---|---:|---:|
+| Documentos únicos | 3.964 | **4.627** |
+| Causas | 1.669 | **2.908** |
+| Filas de voto | 8.355 | **9.956** |
+| Votos con página citable | 0 | **9.955** |
+
+No es que unos números sean falsos y otros verdaderos: son **pipelines distintos
+sobre corpus distintos**. El de 2026-08-24 no incluía la colección «orden del
+día» ni el anclaje por página. Pero si la página muestra 4.627 en un panel y
+consulta 3.964 en otro, el sitio se contradice a sí mismo, y eso es peor que
+cualquiera de las dos cifras.
+
+**Esto se resuelve en la Fase 1 y bloquea todo lo demás.** No tiene sentido
+construir búsqueda sobre datos cuya identidad no está decidida.
+
+### Lo ya hecho hoy
+
+`scripts/exportar_observatorio.py` (en `jem-full`) genera desde la base:
+
+- `data/analysis/jem_full_20260830.json` — snapshot del corte vigente, en el
+  mismo formato que el de agosto, **sin sustituirlo**.
+- `data/analysis/comparacion_snapshots.json` — qué dejó de ser
+  `NO_DETERMINABLE` (6 métricas) y qué lo sigue siendo (7).
+
+Ninguna cifra está transcrita: todas se consultan a la base en cada ejecución.
+La versión preliminar de ese script llevaba cuatro valores escritos a mano y
+**dos estaban mal** (decía 183/166 ocurrencias del patrón textual, son 182/165;
+decía 98,0 % de votos citables, es 99,99 %). Quedó como recordatorio de por qué
+el sitio no debe llevar cifras a mano en el HTML.
+
+---
+
+## Fase 0 — Reparar y blindar (2–4 h)
+
+Antes de añadir nada. Es el trabajo de mejor relación valor/esfuerzo del plan.
+
+1. Corregir las rutas de `stats_config.json`.
+2. Regenerar `manifest_summary.json`.
+3. Resolver `site.js`: darle contenido o quitar la etiqueta que lo carga.
+4. **Extender `validate_web6.py`** para que falle cuando una ruta declarada en
+   cualquier `*.json` de configuración no exista en el árbol desplegado.
+
+El punto 4 es el que importa. Un validador que no detiene el despliegue de una
+página rota no está validando: está dando una garantía falsa.
+
+**Verificación:** introducir a propósito una ruta inexistente y comprobar que el
+workflow falla. Un validador sin prueba negativa no está probado.
+
+---
+
+## Fase 1 — Un linaje, fechado y explícito (4–8 h)
+
+Publicar los Parquet del corte vigente **junto a** los de agosto, no encima.
+
+```
+data/jem-silver/
+  2026-08-24/    causa · document · link · party · party_conflict   (intactos)
+  2026-08-30/    documento · causa · pagina · voto · resolucion ·
+                 entidad · procedencia · vinculo
+  editions.json  qué ediciones hay, cuál es la vigente, qué cambió
+```
+
+Script nuevo `exportar_parquet.py` en `jem-full`, hermano del ya escrito: mismo
+principio, la base es la fuente y nada se transcribe. Salida en Parquet con
+compresión zstd; `pagina` lleva `blob_id`, `page_idx`, `char_start`, `char_end`,
+`score_p10` y el texto, que es lo que habilita las fases 3 y 4.
+
+La interfaz debe **mostrar qué edición está consultando**. Un archivo que no
+dice de cuándo son sus cifras obliga a creerle.
+
+**Verificación:** `SELECT COUNT(*)` sobre cada Parquet igual al `COUNT(*)` de la
+tabla de origen. Sin igualdad exacta, la fase no está cerrada.
+
+---
+
+## Fase 2 — Estadísticas conectadas a la base real (8–12 h)
+
+Reescribir `estadisticas.html` contra los Parquet de la Fase 1. Las pestañas
+actuales (`tab-documental`, `tab-rivas`, `tab-independiente`, `tab-votaciones`)
+se conservan y se agregan las que el corte vigente hace posibles por primera vez:
+
+- **Trazabilidad** — 15.908 páginas por banda de confianza; 91,61 % ancladas.
+- **Quórum** — 655 resoluciones con quórum incompleto por extracción.
+- **FAIR** — las ocho dimensiones, con su escala declarada.
+- **Procedencia** — persistencia de la URL de origen, que es el hallazgo más
+  duro del proyecto: sólo 178 de 4.627 documentos tienen URL persistente.
+
+Tres reglas de presentación, no negociables:
+
+1. **`NO_DETERMINABLE` se dibuja como categoría visible, nunca como cero ni como
+   hueco.** Es la regla que gobierna todo el proyecto y donde más fácil es
+   traicionarla es en un gráfico: una barra ausente se lee como «ninguno».
+2. **Banner permanente de estado.** Cero de 25.293 campos revisados por una
+   persona. Mientras siga así, el sitio lo dice en cada página con cifras.
+3. **Ninguna cifra escrita en el HTML.** Todas por consulta, como en el resto
+   del proyecto.
+
+**Verificación:** extender `verificar_cifras.py` a los HTML del sitio, igual que
+ya cubre Markdown y LaTeX.
+
+---
+
+## Fase 3 — Búsqueda léxica sobre las páginas (8–16 h)
+
+**Aquí empieza lo que se ha llamado «RAG», y conviene empezar por abajo.**
+
+DuckDB-WASM ya está cargado y trae la extensión `fts`: BM25 sobre
+`pagina.texto`, sin una sola dependencia nueva y sin descarga adicional. Para un
+archivo jurídico en español —números de causa, apellidos, fórmulas fijas como
+«ENJUICIAMIENTO» o «se resuelve»— la búsqueda léxica exacta no es un escalón
+previo a lo bueno: **es lo que más se va a usar**.
+
+Y encaja con la unidad natural del corpus: el resultado es una **página**, con
+su documento, su número de página y su enlace a HuggingFace. Eso ya existe
+—14.573 páginas ancladas— y es lo que hace la cita verificable.
+
+**Verificación:** conjunto fijo de consultas con resultado esperado conocido,
+corriendo en CI con Playwright.
+
+---
+
+## Fase 4 — Recuperación semántica, local y sin servidor (16–24 h)
+
+Lo que BM25 no hace: encontrar «apartamiento del cargo» buscando «destitución».
+
+Diseño, todo del lado del cliente:
+
+| Pieza | Herramienta | Coste |
+|---|---|---|
+| Embeddings del corpus | `sentence-transformers`, offline | 0 |
+| Modelo | `multilingual-e5-small`, 384 dim, Apache-2.0 | 0 |
+| Formato | Parquet, int8 cuantizado | **~6 MB** para 15.908 páginas |
+| Consulta en el navegador | Transformers.js + ONNX Runtime Web | ~30 MB, cacheado |
+| Ranking | RRF sobre BM25 + coseno | 0 |
+
+Los embeddings del corpus se calculan **una vez, fuera de línea**, y se publican
+como dato. El navegador sólo codifica la consulta: una frase corta. 15.908
+vectores es un problema pequeño —producto escalar en JavaScript basta, sin
+índice ANN—.
+
+**Sigue sin haber generación de texto.** El resultado es un pasaje literal con
+su página.
+
+**Verificación:** 30 consultas con juicio de relevancia hecho a mano; medir
+recall@10 contra BM25 solo. Si el híbrido no mejora, la fase no se despliega.
+
+---
+
+## Fase 5 — Respuesta asistida (16–32 h) — **condicionada, no automática**
+
+Aquí hay que parar y decidir, no seguir por inercia.
+
+El proyecto entero se sostiene sobre una regla: **toda afirmación se ancla a una
+página, y lo indeterminable se declara**. Un modelo generativo produce prosa
+fluida y plausible sobre procesos disciplinarios **de personas reales y
+nombradas**. Una sola frase inventada sobre la conducta de un magistrado es un
+daño que no se repara con una nota al pie, y contradice de raíz `alcance-etico.md`.
+
+**Recomendación: respuesta extractiva, sin generación.** La respuesta se arma
+con pasajes literales recuperados, ordenados, cada uno con documento y página,
+y con una plantilla fija que los presenta. Cuando la recuperación es débil, la
+respuesta correcta es «no determinable con este corpus» —que es, además, la
+respuesta honesta y la que el proyecto ya sabe dar—.
+
+Si aun así se quiere generación, entonces: modelo local (WebLLM, ~1 GB de
+descarga), cada oración con ancla obligatoria, negativa explícita ante
+recuperación débil, y **no antes** de cerrar la validación humana y una decisión
+expresa sobre protección de datos. Un modelo servido desde un tercero rompe las
+dos propiedades que hoy hacen sostenible este sitio: estático y gratuito.
+
+---
+
+## Fase 6 — El sitio como objeto FAIR (8 h)
+
+El observatorio es en sí mismo un producto de investigación, y hoy no es citable.
+
+- **DOI por Zenodo**, vía la integración con GitHub. Gratuito.
+- `ro-crate-metadata.json` y `codemeta.json` — metadatos legibles por máquina.
+- `datapackage.json` (Frictionless) describiendo cada Parquet.
+- `CITATION.cff`.
+- **Alojar DuckDB-WASM en el propio repositorio** en lugar de jsDelivr. Un CDN
+  es un punto único de fallo y una fuga de datos de navegación hacia un tercero,
+  en un sitio sobre derechos. Además, un archivo que depende de un CDN para
+  leerse no está preservado.
+
+Es la fase de mejor rendimiento sobre el índice FAIR: ataca **Gobernable (45,0)**
+y **Encontrable (70,8)**, las dos dimensiones más bajas de las ocho.
+
+---
+
+## Orden, esfuerzo y dependencias
+
+```
+Fase 0  reparar y blindar        2–4 h    ← empezar aquí
+   │
+Fase 1  un linaje fechado        4–8 h    ← bloquea 2, 3 y 4
+   ├── Fase 2  estadísticas      8–12 h
+   └── Fase 3  BM25              8–16 h
+          └── Fase 4  semántica  16–24 h
+                 └── Fase 5  respuesta   condicionada
+Fase 6  FAIR del sitio           8 h      ← independiente, en paralelo
+```
+
+Fases 0 a 3: entre tres y cinco jornadas, y dejan el sitio **correcto, coherente
+y con búsqueda útil**. Es el corte que yo recomendaría como primer entregable.
+
+Fase 4 añade valor real pero no es imprescindible para que el sitio sirva.
+Fase 5 no debería iniciarse antes de que `T6` deje de valer cero.
+
+## Herramientas — todas libres
+
+DuckDB-WASM (MIT) · Transformers.js (Apache-2.0) · ONNX Runtime Web (MIT) ·
+sentence-transformers (Apache-2.0) · Frictionless (MIT) · RO-Crate ·
+Zenodo · Playwright (Apache-2.0) · pa11y (LGPL) · GitHub Pages y Actions.
+
+Sin servicio de pago, sin servidor propio, sin dependencia de un proveedor para
+que el sitio siga leyéndose.
