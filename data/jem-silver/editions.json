@@ -1,0 +1,304 @@
+{
+  "_comentario": [
+    "Ediciones de la capa Silver. Conviven fechadas: la anterior NO se",
+    "sobrescribe, porque miden corpus distintos y la comparación entre",
+    "ambas es en sí misma un resultado.",
+    "«vigente» es la edición más reciente publicada.",
+    "«en_uso_por_la_interfaz» es la que el JavaScript lee hoy. Que",
+    "difieran no es un error: es el trabajo pendiente de la Fase 2,",
+    "declarado en vez de disimulado."
+  ],
+  "version": 1,
+  "actualizado": "2026-09-22",
+  "vigente": "2026-08-30",
+  "en_uso_por_la_interfaz": "2026-08-24",
+  "ediciones": {
+    "2026-08-24": {
+      "base": "data/jem-silver/",
+      "origen": "Pipeline anterior del repositorio jem-observatorio.",
+      "tablas": {
+        "causa": {
+          "archivo": "causa.parquet",
+          "filas": 1669
+        },
+        "document": {
+          "archivo": "document.parquet",
+          "filas": 3964
+        },
+        "link": {
+          "archivo": "link.parquet",
+          "filas": 1039
+        },
+        "party": {
+          "archivo": "party.parquet",
+          "filas": 6347
+        },
+        "party_conflict": {
+          "archivo": "party_conflict.parquet",
+          "filas": 554
+        }
+      },
+      "limitaciones": [
+        "No incluye la colección «orden del día» (358 archivos).",
+        "Sin anclaje por página: la evidencia no es citable a página.",
+        "hf_oid es un OID de blob de Git (SHA-1), no el SHA-256 del contenido."
+      ],
+      "nota": "Es la edición que lee hoy assets/js/duckdb-stats.js."
+    },
+    "2026-08-30": {
+      "base": "data/jem-silver/2026-08-30/",
+      "origen": "Repositorio jem-full, corte corte-2026-08-30.",
+      "manifest_sha256": "5ec45cc3fd023ebedf7f464e7060a1d70b03aef0057c48dcb6086556cbc71626",
+      "generado": "2026-09-22",
+      "generador": "exportar_parquet/1.0",
+      "tablas": {
+        "documento": {
+          "archivo": "documento.parquet",
+          "filas": 4627,
+          "columnas": [
+            "blob_id",
+            "sha256",
+            "extension",
+            "size_bytes",
+            "mime_type",
+            "ruta",
+            "coleccion",
+            "anio",
+            "motor",
+            "motor_version",
+            "paginas",
+            "tiene_paginas"
+          ],
+          "bytes": 312989,
+          "sha256": "d6b02a39aec2e136c6789b67aed9a790aef55837e9346d04ed88355bb0eaa077",
+          "descripcion": "Un documento por contenido único (SHA-256), con su colección y su motor de extracción."
+        },
+        "fragmento": {
+          "archivo": "fragmento.parquet",
+          "filas": 18141,
+          "columnas": [
+            "fragmento_id",
+            "blob_id",
+            "sha256",
+            "tipo_ancla",
+            "pagina",
+            "char_inicio",
+            "char_fin",
+            "anclado",
+            "caracteres",
+            "confianza",
+            "motor",
+            "texto"
+          ],
+          "bytes": 10596023,
+          "sha256": "4ebdf16b1766f224bd717a2061ac538629796d49340aea758b5c8f81d19aa743",
+          "descripcion": "Unidad citable. tipo_ancla=PAGINA en PDF; DOCUMENTO donde el formato no tiene páginas (Word, JSON). La página no falta: no existe."
+        },
+        "procedencia": {
+          "archivo": "procedencia.parquet",
+          "filas": 4893,
+          "columnas": [
+            "blob_id",
+            "fuente",
+            "url",
+            "url_pagina",
+            "persistencia",
+            "nombre_origen",
+            "recuperado",
+            "nivel",
+            "metodo",
+            "sha_coincide",
+            "confianza"
+          ],
+          "bytes": 130234,
+          "sha256": "87eac16f14e07d8dacc960e2f757737f073abf6f3ec78536b47a878b79c41eff",
+          "descripcion": "De dónde vino cada documento y si su URL vuelve a resolver."
+        },
+        "documento_logico": {
+          "archivo": "documento_logico.parquet",
+          "filas": 4593,
+          "columnas": [
+            "document_id",
+            "tipo",
+            "numero",
+            "anio",
+            "fecha",
+            "titulo",
+            "confianza",
+            "revision"
+          ],
+          "bytes": 118394,
+          "sha256": "c19275d57aedb2a224c2265d9edd9f1a5a51fe41757e4caa00e91b140214e2ba",
+          "descripcion": "El documento como pieza jurídica, por encima del archivo físico."
+        },
+        "causa": {
+          "archivo": "causa.parquet",
+          "filas": 2908,
+          "columnas": [
+            "causa_id",
+            "numero",
+            "anio",
+            "clave",
+            "caratula",
+            "descripcion",
+            "estado",
+            "presentada",
+            "origen"
+          ],
+          "bytes": 31591,
+          "sha256": "cf66ff4300ed43e31957027fe614a9954fc9384f8497cd65ee8981969f48f4ba",
+          "descripcion": "Causa o expediente reconstruido a partir de las referencias del texto."
+        },
+        "vinculo": {
+          "archivo": "vinculo.parquet",
+          "filas": 11145,
+          "columnas": [
+            "causa_id",
+            "document_id",
+            "tipo",
+            "confianza",
+            "metodo"
+          ],
+          "bytes": 43234,
+          "sha256": "d8a85d6dc481264ddeb9abf712b41bed1e2ec16ec46265dc1fa8444d4d5fec9a",
+          "descripcion": "Vínculo causa-documento. Su precisión NO ha sido medida (Fase 7)."
+        },
+        "resolucion": {
+          "archivo": "resolucion.parquet",
+          "filas": 1816,
+          "columnas": [
+            "resolucion_id",
+            "document_id",
+            "tipo",
+            "numero",
+            "anio",
+            "fecha",
+            "objeto",
+            "resultado",
+            "verbo",
+            "estado_votos",
+            "sentido",
+            "quorum",
+            "n_votos",
+            "mayoria",
+            "disidentes",
+            "quorum_observado"
+          ],
+          "bytes": 24531,
+          "sha256": "e40c1e4bba66e86c8241bd6b7420db8231ea01e7464f61f6acd752dddb20ebab",
+          "descripcion": "Resolución con su estado de quórum y el sentido de la decisión."
+        },
+        "voto": {
+          "archivo": "voto.parquet",
+          "filas": 9956,
+          "columnas": [
+            "voto_id",
+            "resolucion_id",
+            "entidad_id",
+            "nombre_crudo",
+            "sentido",
+            "determination",
+            "confianza",
+            "orden",
+            "disidencia",
+            "pagina",
+            "evidencia"
+          ],
+          "bytes": 100397,
+          "sha256": "40ee71d83861683a3a9689474f5c94e69690e9961affbe78298767570f0b8dbe",
+          "descripcion": "Voto individual. SIN VALIDACIÓN HUMANA: no publicable como resultado."
+        },
+        "entidad": {
+          "archivo": "entidad.parquet",
+          "filas": 118,
+          "columnas": [
+            "entidad_id",
+            "nombre",
+            "clave",
+            "tipo",
+            "revision",
+            "origen",
+            "primer_voto",
+            "ultimo_voto",
+            "resoluciones"
+          ],
+          "bytes": 6481,
+          "sha256": "4111f3bd6306a4d26871aadef3679575dc15a3585f0cc151856f537659682620",
+          "descripcion": "Integrante del órgano. Ojo: el OCR fragmenta nombres en varias entidades."
+        },
+        "alias": {
+          "archivo": "alias.parquet",
+          "filas": 309,
+          "columnas": [
+            "alias_id",
+            "entidad_id",
+            "nombre_original",
+            "nombre_normalizado",
+            "blob_id"
+          ],
+          "bytes": 8003,
+          "sha256": "d196031013c3d94f650329674f712c750d26bf8cd7a5e2b20159ffd80f4daf0e",
+          "descripcion": "Cada forma en que un nombre aparece en el texto."
+        },
+        "relacion": {
+          "archivo": "relacion.parquet",
+          "filas": 2296,
+          "columnas": [
+            "relacion_id",
+            "desde",
+            "hacia",
+            "tipo",
+            "metodo",
+            "score",
+            "determination",
+            "dias",
+            "evidencia"
+          ],
+          "bytes": 38931,
+          "sha256": "e985a9fa7b37267cc82c58915ce8b8997c9a2e7afc04ee48eb09fb91d6c6d9c1",
+          "descripcion": "Relación entre documentos, sobre todo dictamen-resolución."
+        },
+        "campo": {
+          "archivo": "campo.parquet",
+          "filas": 25293,
+          "columnas": [
+            "campo_id",
+            "blob_id",
+            "document_id",
+            "causa_id",
+            "campo",
+            "valor",
+            "pagina",
+            "confianza",
+            "revision"
+          ],
+          "bytes": 198078,
+          "sha256": "dff5bc7ca8c8fd7de777c107d5293a71b2b558e15315447b2c40d245d1eb65a6",
+          "descripcion": "Dato extraído con su evidencia. review_status='AUTO' en el 100 %: nadie lo revisó."
+        },
+        "evento": {
+          "archivo": "evento.parquet",
+          "filas": 10662,
+          "columnas": [
+            "evento_id",
+            "causa_id",
+            "document_id",
+            "fecha",
+            "tipo",
+            "descripcion",
+            "confianza"
+          ],
+          "bytes": 77052,
+          "sha256": "073e180c3726fec55a14d73fd32d92f7b927a30131e99750e431f81a782cd84f",
+          "descripcion": "Línea de tiempo de cada causa."
+        }
+      },
+      "limitaciones": [
+        "SIN VALIDACIÓN HUMANA: cero campos revisados por una persona. Ninguna cifra sobre votos es publicable como resultado.",
+        "La precisión de los vínculos causa-documento no ha sido medida.",
+        "El CER del OCR no ha sido medido.",
+        "«fragmento» mezcla dos unidades de cita: página en PDF y documento completo donde el formato no pagina. Ver tipo_ancla."
+      ]
+    }
+  }
+}

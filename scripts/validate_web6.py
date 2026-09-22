@@ -55,6 +55,7 @@ REQUIRED_PAGES = [
 ]
 STATS_CONFIG = "data/portal/stats_config.json"
 MANIFEST_SUMMARY = "data/catalog/manifest_summary.json"
+EDITIONS = "data/jem-silver/editions.json"
 
 # src/href locales en el HTML. Se excluye todo lo que salga a la red.
 REF_HTML = re.compile(r'(?:src|href)\s*=\s*"([^"]+)"', re.I)
@@ -129,6 +130,69 @@ def revisar_stats_config(root: Path, errores: list, avisos: list, verbose: bool)
         avisos.append(f"{STATS_CONFIG} no declara ninguna ruta con el formato esperado")
     elif verbose:
         print(f"  {declarados} rutas declaradas revisadas")
+
+
+def sha256_archivo(ruta: Path) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    with ruta.open("rb") as fh:
+        for trozo in iter(lambda: fh.read(1 << 20), b""):
+            h.update(trozo)
+    return h.hexdigest()
+
+
+def revisar_editions(root: Path, errores: list, avisos: list, verbose: bool):
+    """Cada edición de la capa Silver debe existir tal como se declara.
+
+    Las ediciones conviven fechadas y ninguna sobrescribe a la anterior, así que
+    lo único que impide que una se pudra en silencio es comprobarla: filas
+    declaradas contra filas reales, y SHA-256 declarado contra el archivo.
+    """
+    ruta = root / EDITIONS
+    if not ruta.is_file():
+        avisos.append(f"No existe {EDITIONS}; no se validan las ediciones Silver")
+        return
+    try:
+        cfg = json.loads(ruta.read_text(encoding="utf-8"))
+    except Exception as e:
+        errores.append(f"{EDITIONS} inválido: {e}")
+        return
+
+    ediciones = cfg.get("ediciones", {})
+    if not ediciones:
+        errores.append(f"{EDITIONS} no declara ninguna edición")
+        return
+
+    for clave in ("vigente", "en_uso_por_la_interfaz"):
+        valor = cfg.get(clave)
+        if valor and valor not in ediciones:
+            errores.append(f"{EDITIONS}: «{clave}» apunta a «{valor}», que no está declarada")
+
+    for nombre, ed in ediciones.items():
+        base = ed.get("base", "")
+        tablas = ed.get("tablas", {})
+        if not tablas:
+            errores.append(f"{EDITIONS} → {nombre}: no declara tablas")
+            continue
+        for tabla, spec in tablas.items():
+            etiqueta = f"{EDITIONS} → {nombre}.{tabla}"
+            destino = root / base / spec.get("archivo", "")
+            if not destino.is_file():
+                errores.append(f"{etiqueta}: no existe {base}{spec.get('archivo')}")
+                continue
+            esperadas = spec.get("filas")
+            reales = filas_parquet(destino)
+            if esperadas is not None and reales is not None and reales != esperadas:
+                errores.append(
+                    f"{etiqueta}: declara {esperadas:,} filas y el archivo tiene {reales:,}")
+            digest = spec.get("sha256")
+            if digest and sha256_archivo(destino) != digest:
+                errores.append(
+                    f"{etiqueta}: el SHA-256 declarado no coincide con el archivo. "
+                    "Regenerar la edición o corregir la declaración.")
+        if verbose:
+            filas = sum(t.get("filas") or 0 for t in tablas.values())
+            print(f"  ok  {EDITIONS} → {nombre}: {len(tablas)} tablas, {filas:,} filas")
 
 
 def revisar_coherencia_resumen(root: Path, errores: list, verbose: bool):
@@ -212,6 +276,7 @@ def main():
         errors.append("Faltan Parquet locales en data/jem-silver/: "+", ".join(missing))
 
     revisar_stats_config(root, errors, avisos, args.verbose)
+    revisar_editions(root, errors, avisos, args.verbose)
     revisar_coherencia_resumen(root, errors, args.verbose)
     revisar_referencias_html(root, errors, args.verbose)
 

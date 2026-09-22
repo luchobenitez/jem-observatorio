@@ -81,28 +81,50 @@ workflow falla. Un validador sin prueba negativa no está probado.
 
 ---
 
-## Fase 1 — Un linaje, fechado y explícito (4–8 h)
+## Fase 1 — Un linaje, fechado y explícito — **hecha**
 
-Publicar los Parquet del corte vigente **junto a** los de agosto, no encima.
+Publicados los Parquet del corte vigente **junto a** los de agosto, no encima.
 
 ```
 data/jem-silver/
-  2026-08-24/    causa · document · link · party · party_conflict   (intactos)
-  2026-08-30/    documento · causa · pagina · voto · resolucion ·
-                 entidad · procedencia · vinculo
-  editions.json  qué ediciones hay, cuál es la vigente, qué cambió
+  *.parquet          edición 2026-08-24, intacta      5 tablas ·  13.573 filas
+  2026-08-30/        edición del corte vigente       13 tablas ·  96.757 filas · 11,7 MB
+  editions.json      qué hay en cada una, de dónde sale y qué la limita
 ```
 
-Script nuevo `exportar_parquet.py` en `jem-full`, hermano del ya escrito: mismo
-principio, la base es la fuente y nada se transcribe. Salida en Parquet con
-compresión zstd; `pagina` lleva `blob_id`, `page_idx`, `char_start`, `char_end`,
-`score_p10` y el texto, que es lo que habilita las fases 3 y 4.
+Genera `scripts/exportar_parquet.py` en `jem-full`. Las 13 tablas coinciden fila
+a fila con su tabla de origen en SQLite: **13 comprobaciones, 0 discrepancias**.
 
-La interfaz debe **mostrar qué edición está consultando**. Un archivo que no
-dice de cuándo son sus cifras obliga a creerle.
+### La unidad citable no es la página
 
-**Verificación:** `SELECT COUNT(*)` sobre cada Parquet igual al `COUNT(*)` de la
-tabla de origen. Sin igualdad exacta, la fase no está cerrada.
+El plan preveía una tabla `pagina`. Medirlo lo desmintió: **las páginas existen
+sólo en PDF**. De 4.620 documentos con texto, 2.387 tienen páginas y 2.233 no
+—2.053 son Word y 180 son actas en JSON—. Un `.docx` no tiene paginación hasta
+que se renderiza: la página no falta, **no existe**.
+
+Un índice sobre `pagina` habría buscado en el 51,7 % del corpus sin avisarlo.
+Por eso se publica `fragmento`, con `tipo_ancla` explícito:
+
+| tipo_ancla | fragmentos | documentos | texto |
+|---|---:|---:|---:|
+| `PAGINA` | 15.908 | 2.387 | 30,0 MB |
+| `DOCUMENTO` | 2.233 | 2.233 | 23,7 MB |
+
+Lo que esto **no** compromete: el 100 % de los votos y de las resoluciones sale
+de documentos paginados, de modo que la cita por página sigue intacta donde el
+proyecto la usa como garantía.
+
+### Qué custodia el validador
+
+`editions.json` declara por tabla su archivo, sus filas y su **SHA-256**. El
+validador comprueba las tres cosas, más que `vigente` y
+`en_uso_por_la_interfaz` nombren ediciones que existan.
+
+Que esas dos difieran hoy —vigente `2026-08-30`, interfaz `2026-08-24`— no es un
+error: es el trabajo de la Fase 2, **declarado en vez de disimulado**.
+
+**Verificado:** 14 pruebas negativas, 0 fallos. Entre ellas, alterar un byte de
+un Parquet publicado: el SHA-256 declarado lo detecta.
 
 ---
 

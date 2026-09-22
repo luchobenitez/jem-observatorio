@@ -100,6 +100,39 @@ def estado_desconocido(root: Path) -> str:
     return "estado desconocido"
 
 
+EDITIONS = "data/jem-silver/editions.json"
+
+
+def edicion_con_filas_falsas(root: Path) -> str:
+    p = root / EDITIONS
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    cfg["ediciones"]["2026-08-30"]["tablas"]["voto"]["filas"] = 8355  # cifra del otro linaje
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "declara 8,355 filas"
+
+
+def edicion_a_una_tabla_que_falta(root: Path) -> str:
+    (root / "data/jem-silver/2026-08-30/entidad.parquet").unlink()
+    return "no existe data/jem-silver/2026-08-30/entidad.parquet"
+
+
+def parquet_alterado(root: Path) -> str:
+    """Un Parquet modificado sin regenerar la edición: el SHA-256 lo delata."""
+    p = root / "data/jem-silver/2026-08-30/alias.parquet"
+    datos = bytearray(p.read_bytes())
+    datos[len(datos) // 2] ^= 0xFF
+    p.write_bytes(bytes(datos))
+    return "SHA-256 declarado no coincide"
+
+
+def vigente_inexistente(root: Path) -> str:
+    p = root / EDITIONS
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    cfg["vigente"] = "2027-01-01"
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "no está declarada"
+
+
 PRUEBAS = [
     ("un conjunto «disponible» que falta",       falta_un_disponible),
     ("filas declaradas que no cuadran",          filas_que_no_cuadran),
@@ -110,6 +143,10 @@ PRUEBAS = [
     ("HTML apunta a un archivo inexistente",     html_a_un_archivo_inexistente),
     ("HTML apunta a un archivo vacío",           html_a_un_archivo_vacio),
     ("un estado que no está definido",           estado_desconocido),
+    ("la edición declara filas de otro linaje",  edicion_con_filas_falsas),
+    ("falta una tabla de la edición",            edicion_a_una_tabla_que_falta),
+    ("un Parquet alterado tras publicarse",      parquet_alterado),
+    ("«vigente» nombra una edición inexistente", vigente_inexistente),
 ]
 
 

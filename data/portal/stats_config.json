@@ -48,6 +48,13 @@
       "motivo": "Previsto, junto con votacion.parquet."
     }
   },
+  "silver": {
+    "ediciones": {
+      "ruta": "data/jem-silver/editions.json",
+      "estado": "disponible",
+      "nota": "Declara cada edición fechada con sus tablas, filas y SHA-256. Las entradas «parquet» de arriba son la edición 2026-08-24, que es la que lee hoy el JavaScript."
+    }
+  },
   "json": {
     "sources": { "ruta": "data/portal/sources.json", "estado": "disponible" },
     "timeline": { "ruta": "data/portal/timeline.json", "estado": "disponible" },
