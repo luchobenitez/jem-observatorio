@@ -515,6 +515,58 @@
       }
     },
     {
+      "name": "fusion_entidad",
+      "path": "data/jem-silver/2026-08-30/fusion_entidad.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 5678,
+      "description": "",
+      "schema": {
+        "fields": [
+          {
+            "name": "entidad_origen",
+            "type": "integer",
+            "description": "Entidad que se absorbe en otra."
+          },
+          {
+            "name": "nombre_origen",
+            "type": "string",
+            "description": "Nombre tal como lo capturó el extractor, con el ruido del OCR incluido."
+          },
+          {
+            "name": "votos_origen",
+            "type": "integer",
+            "description": "Votos que la fusión traslada. Cuanto mayor, más caro sería equivocarse."
+          },
+          {
+            "name": "entidad_destino",
+            "type": "integer",
+            "description": "Entidad canónica que los recibe: la de más votos de su grupo. Nula si la fila se descarta."
+          },
+          {
+            "name": "nombre_destino",
+            "type": "string",
+            "description": "Nombre canónico del destino."
+          },
+          {
+            "name": "puntuacion",
+            "type": "number",
+            "description": "Similitud entre 0 y 1, calculada sobre los apellidos y no sobre el nombre de pila: «César Garay», «César Diesel» y «César Ruffinelli» son tres personas y comparten el primer componente."
+          },
+          {
+            "name": "motivo",
+            "type": "string",
+            "description": "Evidencia de la decisión: qué apellidos coinciden, cuántas resoluciones comparten las dos entidades, y si alguna las registra a ambas como ponente, lo que es imposible y prueba una doble captura del OCR."
+          },
+          {
+            "name": "decision",
+            "type": "string",
+            "description": "AUTO se aplicó; REVISAR espera decisión humana y mientras tanto los votos siguen repartidos; DESCARTAR excluye la entidad porque no es un nombre sino una frase del texto que el extractor capturó."
+          }
+        ]
+      }
+    },
+    {
       "name": "indice_forma",
       "path": "data/jem-silver/2026-08-30/indice_forma.parquet",
       "format": "parquet",
@@ -627,7 +679,7 @@
       "path": "data/jem-silver/2026-08-30/metrica_juez.parquet",
       "format": "parquet",
       "mediatype": "application/vnd.apache.parquet",
-      "bytes": 10692,
+      "bytes": 9822,
       "description": "",
       "schema": {
         "fields": [

@@ -55,6 +55,9 @@
           "@id": "data/jem-silver/2026-08-30/fragmento.parquet"
         },
         {
+          "@id": "data/jem-silver/2026-08-30/fusion_entidad.parquet"
+        },
+        {
           "@id": "data/jem-silver/2026-08-30/indice_forma.parquet"
         },
         {
@@ -170,6 +173,14 @@
       "contentSize": "10596023"
     },
     {
+      "@id": "data/jem-silver/2026-08-30/fusion_entidad.parquet",
+      "@type": "File",
+      "name": "fusion_entidad",
+      "description": "",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "5678"
+    },
+    {
       "@id": "data/jem-silver/2026-08-30/indice_forma.parquet",
       "@type": "File",
       "name": "indice_forma",
@@ -207,7 +218,7 @@
       "name": "metrica_juez",
       "description": "",
       "encodingFormat": "application/vnd.apache.parquet",
-      "contentSize": "10692"
+      "contentSize": "9822"
     },
     {
       "@id": "data/jem-silver/2026-08-30/procedencia.parquet",
