@@ -278,7 +278,12 @@ def revisar_referencias_html(root: Path, errores: list, verbose: bool):
         for ref in REF_HTML.findall(p.read_text(encoding="utf-8", errors="replace")):
             if EXTERNO.match(ref) or ref.endswith(".html"):
                 continue
-            destino = root / ref.split("?", 1)[0].split("#", 1)[0]
+            # Una referencia que empieza por «/» es absoluta respecto de la
+            # raíz del sitio, no del sistema de archivos. Sin quitar la barra,
+            # `root / "/favicon.ico"` descarta `root` y busca en la raíz del
+            # disco: el archivo existe y la comprobación lo declara ausente.
+            limpio = ref.split("?", 1)[0].split("#", 1)[0].lstrip("/")
+            destino = root / limpio
             revisadas += 1
             if not destino.is_file():
                 errores.append(f"{pagina} referencia {ref}, que no existe")

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img"
+     aria-label="Observatorio Cívico JEM">
+  <title>Observatorio Cívico JEM</title>
+  <!--
+    Marca reducida para tamaños pequeños.
+
+    La marca completa lleva cinco elementos —sede, ojo, lupa, documento y cuatro
+    nodos— y medido a 16 y 24 px resulta ilegible: el detalle fino (huecos entre
+    columnas, renglones del documento, nodos de la órbita) se convierte en
+    manchas. Un favicon se juzga a 16 px, que es donde el navegador lo dibuja.
+
+    Aquí los dos conceptos centrales se funden en UNA silueta: el ojo es el
+    contorno y el documento es la pupila. Observar y documentar dejan de ser dos
+    dibujos yuxtapuestos y pasan a ser el mismo.
+
+    El fondo sólido no es decorativo: garantiza contraste tanto en una pestaña
+    clara como en una oscura. Una marca transparente desaparece sobre la mitad
+    de los navegadores.
+
+    Los renglones del documento se dibujan igual aunque a 16 px no se vean:
+    aparecen solos al crecer, de modo que el mismo archivo sirve de favicon y de
+    icono de aplicación sin mantener dos dibujos.
+  -->
+  <rect width="64" height="64" rx="14" fill="#0A2A4A"/>
+
+  <!-- Ojo: dos arcos que se encuentran en punta. Relleno, no trazo: un trazo
+       de 2 px se adelgaza al escalar y se rompe antes que una forma llena. -->
+  <path d="M6 32 Q32 8 58 32 Q32 56 6 32 Z" fill="#FFFFFF"/>
+
+  <!-- Documento como pupila, con esquina plegada. -->
+  <path d="M25 21h9l5 5v17H25z" fill="#0A2A4A"/>
+  <path d="M34 21l5 5h-5z" fill="#1B7F8C"/>
+  <g fill="#FFFFFF">
+    <rect x="28" y="30" width="8" height="1.8" rx=".9"/>
+    <rect x="28" y="34" width="8" height="1.8" rx=".9"/>
+    <rect x="28" y="38" width="5" height="1.8" rx=".9"/>
+  </g>
+
+  <!-- Nodo dorado: el único resto de la órbita de la marca completa. A 16 px
+       es un punto de color que ancla la identidad; a 512 es un nodo de red. -->
+  <circle cx="52" cy="13" r="5" fill="#C9A227"/>
+</svg>

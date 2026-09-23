@@ -67,6 +67,9 @@ jobs:
           # desplegarlos, un marco que nadie puede leer no gobierna nada y
           # unos metadatos que no se sirven no describen nada.
           cp ro-crate-metadata.json codemeta.json CITATION.cff CNAME _site/
+          # favicon.ico va en la raíz porque es donde lo pide el navegador
+          # cuando no encuentra una declaración; el manifiesto, por la misma razón.
+          cp favicon.ico site.webmanifest _site/
           cp -r assets data gobernanza _site/
 
       - name: Upload GitHub Pages artifact

@@ -268,6 +268,17 @@ def diccionario_sin_una_tabla(root: Path) -> str:
     return "no describe: entidad"
 
 
+def ruta_absoluta_inexistente(root: Path) -> str:
+    """Una referencia «/algo» se resuelve desde la raíz del sitio. Antes de
+    corregirlo, `root / "/x"` descartaba la raíz y todo «/x» parecía ausente;
+    esta prueba fija el comportamiento en los dos sentidos."""
+    p = root / "index.html"
+    p.write_text(p.read_text(encoding="utf-8").replace(
+        '<link rel="manifest" href="/site.webmanifest">',
+        '<link rel="manifest" href="/no-existe.webmanifest">'), encoding="utf-8")
+    return "referencia /no-existe.webmanifest"
+
+
 PRUEBAS = [
     ("un conjunto «disponible» que falta",       falta_un_disponible),
     ("filas declaradas que no cuadran",          filas_que_no_cuadran),
@@ -296,6 +307,7 @@ PRUEBAS = [
     ("el sitio vuelve a depender de un CDN",     vuelve_al_cdn),
     ("una columna sin describir",                diccionario_incompleto),
     ("una tabla fuera del diccionario",          diccionario_sin_una_tabla),
+    ("ruta absoluta que no existe",              ruta_absoluta_inexistente),
 ]
 
 
