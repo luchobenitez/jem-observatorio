@@ -208,6 +208,37 @@ def posting_alterado(root: Path) -> str:
     return "SHA-256 declarado no coincide"
 
 
+def _tiene_vectores(root: Path) -> bool:
+    cfg = json.loads((root / EDITIONS).read_text(encoding="utf-8"))
+    return bool(cfg["ediciones"].get("2026-08-30", {}).get("vectores"))
+
+
+def vectores_sin_modelo(root: Path) -> str:
+    """Sin saber de qué modelo salieron, los vectores no son consultables:
+    la consulta caería en otro espacio y el resultado sería arbitrario."""
+    p = root / EDITIONS
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    cfg["ediciones"]["2026-08-30"]["vectores"].pop("modelo", None)
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "falta «modelo»"
+
+
+def vectores_sin_limitaciones(root: Path) -> str:
+    p = root / EDITIONS
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    cfg["ediciones"]["2026-08-30"]["vectores"]["limitaciones"] = []
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "vectores: no declara limitaciones"
+
+
+# Pruebas que sólo tienen sentido si la edición ya publicó ese artefacto.
+# Saltarlas es honesto; fingir que pasan, no.
+CONDICIONALES = {
+    vectores_sin_modelo: _tiene_vectores,
+    vectores_sin_limitaciones: _tiene_vectores,
+}
+
+
 PRUEBAS = [
     ("un conjunto «disponible» que falta",       falta_un_disponible),
     ("filas declaradas que no cuadran",          filas_que_no_cuadran),
@@ -231,6 +262,8 @@ PRUEBAS = [
     ("el índice sin limitaciones declaradas",    indice_sin_limitaciones),
     ("num_docs que no cuadra con el índice",     indice_descuadrado),
     ("el posting alterado tras publicarse",      posting_alterado),
+    ("vectores sin el modelo declarado",         vectores_sin_modelo),
+    ("vectores sin limitaciones declaradas",     vectores_sin_limitaciones),
 ]
 
 
@@ -265,6 +298,10 @@ def main() -> int:
             print("        " + salida.strip().replace("\n", "\n        "))
 
         for nombre, romper in PRUEBAS:
+            guarda = CONDICIONALES.get(romper)
+            if guarda and not guarda(base):
+                print(f"  --    {nombre}: no aplica todavía (falta el artefacto)")
+                continue
             trabajo = Path(tmp) / "trabajo"
             if trabajo.exists():
                 shutil.rmtree(trabajo)

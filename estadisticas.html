@@ -356,7 +356,20 @@ de un PDF o documento completo— y enlaza al original.</p></div>
 <option value="PAGINA">Sólo páginas (PDF)</option>
 <option value="DOCUMENTO">Sólo documentos completos</option>
 </select>
+<select id="bmModo">
+<option value="lexico">Léxico (BM25)</option>
+<option value="semantico">Semántico</option>
+<option value="hibrido">Híbrido</option>
+</select>
 <button id="bmBuscar" class="tab">Buscar</button>
+</div>
+<div id="bmModelo" class="data-note" hidden>
+<strong>El modo semántico exige descargar un modelo de lenguaje al navegador.</strong>
+Son <strong>135 MB</strong> —118 MB del codificador y 17 MB del vocabulario— más
+<strong>17 MB</strong> de vectores del corpus. Queda en la caché del navegador, pero la
+primera vez se descarga entero. El modo léxico no necesita nada de esto y funciona ya.
+<div><button id="bmCargarModelo" class="tab">Descargar el modelo y activar</button>
+<span id="bmModeloEstado"></span></div>
 </div>
 <p class="hint" id="bmAviso">El índice reduce cada palabra a su raíz, de modo que «destituir»
 encuentra «destitución». <strong>No indexa números</strong>: para buscar una causa por su

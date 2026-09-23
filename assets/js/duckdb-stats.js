@@ -354,7 +354,7 @@ const uno = async (sql) => (await filas(sql))[0] || {};
 const pon = (sel, v) => { const e = $(sel); if (e) e.textContent = v; };
 
 async function loadEdicionVigente(db, base) {
-  let edicion, baseEd, indiceMeta = null;
+  let edicion, baseEd, indiceMeta = null, vectoresMeta = null;
   try {
     const cfg = await fetch(new URL(CFG.jemSilverBase + 'editions.json', base).href)
       .then(r => { if(!r.ok) throw new Error('editions.json '+r.status); return r.json(); });
@@ -366,6 +366,7 @@ async function loadEdicionVigente(db, base) {
     // aquí: si el índice se reconstruye con otro k1 o b, la página los usa
     // sin que nadie tenga que acordarse de tocar el JavaScript.
     indiceMeta = cfg.ediciones[edicion]?.indice || null;
+    vectoresMeta = cfg.ediciones[edicion]?.vectores || null;
   } catch (e) {
     console.info('No se pudo resolver la edición vigente:', e.message);
     pon('#edicionEstado', 'Edición: no disponible');
@@ -383,6 +384,7 @@ async function loadEdicionVigente(db, base) {
     return;
   }
 
+  window.__db = db;
   pon('#edicionEstado', `Edición ${edicion}`);
   ['#trzEdicion','#qrmEdicion','#prvEdicion'].forEach(s => pon(s, `Edición ${edicion}`));
 
@@ -399,7 +401,7 @@ async function loadEdicionVigente(db, base) {
   await panelQuorum();
   await panelProcedencia();
   await panelFair(base);
-  await loadIndiceBM25(db, base, baseEd, indiceMeta);
+  await loadIndiceBM25(db, base, baseEd, indiceMeta, vectoresMeta);
 }
 
 async function panelTrazabilidad() {
@@ -597,7 +599,7 @@ const normaliza = (s) => String(s||'')
 
 const lit = (s) => "'" + String(s).replace(/'/g, "''") + "'";
 
-async function loadIndiceBM25(db, base, baseEd, meta) {
+async function loadIndiceBM25(db, base, baseEd, meta, vectoresMeta) {
   const archivos = ['indice_termino','indice_posting','indice_fragmento','indice_forma'];
   try {
     for (const a of archivos) {
@@ -616,6 +618,22 @@ async function loadIndiceBM25(db, base, baseEd, meta) {
   pon('#bmEstado', `Índice BM25 · ${num(meta?.tablas?.indice_posting?.filas)} postings`);
   pon('#bmFragmentos', num(IDX.N));
 
+  if (vectoresMeta) {
+    SEM.meta = vectoresMeta; SEM.baseEd = baseEd; SEM.base = base;
+    $('#bmModelo').hidden = false;
+    $('#bmCargarModelo')?.addEventListener('click', async (ev) => {
+      ev.target.disabled = true;
+      const ok = await activarSemantico();
+      ev.target.disabled = !ok;
+      if (ok) ev.target.textContent = 'Modelo activo';
+    });
+  } else {
+    // Sin vectores publicados los modos que los usan no deben ofrecerse:
+    // un desplegable que no hace nada es peor que no tenerlo.
+    const sel = $('#bmModo');
+    if (sel) [...sel.options].forEach(o => { if (o.value !== 'lexico') o.disabled = true; });
+  }
+
   const lanzar = () => buscar().catch(e => {
     console.error('Búsqueda:', e);
     $('#bmResumen').hidden = false;
@@ -625,6 +643,105 @@ async function loadIndiceBM25(db, base, baseEd, meta) {
   $('#bmConsulta')?.addEventListener('keydown', (ev) => {
     if (ev.key === 'Enter') { ev.preventDefault(); lanzar(); }
   });
+}
+
+/* ------------------------------------------------------------------
+   Recuperación semántica — Fase 4
+   ------------------------------------------------------------------
+   Los vectores del corpus se calculan fuera de línea y se publican
+   como dato. Lo que NO se puede precomputar es el vector de la
+   consulta, y ahí está el coste real: el codificador multilingüe pesa
+   118 MB y su vocabulario otros 17. La estimación del plan —«unos
+   30 MB»— se quedó corta por cuatro veces y media, porque en un modelo
+   pequeño multilingüe la tabla de embeddings del vocabulario domina y
+   no se comprime.
+
+   Por eso el modo semántico es **opcional y explícito**: quien lo
+   quiere lo pide, y ve el tamaño antes de decidir. El modo léxico
+   funciona sin descargar nada.
+
+   Se probó la alternativa barata —expandir la consulta con los vecinos
+   semánticos de cada término, precomputados— y quedó refutada: las
+   palabras sueltas se agrupan por forma, no por sentido. «magistrado»
+   devuelve «magistrados, magistrada, magistradas», que es justo lo que
+   la expansión morfológica de BM25 ya hace. El sentido necesita
+   contexto, y el contexto obliga a codificar la consulta entera.
+   ------------------------------------------------------------------ */
+
+const SEM = { extractor:null, cargando:false, vectoresListos:false, meta:null,
+              baseEd:null, base:null };
+
+async function activarSemantico() {
+  if (SEM.extractor || SEM.cargando) return !!SEM.extractor;
+  SEM.cargando = true;
+  const estado = $('#bmModeloEstado');
+  const decir = (t) => { if (estado) estado.textContent = ' ' + t; };
+  try {
+    decir('descargando el codificador…');
+    const { pipeline, env } = await import(
+      'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0/+esm');
+    env.allowLocalModels = false;
+    // `pooling: 'mean'` y `normalize: true` no son opcionales: los vectores
+    // del corpus se calcularon con esa misma configuración, y cualquier otra
+    // los dejaría en un espacio distinto —el resultado no sería peor, sería
+    // arbitrario—.
+    SEM.extractor = await pipeline('feature-extraction', SEM.meta.modelo,
+      { dtype: 'q8', progress_callback: (p) => {
+          if (p.status === 'progress' && p.file?.endsWith('.onnx')) {
+            decir(`descargando ${Math.round(p.progress || 0)} %`);
+          }
+        } });
+    decir('listo');
+    return true;
+  } catch (e) {
+    console.error('Modelo semántico:', e);
+    decir('no se pudo cargar: ' + e.message);
+    return false;
+  } finally {
+    SEM.cargando = false;
+  }
+}
+
+async function vectorConsulta(texto) {
+  // `query:` es el prefijo que e5 exige del lado de la consulta, frente a
+  // `passage:` del lado del corpus. Omitirlo degrada la recuperación.
+  const r = await SEM.extractor('query: ' + texto,
+                                { pooling: 'mean', normalize: true });
+  return Array.from(r.data);
+}
+
+async function buscarSemantico(consulta, k) {
+  if (!SEM.vectoresListos) {
+    try {
+      await registerAndTest(window.__db, 'vector.parquet',
+        new URL(SEM.baseEd + 'vector.parquet', SEM.base).href);
+      SEM.vectoresListos = true;
+    } catch (e) {
+      console.info('Vectores no disponibles:', e.message);
+      return [];
+    }
+  }
+  const v = await vectorConsulta(consulta);
+  const lit = '[' + v.map(x => x.toFixed(6)).join(',') + ']';
+  // Un fragmento puede tener varios trozos; se queda con el mejor, que es
+  // el pasaje que realmente responde.
+  return await filas(`
+    SELECT fragmento_id, MAX(array_cosine_similarity(
+             CAST(vector AS FLOAT[${SEM.meta.dimensiones}]),
+             CAST(${lit} AS FLOAT[${SEM.meta.dimensiones}]))) AS score
+    FROM read_parquet('vector.parquet')
+    GROUP BY 1 ORDER BY score DESC LIMIT ${k}`);
+}
+
+/** Fusión por rango recíproco: no exige que las dos puntuaciones sean
+ *  comparables, que es justo lo que no son —BM25 no está acotado y el
+ *  coseno vive en [-1, 1]—. */
+function fusionarRRF(listas, k, c = 60) {
+  const p = new Map();
+  for (const lista of listas) {
+    lista.forEach((id, i) => p.set(id, (p.get(id) || 0) + 1 / (c + i + 1)));
+  }
+  return [...p.entries()].sort((a, b) => b[1] - a[1]).slice(0, k).map(e => e[0]);
 }
 
 async function buscar() {
@@ -701,8 +818,32 @@ async function buscar() {
     ${filtro ? `WHERE f.tipo_ancla = ${lit(filtro)}` : ''}
     ORDER BY punt.score DESC LIMIT 25`);
 
-  const total = r.length ? Number(r[0].total) : 0;
-  const partes = [`<strong>${num(total)}</strong> fragmentos coinciden; se muestran los ${Math.min(25, r.length)} de mayor relevancia.`];
+  // --- modo semántico e híbrido -------------------------------------
+  const modo = $('#bmModo')?.value || 'lexico';
+  let notaModo = '';
+  if (modo !== 'lexico') {
+    if (!SEM.extractor) {
+      notaModo = ' El modo semántico necesita el modelo: pulsar «Descargar el modelo y activar».';
+    } else {
+      const sem = await buscarSemantico(crudo, 25);
+      if (!sem.length) {
+        notaModo = ' El modo semántico no devolvió resultados.';
+      } else if (modo === 'semantico') {
+        r.length = 0;
+        r.push(...await detallar(sem.map(x => x.fragmento_id)));
+        notaModo = ' Orden por proximidad semántica; BM25 no interviene.';
+      } else {
+        const orden = fusionarRRF(
+          [r.map(x => x.fragmento_id), sem.map(x => x.fragmento_id)], 25);
+        r.length = 0;
+        r.push(...await detallar(orden));
+        notaModo = ' Orden híbrido por rango recíproco entre BM25 y proximidad semántica.';
+      }
+    }
+  }
+
+  const total = r.length ? Number(r[0].total ?? r.length) : 0;
+  const partes = [`<strong>${num(total)}</strong> fragmentos coinciden; se muestran los ${Math.min(25, r.length)} de mayor relevancia.${notaModo}`];
   if (aproximadas.length) {
     partes.push(`No aparecen en el corpus tal cual: <em>${aproximadas.map(esc).join(', ')}</em>. `
       + `Se buscó por raíz aproximada.`);
@@ -726,6 +867,20 @@ async function buscar() {
       <td>${resaltar(x.texto, palabras)}</td>
       <td>${enlace}</td></tr>`;
   }).join('') || '<tr><td colspan="5">Sin coincidencias con el filtro aplicado.</td></tr>';
+}
+
+/** Recupera las columnas que la tabla muestra, respetando un orden dado. */
+async function detallar(ids) {
+  if (!ids.length) return [];
+  const lista = ids.map(lit).join(',');
+  const fs = await filas(`
+    SELECT f.fragmento_id, f.tipo_ancla, f.pagina, f.texto,
+           d.coleccion, d.ruta, d.sha256, NULL AS score, NULL AS terminos
+    FROM read_parquet('fragmento.parquet') f
+    JOIN read_parquet('documento.parquet') d USING (blob_id)
+    WHERE f.fragmento_id IN (${lista})`);
+  const por = new Map(fs.map(x => [x.fragmento_id, x]));
+  return ids.map(id => por.get(id)).filter(Boolean);
 }
 
 /** Recorta alrededor de la primera coincidencia y la resalta. */

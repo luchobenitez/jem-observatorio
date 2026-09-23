@@ -185,6 +185,20 @@ def revisar_editions(root: Path, errores: list, avisos: list, verbose: bool):
         tablas = dict(ed.get("tablas", {}))
         # El índice BM25 se declara aparte porque lo genera otro script, pero
         # sus archivos se comprueban igual: filas y SHA-256 contra el disco.
+        # Los vectores semánticos imponen un coste de descarga grande y
+        # desigual: publicarlos sin decir de qué modelo salen, con qué
+        # dimensión y con qué límites sería pedir que se les crea.
+        vectores = ed.get("vectores")
+        if vectores:
+            tablas.update(vectores.get("tablas", {}))
+            for clave in ("modelo", "dimensiones", "prefijo_consulta", "cuantizacion"):
+                if not vectores.get(clave):
+                    errores.append(
+                        f"{EDITIONS} → {nombre}.vectores: falta «{clave}», sin lo cual "
+                        "la consulta no puede caer en el mismo espacio vectorial")
+            if not vectores.get("limitaciones"):
+                errores.append(f"{EDITIONS} → {nombre}.vectores: no declara limitaciones")
+
         indice = ed.get("indice")
         if indice:
             tablas.update(indice.get("tablas", {}))
