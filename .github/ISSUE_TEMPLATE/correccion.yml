@@ -1,0 +1,66 @@
+name: Corrección o supresión de un dato
+description: Pedir que se corrija, se matice o se retire un dato publicado.
+title: "[Corrección] "
+labels: ["correccion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Este archivo se construyó con extracción automática sobre documentos
+        digitalizados y **ninguna de sus cifras fue revisada por una persona**.
+        Los errores son esperables, y señalarlos es la forma más útil de
+        contribuir.
+
+        Si el pedido involucra datos personales suyos, no hace falta que
+        justifique nada ni que use este formulario público: puede escribir
+        directamente a la dirección que figura en
+        [`gobernanza/marco-legal.md`](../../gobernanza/marco-legal.md).
+
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Qué pide
+      options:
+        - Corregir un dato equivocado
+        - Añadir un matiz o una salvedad
+        - Retirar un dato
+        - Señalar un documento mal atribuido
+        - Otra cosa
+    validations:
+      required: true
+
+  - type: input
+    id: donde
+    attributes:
+      label: Dónde aparece
+      description: Página del portal, tabla y fila, o identificador del documento.
+      placeholder: "estadisticas.html, pestaña Quórum · o bien fragmento p9847"
+    validations:
+      required: true
+
+  - type: textarea
+    id: quedice
+    attributes:
+      label: Qué dice ahora
+    validations:
+      required: true
+
+  - type: textarea
+    id: quedeberia
+    attributes:
+      label: Qué debería decir, y por qué
+      description: >-
+        Si puede señalar el documento original y la página donde consta,
+        la corrección se resuelve mucho más rápido.
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        **Qué pasa después.** Cada pedido se responde en el propio hilo.
+        Si la corrección procede, se aplica en la siguiente edición fechada
+        de los datos y **la edición anterior no se borra**: queda con su
+        fecha, de modo que quien haya citado la cifra vieja pueda seguir el
+        rastro. El procedimiento completo está en
+        [`gobernanza/marco-legal.md`](../../gobernanza/marco-legal.md).

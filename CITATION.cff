@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: >-
+  Si se usa este material, citarlo así. La autoría corresponde al repositorio;
+  la del artículo asociado todavía no está completa.
+title: "Observatorio Cívico JEM — archivo del Jurado de Enjuiciamiento de Magistrados de Paraguay"
+type: dataset
+version: "2026-08-30"
+date-released: "2026-09-23"
+url: "https://luchobenitez.github.io/jem-observatorio/"
+repository-code: "https://github.com/luchobenitez/jem-observatorio"
+license: GPL-3.0-or-later
+authors:
+  - family-names: "Benítez"
+    given-names: "Lucho"
+    email: "luchobenitez@gmail.com"
+abstract: >-
+  Capa de datos estructurados derivada del archivo público del Jurado de Enjuiciamiento de Magistrados de Paraguay, con trazabilidad hasta página y fragmento. Ninguna cifra ha sido validada por una persona: el indicador de revisión humana vale cero sobre 25.293 campos extraídos, y los datos sobre votos NO son publicables como resultado sobre la conducta de ninguna persona.
+keywords:
+  - transparencia judicial
+  - Paraguay
+  - archivos preparados para IA
+  - FAIR

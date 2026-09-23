@@ -1,4 +1,11 @@
-import * as duckdb from 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.28.0/+esm';
+// DuckDB-WASM y sus dependencias se sirven desde este mismo repositorio, no
+// desde un CDN. Un archivo que necesita a un tercero para poder leerse no está
+// preservado, y en un sitio sobre derechos cada petición a un CDN filtra a ese
+// tercero qué se está consultando y desde dónde.
+//
+// El módulo conserva internamente `getJsDelivrBundles()`, que construye URLs
+// del CDN. No se llama: el paquete se arma a mano más abajo con rutas locales.
+import * as duckdb from '../vendor/duckdb/duckdb-duckdb-wasm.esm.js';
 const P = window.PortalStats;
 if (!P) throw new Error('PortalStats no inicializado');
 const {$, esc, chart} = P;
@@ -30,9 +37,26 @@ function col(name, fallback='NULL') {
   return schema.has(name) ? name + ` AS ${name}` : `${fallback} AS ${name}`;
 }
 
+/** Paquetes locales. `selectBundle` elige entre ellos según lo que el
+ *  navegador admita: `eh` usa excepciones de WebAssembly y `mvp` es el
+ *  respaldo para navegadores que no las tienen. Se sirve uno solo, así que
+ *  el coste para quien visita la página no cambia respecto del CDN; lo que
+ *  cambia es de quién depende el sitio para funcionar. */
+function paquetesLocales() {
+  const raiz = new URL('../vendor/duckdb/', import.meta.url).href;
+  return {
+    mvp: { mainModule: raiz + 'duckdb-mvp.wasm',
+           mainWorker: raiz + 'duckdb-browser-mvp.worker.js' },
+    eh:  { mainModule: raiz + 'duckdb-eh.wasm',
+           mainWorker: raiz + 'duckdb-browser-eh.worker.js' },
+  };
+}
+
 async function setupDb() {
-  const bundles = duckdb.getJsDelivrBundles();
-  const bundle = await duckdb.selectBundle(bundles);
+  const bundle = await duckdb.selectBundle(paquetesLocales());
+  // El Blob se conserva aunque el worker sea del mismo origen: mantiene una
+  // sola forma de arranque y evita depender de cómo resuelva cada navegador
+  // una ruta relativa dentro de un worker.
   const workerUrl = URL.createObjectURL(new Blob(
     [`importScripts("${bundle.mainWorker}");`],
     {type:'text/javascript'}

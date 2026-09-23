@@ -1,0 +1,1032 @@
+{
+  "$schema": "https://datapackage.org/profiles/2.0/datapackage.json",
+  "name": "jem-observatorio",
+  "title": "Observatorio Cívico JEM — archivo del Jurado de Enjuiciamiento de Magistrados de Paraguay",
+  "description": "Capa de datos estructurados derivada del archivo público del Jurado de Enjuiciamiento de Magistrados de Paraguay, con trazabilidad hasta página y fragmento. Ninguna cifra ha sido validada por una persona: el indicador de revisión humana vale cero sobre 25.293 campos extraídos, y los datos sobre votos NO son publicables como resultado sobre la conducta de ninguna persona.",
+  "version": "2026-08-30",
+  "created": "2026-09-23",
+  "homepage": "https://luchobenitez.github.io/jem-observatorio/",
+  "licenses": [
+    {
+      "name": "GPL-3.0-or-later",
+      "path": "https://www.gnu.org/licenses/gpl-3.0",
+      "title": "Código del portal"
+    }
+  ],
+  "contributors": [
+    {
+      "title": "Benítez, Lucho",
+      "email": "luchobenitez@gmail.com",
+      "roles": [
+        "author",
+        "maintainer"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "Jurado de Enjuiciamiento de Magistrados de Paraguay",
+      "path": "https://www.jem.gov.py/"
+    }
+  ],
+  "_advertencias": [
+    "SIN VALIDACIÓN HUMANA: 0 de 25.293 campos revisados por una persona.",
+    "La licencia de los DATOS no está adoptada todavía; sólo el código lo está. Ver el indicador FAIR R3.",
+    "No hay identificador persistente acuñado: el indicador F1 sigue en 3,8 %."
+  ],
+  "resources": [
+    {
+      "name": "alias",
+      "path": "data/jem-silver/2026-08-30/alias.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 8003,
+      "description": "Cada forma en que un nombre aparece en el texto.",
+      "schema": {
+        "fields": [
+          {
+            "name": "alias_id",
+            "type": "integer",
+            "description": "Identificador de esta forma del nombre."
+          },
+          {
+            "name": "entidad_id",
+            "type": "integer",
+            "description": "Identificador del integrante del órgano."
+          },
+          {
+            "name": "nombre_original",
+            "type": "string",
+            "description": "Forma exacta hallada en el texto."
+          },
+          {
+            "name": "nombre_normalizado",
+            "type": "string",
+            "description": "Forma del nombre sin tildes, en mayúsculas y con los componentes ordenados, que sirve para agrupar variantes del mismo nombre."
+          },
+          {
+            "name": "blob_id",
+            "type": "any",
+            "description": "Identificador interno del contenido único, uno por SHA-256 distinto."
+          }
+        ]
+      }
+    },
+    {
+      "name": "campo",
+      "path": "data/jem-silver/2026-08-30/campo.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 198078,
+      "description": "Dato extraído con su evidencia. review_status='AUTO' en el 100 %: nadie lo revisó.",
+      "schema": {
+        "fields": [
+          {
+            "name": "campo_id",
+            "type": "integer",
+            "description": "Identificador del dato extraído."
+          },
+          {
+            "name": "blob_id",
+            "type": "integer",
+            "description": "Identificador interno del contenido único, uno por SHA-256 distinto."
+          },
+          {
+            "name": "document_id",
+            "type": "integer",
+            "description": "Identificador del documento lógico, la pieza jurídica por encima del archivo físico."
+          },
+          {
+            "name": "causa_id",
+            "type": "integer",
+            "description": "Identificador de la causa o expediente reconstruido."
+          },
+          {
+            "name": "campo",
+            "type": "string",
+            "description": "Nombre del dato extraído."
+          },
+          {
+            "name": "valor",
+            "type": "string",
+            "description": "Valor normalizado."
+          },
+          {
+            "name": "pagina",
+            "type": "integer",
+            "description": "Número de página dentro del documento, si el formato tiene páginas."
+          },
+          {
+            "name": "confianza",
+            "type": "number",
+            "description": "Confianza de la extracción, entre 0 y 1. Es una estimación del extractor, NO una probabilidad calibrada ni una medida de exactitud."
+          },
+          {
+            "name": "revision",
+            "type": "string",
+            "description": "Estado de revisión humana. Vale «AUTO» en el 100 % de los registros: ningún campo fue revisado por una persona.",
+            "constraints": {
+              "enum": [
+                "AUTO",
+                "REVISADO",
+                "CORREGIDO"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "causa",
+      "path": "data/jem-silver/2026-08-30/causa.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 31591,
+      "description": "Causa o expediente reconstruido a partir de las referencias del texto.",
+      "schema": {
+        "fields": [
+          {
+            "name": "causa_id",
+            "type": "integer",
+            "description": "Identificador de la causa o expediente reconstruido."
+          },
+          {
+            "name": "numero",
+            "type": "string",
+            "description": "Número, tal como aparece en el documento."
+          },
+          {
+            "name": "anio",
+            "type": "integer",
+            "description": "Año, tomado del documento o de la ruta de origen."
+          },
+          {
+            "name": "clave",
+            "type": "string",
+            "description": "Forma normalizada que sirve para agrupar variantes."
+          },
+          {
+            "name": "caratula",
+            "type": "any",
+            "description": "Carátula de la causa: quién denuncia y contra quién, tal como figura en el documento."
+          },
+          {
+            "name": "descripcion",
+            "type": "any",
+            "description": "Texto descriptivo extraído del documento."
+          },
+          {
+            "name": "estado",
+            "type": "any",
+            "description": "Estado procesal reconstruido a partir de los documentos hallados. No proviene de una fuente oficial de estados."
+          },
+          {
+            "name": "presentada",
+            "type": "any",
+            "description": "Fecha de presentación, cuando se pudo determinar."
+          },
+          {
+            "name": "origen",
+            "type": "string",
+            "description": "Procedimiento o colección de la que proviene el registro."
+          }
+        ]
+      }
+    },
+    {
+      "name": "documento",
+      "path": "data/jem-silver/2026-08-30/documento.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 312989,
+      "description": "Un documento por contenido único (SHA-256), con su colección y su motor de extracción.",
+      "schema": {
+        "fields": [
+          {
+            "name": "blob_id",
+            "type": "integer",
+            "description": "Identificador interno del contenido único, uno por SHA-256 distinto."
+          },
+          {
+            "name": "sha256",
+            "type": "string",
+            "description": "Resumen SHA-256 del archivo original. Es la identidad del documento en todo el proyecto: dos rutas con el mismo SHA-256 son el mismo documento."
+          },
+          {
+            "name": "extension",
+            "type": "string",
+            "description": "Extensión del archivo original: .pdf, .docx, .doc o .json. Determina si el documento tiene páginas."
+          },
+          {
+            "name": "size_bytes",
+            "type": "integer",
+            "description": "Tamaño del archivo original en bytes."
+          },
+          {
+            "name": "mime_type",
+            "type": "string",
+            "description": "Tipo MIME detectado del archivo original."
+          },
+          {
+            "name": "ruta",
+            "type": "string",
+            "description": "Ruta relativa dentro de la colección de origen."
+          },
+          {
+            "name": "coleccion",
+            "type": "string",
+            "description": "Colección del portal de la que se descargó."
+          },
+          {
+            "name": "anio",
+            "type": "integer",
+            "description": "Año, tomado del documento o de la ruta de origen."
+          },
+          {
+            "name": "motor",
+            "type": "string",
+            "description": "Motor que extrajo el texto: «mineru» (OCR), «native» (texto embebido en el PDF), «word-com», «pymupdf». Se distinguen porque un documento con texto nativo no tiene error de OCR."
+          },
+          {
+            "name": "motor_version",
+            "type": "string",
+            "description": "Versión del motor de extracción, para poder reproducir el resultado."
+          },
+          {
+            "name": "paginas",
+            "type": "integer",
+            "description": "Número de páginas reconocidas. Vale 0 en formatos que no paginan."
+          },
+          {
+            "name": "tiene_paginas",
+            "type": "integer",
+            "description": "1 si el documento admite cita por página. Los Word y las actas JSON valen 0: la página no falta, no existe."
+          }
+        ]
+      }
+    },
+    {
+      "name": "documento_logico",
+      "path": "data/jem-silver/2026-08-30/documento_logico.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 118394,
+      "description": "El documento como pieza jurídica, por encima del archivo físico.",
+      "schema": {
+        "fields": [
+          {
+            "name": "document_id",
+            "type": "integer",
+            "description": "Identificador del documento lógico, la pieza jurídica por encima del archivo físico."
+          },
+          {
+            "name": "tipo",
+            "type": "string",
+            "description": "Clasificación asignada por la extracción."
+          },
+          {
+            "name": "numero",
+            "type": "string",
+            "description": "Número, tal como aparece en el documento."
+          },
+          {
+            "name": "anio",
+            "type": "integer",
+            "description": "Año, tomado del documento o de la ruta de origen."
+          },
+          {
+            "name": "fecha",
+            "type": "string",
+            "description": "Fecha en formato ISO-8601 cuando se pudo normalizar."
+          },
+          {
+            "name": "titulo",
+            "type": "string",
+            "description": "Título o encabezado del documento, si se extrajo."
+          },
+          {
+            "name": "confianza",
+            "type": "number",
+            "description": "Confianza de la extracción, entre 0 y 1. Es una estimación del extractor, NO una probabilidad calibrada ni una medida de exactitud."
+          },
+          {
+            "name": "revision",
+            "type": "string",
+            "description": "Estado de revisión humana. Vale «AUTO» en el 100 % de los registros: ningún campo fue revisado por una persona."
+          }
+        ]
+      }
+    },
+    {
+      "name": "entidad",
+      "path": "data/jem-silver/2026-08-30/entidad.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 6481,
+      "description": "Integrante del órgano. Ojo: el OCR fragmenta nombres en varias entidades.",
+      "schema": {
+        "fields": [
+          {
+            "name": "entidad_id",
+            "type": "integer",
+            "description": "Identificador del integrante del órgano."
+          },
+          {
+            "name": "nombre",
+            "type": "string",
+            "description": "Forma canónica elegida. Atención: el OCR fragmenta un mismo nombre en varias entidades; la del caso estudiado aparece en siete registros distintos."
+          },
+          {
+            "name": "clave",
+            "type": "string",
+            "description": "Forma normalizada que sirve para agrupar variantes."
+          },
+          {
+            "name": "tipo",
+            "type": "string",
+            "description": "Clasificación asignada por la extracción."
+          },
+          {
+            "name": "revision",
+            "type": "string",
+            "description": "Estado de revisión humana. Vale «AUTO» en el 100 % de los registros: ningún campo fue revisado por una persona."
+          },
+          {
+            "name": "origen",
+            "type": "string",
+            "description": "Procedimiento o colección de la que proviene el registro."
+          },
+          {
+            "name": "primer_voto",
+            "type": "string",
+            "description": "Fecha del primer voto registrado para esta entidad. Marca presencia en el corpus, NO el inicio de su mandato."
+          },
+          {
+            "name": "ultimo_voto",
+            "type": "string",
+            "description": "Fecha del último voto registrado. No indica cese: sólo que después no se le halló otro voto."
+          },
+          {
+            "name": "resoluciones",
+            "type": "integer",
+            "description": "Resoluciones en las que se le registró un voto."
+          }
+        ]
+      }
+    },
+    {
+      "name": "evento",
+      "path": "data/jem-silver/2026-08-30/evento.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 77052,
+      "description": "Línea de tiempo de cada causa.",
+      "schema": {
+        "fields": [
+          {
+            "name": "evento_id",
+            "type": "integer",
+            "description": "Identificador del evento de la línea de tiempo."
+          },
+          {
+            "name": "causa_id",
+            "type": "integer",
+            "description": "Identificador de la causa o expediente reconstruido."
+          },
+          {
+            "name": "document_id",
+            "type": "integer",
+            "description": "Identificador del documento lógico, la pieza jurídica por encima del archivo físico."
+          },
+          {
+            "name": "fecha",
+            "type": "string",
+            "description": "Fecha en formato ISO-8601 cuando se pudo normalizar."
+          },
+          {
+            "name": "tipo",
+            "type": "string",
+            "description": "Clasificación asignada por la extracción."
+          },
+          {
+            "name": "descripcion",
+            "type": "string",
+            "description": "Texto descriptivo extraído del documento."
+          },
+          {
+            "name": "confianza",
+            "type": "number",
+            "description": "Confianza de la extracción, entre 0 y 1. Es una estimación del extractor, NO una probabilidad calibrada ni una medida de exactitud."
+          }
+        ]
+      }
+    },
+    {
+      "name": "fragmento",
+      "path": "data/jem-silver/2026-08-30/fragmento.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 10596023,
+      "description": "Unidad citable. tipo_ancla=PAGINA en PDF; DOCUMENTO donde el formato no tiene páginas (Word, JSON). La página no falta: no existe.",
+      "schema": {
+        "fields": [
+          {
+            "name": "fragmento_id",
+            "type": "string",
+            "description": "Identificador de la unidad citable. Empieza por «p» si es una página y por «d» si es un documento sin paginación."
+          },
+          {
+            "name": "blob_id",
+            "type": "integer",
+            "description": "Identificador interno del contenido único, uno por SHA-256 distinto."
+          },
+          {
+            "name": "sha256",
+            "type": "string",
+            "description": "Resumen SHA-256 del archivo original. Es la identidad del documento en todo el proyecto: dos rutas con el mismo SHA-256 son el mismo documento."
+          },
+          {
+            "name": "tipo_ancla",
+            "type": "string",
+            "description": "A qué puede anclarse una cita. «PAGINA» en PDF; «DOCUMENTO» donde el formato no pagina.",
+            "constraints": {
+              "enum": [
+                "PAGINA",
+                "DOCUMENTO"
+              ]
+            }
+          },
+          {
+            "name": "pagina",
+            "type": "integer",
+            "description": "Número de página dentro del documento, si el formato tiene páginas."
+          },
+          {
+            "name": "char_inicio",
+            "type": "integer",
+            "description": "Desplazamiento inicial dentro del texto del documento."
+          },
+          {
+            "name": "char_fin",
+            "type": "integer",
+            "description": "Desplazamiento final dentro del texto del documento."
+          },
+          {
+            "name": "anclado",
+            "type": "integer",
+            "description": "1 si el fragmento pudo alinearse con el texto del documento completo. 1.335 páginas no lo consiguieron."
+          },
+          {
+            "name": "caracteres",
+            "type": "integer",
+            "description": "Longitud en caracteres."
+          },
+          {
+            "name": "confianza",
+            "type": "number",
+            "description": "Percentil 10 de la confianza que el OCR asignó a los bloques de la página. Nulo en fragmentos que no pasaron por OCR: eso no es confianza baja, es ausencia de la medida."
+          },
+          {
+            "name": "motor",
+            "type": "string",
+            "description": "Motor que extrajo el texto de este fragmento."
+          },
+          {
+            "name": "texto",
+            "type": "string",
+            "description": "Texto del fragmento, tal como lo produjo la extracción, sin corregir."
+          }
+        ]
+      }
+    },
+    {
+      "name": "indice_forma",
+      "path": "data/jem-silver/2026-08-30/indice_forma.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 1151277,
+      "description": "Forma escrita -> término, con su familia morfológica para expandir.",
+      "schema": {
+        "fields": [
+          {
+            "name": "forma",
+            "type": "string",
+            "description": "Palabra tal como aparece escrita, sin tildes."
+          },
+          {
+            "name": "termid",
+            "type": "integer",
+            "description": "Identificador del término en el vocabulario del índice."
+          },
+          {
+            "name": "familia",
+            "type": "string",
+            "description": "Raíz calculada conservando las tildes, que agrupa mejor la morfología. Permite que «destituir» encuentre «destitución»."
+          }
+        ]
+      }
+    },
+    {
+      "name": "indice_fragmento",
+      "path": "data/jem-silver/2026-08-30/indice_fragmento.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 108914,
+      "description": "Longitud de cada fragmento, que BM25 usa para normalizar.",
+      "schema": {
+        "fields": [
+          {
+            "name": "docid",
+            "type": "integer",
+            "description": "Identificador del fragmento dentro del índice, distinto de fragmento_id."
+          },
+          {
+            "name": "fragmento_id",
+            "type": "string",
+            "description": "Identificador de la unidad citable. Empieza por «p» si es una página y por «d» si es un documento sin paginación."
+          },
+          {
+            "name": "longitud",
+            "type": "integer",
+            "description": "Longitud en términos, que BM25 usa para normalizar."
+          }
+        ]
+      }
+    },
+    {
+      "name": "indice_posting",
+      "path": "data/jem-silver/2026-08-30/indice_posting.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 6372527,
+      "description": "Postings ordenados por termid. Excluye 18 términos presentes en más del 60% de los fragmentos.",
+      "schema": {
+        "fields": [
+          {
+            "name": "termid",
+            "type": "integer",
+            "description": "Identificador del término en el vocabulario del índice."
+          },
+          {
+            "name": "docid",
+            "type": "integer",
+            "description": "Identificador del fragmento dentro del índice, distinto de fragmento_id."
+          },
+          {
+            "name": "tf",
+            "type": "integer",
+            "description": "Veces que el término aparece en ese fragmento."
+          }
+        ]
+      }
+    },
+    {
+      "name": "indice_termino",
+      "path": "data/jem-silver/2026-08-30/indice_termino.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 837523,
+      "description": "Vocabulario indexado con su frecuencia documental.",
+      "schema": {
+        "fields": [
+          {
+            "name": "termid",
+            "type": "integer",
+            "description": "Identificador del término en el vocabulario del índice."
+          },
+          {
+            "name": "termino",
+            "type": "string",
+            "description": "Término tras minúsculas, quitar tildes y reducir a raíz con el stemmer español."
+          },
+          {
+            "name": "df",
+            "type": "integer",
+            "description": "Número de fragmentos que contienen el término."
+          }
+        ]
+      }
+    },
+    {
+      "name": "procedencia",
+      "path": "data/jem-silver/2026-08-30/procedencia.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 130235,
+      "description": "De dónde vino cada documento y si su URL vuelve a resolver.",
+      "schema": {
+        "fields": [
+          {
+            "name": "blob_id",
+            "type": "integer",
+            "description": "Identificador interno del contenido único, uno por SHA-256 distinto."
+          },
+          {
+            "name": "fuente",
+            "type": "string",
+            "description": "Sistema del que se obtuvo el documento: buscador de resoluciones, portal institucional u otro."
+          },
+          {
+            "name": "url",
+            "type": "string",
+            "description": "Dirección de la que se obtuvo el documento."
+          },
+          {
+            "name": "url_pagina",
+            "type": "string",
+            "description": "Dirección de la página que lo enlazaba."
+          },
+          {
+            "name": "persistencia",
+            "type": "string",
+            "description": "Si la dirección vuelve a resolver al mismo documento. Sólo 178 de 4.627 son PERSISTENTE: el buscador de origen entrega por postback y 1.229 resoluciones comparten una misma URL.",
+            "constraints": {
+              "enum": [
+                "PERSISTENTE",
+                "EFIMERA",
+                "NO_DIRECTA",
+                "SIN_URL"
+              ]
+            }
+          },
+          {
+            "name": "nombre_origen",
+            "type": "string",
+            "description": "Nombre del archivo tal como lo entregó el sistema de origen."
+          },
+          {
+            "name": "recuperado",
+            "type": "string",
+            "description": "Momento de la captura, en ISO-8601."
+          },
+          {
+            "name": "nivel",
+            "type": "string",
+            "description": "Grado de certeza de la procedencia reconstruida."
+          },
+          {
+            "name": "metodo",
+            "type": "string",
+            "description": "Procedimiento que produjo el registro."
+          },
+          {
+            "name": "sha_coincide",
+            "type": "integer",
+            "description": "1 si el SHA-256 de la captura coincide con el del archivo conservado."
+          },
+          {
+            "name": "confianza",
+            "type": "number",
+            "description": "Confianza de la extracción, entre 0 y 1. Es una estimación del extractor, NO una probabilidad calibrada ni una medida de exactitud."
+          }
+        ]
+      }
+    },
+    {
+      "name": "relacion",
+      "path": "data/jem-silver/2026-08-30/relacion.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 38931,
+      "description": "Relación entre documentos, sobre todo dictamen-resolución.",
+      "schema": {
+        "fields": [
+          {
+            "name": "relacion_id",
+            "type": "integer",
+            "description": "Identificador de la relación entre documentos."
+          },
+          {
+            "name": "desde",
+            "type": "integer",
+            "description": "Documento del que parte la relación."
+          },
+          {
+            "name": "hacia",
+            "type": "integer",
+            "description": "Documento al que apunta, si se determinó."
+          },
+          {
+            "name": "tipo",
+            "type": "string",
+            "description": "Clasificación asignada por la extracción."
+          },
+          {
+            "name": "metodo",
+            "type": "string",
+            "description": "Procedimiento que produjo el registro."
+          },
+          {
+            "name": "score",
+            "type": "number",
+            "description": "Puntuación de la correspondencia."
+          },
+          {
+            "name": "determination",
+            "type": "string",
+            "description": "Grado de certeza de la relación. «AMBIGUO» significa que hay varios candidatos y ninguno domina: no es lo mismo que no haber encontrado ninguno.",
+            "constraints": {
+              "enum": [
+                "CONFIRMADO",
+                "PROBABLE",
+                "AMBIGUO",
+                "SIN_CORRESPONDENCIA",
+                "NO_DETERMINABLE"
+              ]
+            }
+          },
+          {
+            "name": "dias",
+            "type": "integer",
+            "description": "Días entre ambos documentos."
+          },
+          {
+            "name": "evidencia",
+            "type": "string",
+            "description": "Fragmento textual literal que sostiene el registro."
+          }
+        ]
+      }
+    },
+    {
+      "name": "resolucion",
+      "path": "data/jem-silver/2026-08-30/resolucion.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 24531,
+      "description": "Resolución con su estado de quórum y el sentido de la decisión.",
+      "schema": {
+        "fields": [
+          {
+            "name": "resolucion_id",
+            "type": "integer",
+            "description": "Identificador de la resolución."
+          },
+          {
+            "name": "document_id",
+            "type": "integer",
+            "description": "Identificador del documento lógico, la pieza jurídica por encima del archivo físico."
+          },
+          {
+            "name": "tipo",
+            "type": "string",
+            "description": "Clasificación asignada por la extracción."
+          },
+          {
+            "name": "numero",
+            "type": "string",
+            "description": "Número, tal como aparece en el documento."
+          },
+          {
+            "name": "anio",
+            "type": "integer",
+            "description": "Año, tomado del documento o de la ruta de origen."
+          },
+          {
+            "name": "fecha",
+            "type": "string",
+            "description": "Fecha en formato ISO-8601 cuando se pudo normalizar."
+          },
+          {
+            "name": "objeto",
+            "type": "any",
+            "description": "Objeto de la resolución, según el documento."
+          },
+          {
+            "name": "resultado",
+            "type": "any",
+            "description": "Parte dispositiva en texto, sin normalizar."
+          },
+          {
+            "name": "verbo",
+            "type": "string",
+            "description": "Verbo de la parte dispositiva: NO HACER LUGAR, CANCELAR, RECHAZAR…"
+          },
+          {
+            "name": "estado_votos",
+            "type": "string",
+            "description": "Si el documento contiene una sección de votación identificable.",
+            "constraints": {
+              "enum": [
+                "CON_VOTOS",
+                "SIN_VOTOS"
+              ]
+            }
+          },
+          {
+            "name": "sentido",
+            "type": "string",
+            "description": "Sentido de la decisión derivado de los votos.",
+            "constraints": {
+              "enum": [
+                "UNANIME",
+                "MAYORIA",
+                "VOTO_UNICO",
+                "NO_DETERMINABLE"
+              ]
+            }
+          },
+          {
+            "name": "quorum",
+            "type": "string",
+            "description": "Estado del quórum. «INCOMPLETO_POR_EXTRACCION» significa que el documento contiene la frase de adhesión pero se capturaron menos votos que el quórum modal del año: un quórum ilegible NO autoriza a declarar unanimidad.",
+            "constraints": {
+              "enum": [
+                "COMPLETO",
+                "INCOMPLETO_POR_EXTRACCION",
+                "NO_DETERMINABLE"
+              ]
+            }
+          },
+          {
+            "name": "n_votos",
+            "type": "integer",
+            "description": "Votos capturados para esta resolución."
+          },
+          {
+            "name": "mayoria",
+            "type": "integer",
+            "description": "Número de votos que formaron la mayoría, cuando pudo determinarse."
+          },
+          {
+            "name": "disidentes",
+            "type": "integer",
+            "description": "Número de votos disidentes detectados. Un cero aquí NO prueba unanimidad: puede ser que el detector no los reconociera."
+          },
+          {
+            "name": "quorum_observado",
+            "type": "integer",
+            "description": "Integrantes distintos observados votando."
+          }
+        ]
+      }
+    },
+    {
+      "name": "vector",
+      "path": "data/jem-silver/2026-08-30/vector.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 15608645,
+      "description": "Vector int8 por trozo, con su desplazamiento dentro del fragmento.",
+      "schema": {
+        "fields": [
+          {
+            "name": "trozo_id",
+            "type": "integer",
+            "description": "Identificador del trozo embebido."
+          },
+          {
+            "name": "fragmento_id",
+            "type": "string",
+            "description": "Identificador de la unidad citable. Empieza por «p» si es una página y por «d» si es un documento sin paginación."
+          },
+          {
+            "name": "orden",
+            "type": "integer",
+            "description": "Posición dentro de su grupo."
+          },
+          {
+            "name": "char_inicio",
+            "type": "integer",
+            "description": "Desplazamiento del trozo dentro del texto de su fragmento, que mantiene citable el resultado."
+          },
+          {
+            "name": "caracteres",
+            "type": "integer",
+            "description": "Longitud en caracteres."
+          },
+          {
+            "name": "escala",
+            "type": "number",
+            "description": "Factor para reconstruir el vector original: float = int8 × escala."
+          },
+          {
+            "name": "vector",
+            "type": "array",
+            "description": "Vector de 384 dimensiones en int8. NO apto para ordenar resultados: se midió que el coseno no discrimina sobre este corpus (0,012 de amplitud entre el primero y el 200) y que el orden no es reproducible (60 % de estabilidad ante reformulaciones triviales)."
+          }
+        ]
+      }
+    },
+    {
+      "name": "vinculo",
+      "path": "data/jem-silver/2026-08-30/vinculo.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 43234,
+      "description": "Vínculo causa-documento. Su precisión NO ha sido medida (Fase 7).",
+      "schema": {
+        "fields": [
+          {
+            "name": "causa_id",
+            "type": "integer",
+            "description": "Identificador de la causa o expediente reconstruido."
+          },
+          {
+            "name": "document_id",
+            "type": "integer",
+            "description": "Identificador del documento lógico, la pieza jurídica por encima del archivo físico."
+          },
+          {
+            "name": "tipo",
+            "type": "string",
+            "description": "Clasificación asignada por la extracción."
+          },
+          {
+            "name": "confianza",
+            "type": "number",
+            "description": "Confianza del vínculo causa-documento. Su precisión NO ha sido medida."
+          },
+          {
+            "name": "metodo",
+            "type": "string",
+            "description": "Procedimiento que produjo el registro."
+          }
+        ]
+      }
+    },
+    {
+      "name": "voto",
+      "path": "data/jem-silver/2026-08-30/voto.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 100397,
+      "description": "Voto individual. SIN VALIDACIÓN HUMANA: no publicable como resultado.",
+      "schema": {
+        "fields": [
+          {
+            "name": "voto_id",
+            "type": "integer",
+            "description": "Identificador del voto individual."
+          },
+          {
+            "name": "resolucion_id",
+            "type": "integer",
+            "description": "Resolución a la que pertenece el voto."
+          },
+          {
+            "name": "entidad_id",
+            "type": "integer",
+            "description": "Identificador del integrante del órgano."
+          },
+          {
+            "name": "nombre_crudo",
+            "type": "string",
+            "description": "Nombre tal como aparece en el texto, antes de resolver la entidad."
+          },
+          {
+            "name": "sentido",
+            "type": "string",
+            "description": "«PONENTE» redacta el voto, «ADHESION» se suma a él, «DISIDENCIA» se aparta. Sólo se detectaron 7 disidencias, cifra que puede reflejar la práctica del órgano o la debilidad del detector.",
+            "constraints": {
+              "enum": [
+                "PONENTE",
+                "ADHESION",
+                "DISIDENCIA"
+              ]
+            }
+          },
+          {
+            "name": "determination",
+            "type": "string",
+            "description": "Grado de certeza con que se asignó el voto a su emisor.",
+            "constraints": {
+              "enum": [
+                "CONFIRMADO",
+                "PROBABLE",
+                "AMBIGUO",
+                "SIN_CORRESPONDENCIA",
+                "NO_DETERMINABLE"
+              ]
+            }
+          },
+          {
+            "name": "confianza",
+            "type": "number",
+            "description": "Confianza de la extracción, entre 0 y 1. Es una estimación del extractor, NO una probabilidad calibrada ni una medida de exactitud."
+          },
+          {
+            "name": "orden",
+            "type": "integer",
+            "description": "Posición dentro de su grupo."
+          },
+          {
+            "name": "disidencia",
+            "type": "integer",
+            "description": "1 si el voto se marcó como disidente."
+          },
+          {
+            "name": "pagina",
+            "type": "integer",
+            "description": "Número de página dentro del documento, si el formato tiene páginas."
+          },
+          {
+            "name": "evidencia",
+            "type": "string",
+            "description": "Fragmento textual literal que sostiene el registro."
+          }
+        ]
+      }
+    }
+  ]
+}

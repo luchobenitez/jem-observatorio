@@ -239,6 +239,35 @@ CONDICIONALES = {
 }
 
 
+def vuelve_al_cdn(root: Path) -> str:
+    """Volver a un CDN reintroduce la dependencia que la Fase 6 quitó."""
+    p = root / "estadisticas.html"
+    p.write_text(p.read_text(encoding="utf-8").replace(
+        'assets/vendor/echarts.min.js',
+        'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js'),
+        encoding="utf-8")
+    return "depende de https://cdn.jsdelivr.net"
+
+
+def diccionario_incompleto(root: Path) -> str:
+    """Una columna sin descripción devuelve R5 a cero sin que nadie lo note."""
+    p = root / "data/jem-silver/2026-08-30/datapackage.json"
+    d = json.loads(p.read_text(encoding="utf-8"))
+    for r in d["resources"]:
+        if r["name"] == "voto":
+            r["schema"]["fields"][0]["description"] = ""
+    p.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "sin descripción"
+
+
+def diccionario_sin_una_tabla(root: Path) -> str:
+    p = root / "data/jem-silver/2026-08-30/datapackage.json"
+    d = json.loads(p.read_text(encoding="utf-8"))
+    d["resources"] = [r for r in d["resources"] if r["name"] != "entidad"]
+    p.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "no describe: entidad"
+
+
 PRUEBAS = [
     ("un conjunto «disponible» que falta",       falta_un_disponible),
     ("filas declaradas que no cuadran",          filas_que_no_cuadran),
@@ -264,6 +293,9 @@ PRUEBAS = [
     ("el posting alterado tras publicarse",      posting_alterado),
     ("vectores sin el modelo declarado",         vectores_sin_modelo),
     ("vectores sin limitaciones declaradas",     vectores_sin_limitaciones),
+    ("el sitio vuelve a depender de un CDN",     vuelve_al_cdn),
+    ("una columna sin describir",                diccionario_incompleto),
+    ("una tabla fuera del diccionario",          diccionario_sin_una_tabla),
 ]
 
 

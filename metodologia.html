@@ -64,6 +64,47 @@
 <p>Una asociación documental indica que el sistema confirmó una ruta remota prevista. Los datos extraídos por OCR o por procesamiento automático pueden requerir verificación contra el archivo original.</p>
 <p>Cuando una métrica no puede establecerse de forma confiable, la interfaz puede conservar valores como <code>NO_DETERMINABLE</code> en lugar de convertir la falta de información en cero.</p>
 </section>
+
+<section class="section">
+<div class="section-head"><p class="eyebrow">Gobernanza</p><h2>Reglas de uso, límites legales y cómo pedir una corrección</h2></div>
+<p>Este archivo trata sobre procesos disciplinarios a <strong>personas identificables</strong>.
+Las reglas bajo las que se publica no están sobreentendidas: están escritas.</p>
+<ul>
+<li><a href="gobernanza/marco-legal.pdf">Marco legal</a>
+(<a href="gobernanza/marco-legal.md">texto</a>) — base normativa de la publicación y
+procedimiento de corrección y supresión.</li>
+<li><a href="gobernanza/alcance-etico.pdf">Alcance ético</a>
+(<a href="gobernanza/alcance-etico.md">texto</a>) — qué se publica, qué no, y por qué.</li>
+<li><a href="gobernanza/licencia-derivados.pdf">Licencia de derivados</a>
+(<a href="gobernanza/licencia-derivados.md">texto</a>) — condiciones propuestas de reutilización.</li>
+</ul>
+<p><strong>Pedir una corrección.</strong> Si encuentra un dato equivocado, puede abrirlo
+como <a href="https://github.com/luchobenitez/jem-observatorio/issues/new?template=correccion.yml"
+rel="noopener">pedido de corrección</a>. Se responde en el mismo hilo. Si la corrección
+procede se aplica en la siguiente edición fechada, y <strong>la edición anterior no se
+borra</strong>: queda con su fecha, para que quien haya citado la cifra vieja pueda seguir
+el rastro.</p>
+<div class="data-note"><strong>Pendiente y declarado:</strong> no hay todavía una persona
+designada como responsable del conjunto de datos, ni una licencia de datos adoptada
+—sólo el código lo está, bajo GPL-3.0—. Ambas cosas son decisiones, no archivos, y el
+índice FAIR las puntúa como ausentes mientras no se tomen.</div>
+</section>
+
+<section class="section">
+<div class="section-head"><p class="eyebrow">Para máquinas</p><h2>Metadatos y diccionario de datos</h2></div>
+<p>El portal se describe a sí mismo en formatos estándar, de modo que otro sistema pueda
+entender qué contiene sin leer esta página.</p>
+<ul>
+<li><a href="data/jem-silver/2026-08-30/datapackage.json">Diccionario de datos</a>
+(Frictionless) — las 142 columnas de las 18 tablas publicadas, con sus vocabularios
+controlados.</li>
+<li><a href="ro-crate-metadata.json">RO-Crate</a> — descripción del conjunto y su procedencia.</li>
+<li><a href="codemeta.json">CodeMeta</a> y <a href="CITATION.cff">CITATION.cff</a> — cómo citar
+el portal y con qué se construyó.</li>
+<li><a href="data/jem-silver/editions.json">Ediciones</a> — qué contiene cada edición fechada,
+con el SHA-256 de cada archivo.</li>
+</ul>
+</section>
 </main>
 
 <footer class="site-footer"><div><strong>Observatorio Cívico JEM</strong><p>Portal orientado a transparencia, trazabilidad documental y análisis reproducible.</p></div><div><a href="documentos.html">Documentos</a><br><a href="fuentes.html">Fuentes</a><br><span>Versión 0.0.7</span></div></footer>

@@ -1,0 +1,250 @@
+{
+  "@context": "https://w3id.org/ro/crate/1.1/context",
+  "@graph": [
+    {
+      "@type": "CreativeWork",
+      "@id": "ro-crate-metadata.json",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.1"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "./",
+      "@type": "Dataset",
+      "name": "Observatorio Cívico JEM — archivo del Jurado de Enjuiciamiento de Magistrados de Paraguay",
+      "description": "Capa de datos estructurados derivada del archivo público del Jurado de Enjuiciamiento de Magistrados de Paraguay, con trazabilidad hasta página y fragmento. Ninguna cifra ha sido validada por una persona: el indicador de revisión humana vale cero sobre 25.293 campos extraídos, y los datos sobre votos NO son publicables como resultado sobre la conducta de ninguna persona.",
+      "datePublished": "2026-09-23",
+      "version": "2026-08-30",
+      "url": "https://luchobenitez.github.io/jem-observatorio/",
+      "author": {
+        "@id": "mailto:luchobenitez@gmail.com"
+      },
+      "license": {
+        "@id": "https://www.gnu.org/licenses/gpl-3.0"
+      },
+      "isBasedOn": {
+        "@id": "https://www.jem.gov.py/"
+      },
+      "measurementTechnique": "Extracción automática por OCR (MinerU) y texto nativo, con reconstrucción documental y anclaje por página. Sin validación humana.",
+      "hasPart": [
+        {
+          "@id": "data/jem-silver/2026-08-30/alias.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/campo.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/causa.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/documento.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/documento_logico.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/entidad.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/evento.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/fragmento.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/indice_forma.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/indice_fragmento.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/indice_posting.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/indice_termino.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/procedencia.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/relacion.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/resolucion.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/vector.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/vinculo.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/voto.parquet"
+        }
+      ]
+    },
+    {
+      "@id": "mailto:luchobenitez@gmail.com",
+      "@type": "Person",
+      "name": "Benítez, Lucho",
+      "email": "luchobenitez@gmail.com"
+    },
+    {
+      "@id": "https://www.gnu.org/licenses/gpl-3.0",
+      "@type": "CreativeWork",
+      "name": "GNU General Public License v3.0 or later"
+    },
+    {
+      "@id": "https://www.jem.gov.py/",
+      "@type": "WebSite",
+      "name": "Jurado de Enjuiciamiento de Magistrados de Paraguay"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/alias.parquet",
+      "@type": "File",
+      "name": "alias",
+      "description": "Cada forma en que un nombre aparece en el texto.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "8003"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/campo.parquet",
+      "@type": "File",
+      "name": "campo",
+      "description": "Dato extraído con su evidencia. review_status='AUTO' en el 100 %: nadie lo revisó.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "198078"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/causa.parquet",
+      "@type": "File",
+      "name": "causa",
+      "description": "Causa o expediente reconstruido a partir de las referencias del texto.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "31591"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/documento.parquet",
+      "@type": "File",
+      "name": "documento",
+      "description": "Un documento por contenido único (SHA-256), con su colección y su motor de extracción.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "312989"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/documento_logico.parquet",
+      "@type": "File",
+      "name": "documento_logico",
+      "description": "El documento como pieza jurídica, por encima del archivo físico.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "118394"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/entidad.parquet",
+      "@type": "File",
+      "name": "entidad",
+      "description": "Integrante del órgano. Ojo: el OCR fragmenta nombres en varias entidades.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "6481"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/evento.parquet",
+      "@type": "File",
+      "name": "evento",
+      "description": "Línea de tiempo de cada causa.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "77052"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/fragmento.parquet",
+      "@type": "File",
+      "name": "fragmento",
+      "description": "Unidad citable. tipo_ancla=PAGINA en PDF; DOCUMENTO donde el formato no tiene páginas (Word, JSON). La página no falta: no existe.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "10596023"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/indice_forma.parquet",
+      "@type": "File",
+      "name": "indice_forma",
+      "description": "Forma escrita -> término, con su familia morfológica para expandir.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "1151277"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/indice_fragmento.parquet",
+      "@type": "File",
+      "name": "indice_fragmento",
+      "description": "Longitud de cada fragmento, que BM25 usa para normalizar.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "108914"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/indice_posting.parquet",
+      "@type": "File",
+      "name": "indice_posting",
+      "description": "Postings ordenados por termid. Excluye 18 términos presentes en más del 60% de los fragmentos.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "6372527"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/indice_termino.parquet",
+      "@type": "File",
+      "name": "indice_termino",
+      "description": "Vocabulario indexado con su frecuencia documental.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "837523"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/procedencia.parquet",
+      "@type": "File",
+      "name": "procedencia",
+      "description": "De dónde vino cada documento y si su URL vuelve a resolver.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "130235"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/relacion.parquet",
+      "@type": "File",
+      "name": "relacion",
+      "description": "Relación entre documentos, sobre todo dictamen-resolución.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "38931"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/resolucion.parquet",
+      "@type": "File",
+      "name": "resolucion",
+      "description": "Resolución con su estado de quórum y el sentido de la decisión.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "24531"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/vector.parquet",
+      "@type": "File",
+      "name": "vector",
+      "description": "Vector int8 por trozo, con su desplazamiento dentro del fragmento.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "15608645"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/vinculo.parquet",
+      "@type": "File",
+      "name": "vinculo",
+      "description": "Vínculo causa-documento. Su precisión NO ha sido medida (Fase 7).",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "43234"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/voto.parquet",
+      "@type": "File",
+      "name": "voto",
+      "description": "Voto individual. SIN VALIDACIÓN HUMANA: no publicable como resultado.",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "100397"
+    }
+  ]
+}

@@ -63,7 +63,11 @@ jobs:
           rm -rf _site
           mkdir -p _site
           cp index.html caso.html estadisticas.html documentos.html fuentes.html metodologia.html .nojekyll MANIFEST.sha256 _site/
-          cp -r assets data _site/
+          # Metadatos legibles por máquina y marco de gobernanza. Sin
+          # desplegarlos, un marco que nadie puede leer no gobierna nada y
+          # unos metadatos que no se sirven no describen nada.
+          cp ro-crate-metadata.json codemeta.json CITATION.cff _site/
+          cp -r assets data gobernanza _site/
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4

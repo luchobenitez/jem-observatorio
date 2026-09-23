@@ -378,6 +378,86 @@ def revisar_ids_js(root: Path, errores: list, verbose: bool):
         print(f"  {revisados} identificadores del JS revisados contra el HTML")
 
 
+CDN = re.compile(r"https?://(?:cdn\.jsdelivr\.net|unpkg\.com|cdnjs\.cloudflare\.com"
+                 r"|ajax\.googleapis\.com|fonts\.googleapis\.com|fonts\.gstatic\.com)",
+                 re.I)
+
+
+def revisar_sin_cdn(root: Path, errores: list, verbose: bool):
+    """El portal no debe depender de un CDN para funcionar.
+
+    Un archivo que necesita a un tercero para poder leerse no está preservado, y
+    cada petición a un CDN le dice a ese tercero qué se consulta y desde dónde.
+    En un sitio sobre procesos disciplinarios a personas identificables eso no
+    es un detalle.
+
+    Se excluye `assets/vendor/`, que es código de terceros alojado aquí
+    precisamente para no depender del CDN; el módulo de DuckDB conserva dentro
+    una función que arma direcciones de jsDelivr y que no se llama.
+    """
+    revisados = 0
+    for p in sorted(root.glob("*.html")) + sorted((root / "assets" / "js").glob("*.js")):
+        revisados += 1
+        texto = p.read_text(encoding="utf-8", errors="replace")
+        for m in set(CDN.findall(texto)):
+            errores.append(
+                f"{p.relative_to(root).as_posix()} depende de {m}. "
+                "Alojar la biblioteca en assets/vendor/.")
+    if verbose:
+        print(f"  {revisados} archivos propios sin dependencias de CDN")
+
+
+def revisar_diccionario(root: Path, errores: list, avisos: list, verbose: bool):
+    """El diccionario de datos debe cubrir cada columna publicada.
+
+    Es el indicador FAIR `R5`, que valía cero. Un diccionario que pierde
+    cobertura en silencio cuando aparece una columna nueva vuelve a valer cero
+    sin que nadie lo note, y la puntuación seguiría diciendo lo contrario.
+    """
+    try:
+        cfg = json.loads((root / EDITIONS).read_text(encoding="utf-8"))
+    except Exception:
+        return
+    edicion = cfg.get("vigente")
+    base = (cfg.get("ediciones", {}).get(edicion) or {}).get("base", "")
+    dp = root / base / "datapackage.json"
+    if not dp.is_file():
+        avisos.append(f"No existe {base}datapackage.json; no se valida el diccionario")
+        return
+    try:
+        paquete = json.loads(dp.read_text(encoding="utf-8"))
+    except Exception as e:
+        errores.append(f"{base}datapackage.json inválido: {e}")
+        return
+
+    try:
+        import pyarrow.parquet as pq
+    except ImportError:
+        avisos.append("Sin pyarrow no se valida la cobertura del diccionario")
+        return
+
+    descritos = {r["name"]: {c["name"]: c.get("description", "")
+                             for c in r.get("schema", {}).get("fields", [])}
+                 for r in paquete.get("resources", [])}
+    faltan_tablas, faltan_campos = [], []
+    for p in sorted((root / base).glob("*.parquet")):
+        if p.stem not in descritos:
+            faltan_tablas.append(p.stem)
+            continue
+        for nombre in pq.ParquetFile(p).schema_arrow.names:
+            if not descritos[p.stem].get(nombre):
+                faltan_campos.append(f"{p.stem}.{nombre}")
+    if faltan_tablas:
+        errores.append(f"{base}datapackage.json no describe: "
+                       + ", ".join(faltan_tablas[:6]))
+    if faltan_campos:
+        errores.append(f"{base}datapackage.json deja {len(faltan_campos)} columnas sin "
+                       f"descripción: " + ", ".join(faltan_campos[:6]))
+    if verbose and not faltan_tablas and not faltan_campos:
+        n = sum(len(v) for v in descritos.values())
+        print(f"  {len(descritos)} tablas y {n} columnas descritas en el diccionario")
+
+
 def main():
     ap=argparse.ArgumentParser(description=__doc__,
                                formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -415,6 +495,8 @@ def main():
     revisar_referencias_html(root, errors, args.verbose)
     revisar_html_balanceado(root, errors, args.verbose)
     revisar_ids_js(root, errors, args.verbose)
+    revisar_sin_cdn(root, errors, args.verbose)
+    revisar_diccionario(root, errors, avisos, args.verbose)
 
     if errors:
         print("ERROR")

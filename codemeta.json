@@ -1,0 +1,33 @@
+{
+  "@context": "https://w3id.org/codemeta/3.0",
+  "@type": "SoftwareSourceCode",
+  "name": "Observatorio Cívico JEM",
+  "description": "Portal estático que publica y explora el archivo del Jurado de Enjuiciamiento de Magistrados de Paraguay, con búsqueda léxica en el navegador y sin servidor.",
+  "codeRepository": "https://github.com/luchobenitez/jem-observatorio",
+  "url": "https://luchobenitez.github.io/jem-observatorio/",
+  "version": "2026-08-30",
+  "dateModified": "2026-09-23",
+  "license": "https://spdx.org/licenses/GPL-3.0-or-later",
+  "programmingLanguage": [
+    "JavaScript",
+    "Python",
+    "SQL"
+  ],
+  "runtimePlatform": "Navegador web",
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Lucho",
+      "familyName": "Benítez",
+      "email": "luchobenitez@gmail.com"
+    }
+  ],
+  "softwareRequirements": [
+    "DuckDB-WASM (MIT)",
+    "Apache ECharts (Apache-2.0)",
+    "pyarrow (Apache-2.0)",
+    "duckdb (MIT)",
+    "sentence-transformers (Apache-2.0)",
+    "intfloat/multilingual-e5-small (MIT)"
+  ]
+}
