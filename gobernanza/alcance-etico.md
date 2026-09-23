@@ -44,7 +44,7 @@ técnico antes que ético.
 |---|---|
 | Resoluciones publicadas (autos interlocutorios, sentencias definitivas) | Publicación de oficio |
 | Dictámenes | Publicación de oficio |
-| Expedientes escaneados de acceso público | Publicación de oficio |
+| Expedientes escaneados | **Entregados por resolución de amparo**, no por publicación de oficio — ver [`analisis-legal-2026-09.md`](analisis-legal-2026-09.md) §2 |
 | Órdenes del día y actas de sesión | Publicación de oficio |
 | Informes estadísticos institucionales | Publicación de oficio |
 | Marco normativo publicado por el JEM | Publicación de oficio |
@@ -116,7 +116,7 @@ asumirse el caso más restrictivo.
 | Integrantes del JEM | Ídem, en ejercicio de función pública | Ídem. Son el objeto de la extracción de votos. |
 | Denunciantes | Particulares que activaron un procedimiento público | Expectativa intermedia. **Evaluar seudonimización en derivados publicados.** |
 | Terceros mencionados incidentalmente (testigos, víctimas, familiares) | No eligieron estar en el expediente | **Mayor protección. No deben ser entidades normalizadas ni indexadas como tales.** |
-| Menores de edad | Protección reforzada | **Exclusión de cualquier derivado publicado.** |
+| Menores de edad | Protección reforzada | **Art. 29 del Código de la Niñez, reformado por la Ley 6083/2018**: prohíbe divulgar por medios **digitales** nombres, imágenes o cualquier dato que permita identificar a un menor víctima o presunto autor de hechos punibles. Sanción del art. 147 del Código Penal. La respuesta que la norma indica **no es excluir el documento entero sino suprimir el dato**: art. 37 del Decreto 4064/2015, divulgación parcial. Ver [`analisis-legal-2026-09.md`](analisis-legal-2026-09.md) §3. |
 
 `[Propuesta]` La capa Gold normaliza entidades **sólo para las dos primeras
 categorías**. Extender el reconocimiento de entidades a todo nombre propio del

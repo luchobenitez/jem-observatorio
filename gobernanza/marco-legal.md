@@ -5,6 +5,22 @@
 **Fase:** 1 del plan de [`JEM.md`](../../JEM.md)
 **Estado:** borrador para revisión jurídica · **no validado por profesional del derecho**
 
+> ### Parcialmente superado — 23 de septiembre de 2026
+>
+> La verificación contra fuentes oficiales desmintió cinco afirmaciones de este
+> memo. Las correcciones y el análisis actualizado están en
+> [`analisis-legal-2026-09.md`](analisis-legal-2026-09.md), que **prevalece
+> sobre este documento** donde discrepen.
+>
+> En síntesis: la Ley 1682/2001 estaba derogada desde 2020 por la Ley 6534, no
+> por la 7593; la Ley 7593/2025 existe pero **no rige hasta el 27/11/2027**; la
+> Ley 5282 no obliga a publicar expedientes completos; el Ministerio de Justicia
+> coordina sólo dentro del Ejecutivo; y el reglamento del JEM no concede acceso
+> público irrestricto al expediente íntegro.
+>
+> Se conserva sin reescribir porque su §6 documenta qué se ignoraba y cuándo,
+> que es la información que permite auditar el proceso.
+
 > **Convención de etiquetado** (formalizada según `JEM.md` §4.6, aplicada a todo este documento):
 >
 > - **`[Dato]`** — verificable contra una fuente normativa oficial o contra los datos del proyecto.
@@ -89,6 +105,12 @@ proyecto.
 ## 3. Ley N.º 7593/2025 — Protección de datos personales
 
 ### 3.1 Estado de la información disponible
+
+> **Verificado el 23/09/2026 — ver [`analisis-legal-2026-09.md`](analisis-legal-2026-09.md) §1.2.**
+> Sancionada el 5/11/2025, promulgada y publicada el **27** de noviembre de 2025
+> (no el 28), 61 artículos. Su artículo 57 fija 24 meses de *vacatio legis*: la
+> ley **no rige hasta el 27/11/2027**. La ANPDP está prevista en su artículo 34,
+> pero **su funcionamiento efectivo no está acreditado**.
 
 `[Antecedente informado, vía JEM.md §4.1]` Ley N.º 7593/2025 *"De Protección de
 Datos Personales en la República del Paraguay"*, promulgada el 28 de noviembre de
@@ -199,18 +221,21 @@ cláusulas de reutilización, son el insumo directo de la dimensión *Reusable* 
 
 ## 6. Qué falta verificar — lista de control de la Fase 1
 
-- [ ] Texto oficial de la Ley 5282/2014: número de artículo de publicación obligatoria de oficio, causales de reserva, órgano de aplicación.
-- [ ] Decreto reglamentario de la Ley 5282/2014: número y vigencia.
-- [ ] Texto oficial de la Ley 7593/2025: existencia, número, fecha, articulado.
-- [ ] Entrada en vigencia y *vacatio legis* de la Ley 7593/2025.
-- [ ] Decreto reglamentario de la Ley 7593/2025, si existe.
-- [ ] Constitución y funcionamiento efectivo de la ANPDP.
-- [ ] Relación entre la Ley 7593/2025 y la Ley 1682/2001 (derogación, sustitución o convivencia).
-- [ ] Régimen aplicable a tratamientos iniciados **antes** de la vigencia de la Ley 7593/2025 — el corpus es mayoritariamente anterior.
-- [ ] Reglamento del Expediente Electrónico del JEM: obtener y analizar.
-- [ ] Existencia de excepción por investigación científica o estadística en la Ley 7593/2025, y sus condiciones.
-- [ ] Régimen de datos de menores y si alguna causa del corpus lo activa.
-- [ ] Revisión del memo por profesional del derecho paraguayo.
+Estado al 23/09/2026. Lo verificado remite a
+[`analisis-legal-2026-09.md`](analisis-legal-2026-09.md).
+
+- [x] Texto oficial de la Ley 5282/2014 — arts. 8 a 11 (publicación mínima), 22 (reserva por ley), 6 (oficinas de acceso).
+- [x] Decreto reglamentario de la Ley 5282/2014 — **Decreto 4064/2015**, del 17/09/2015, 40 artículos y dos anexos.
+- [x] Texto oficial de la Ley 7593/2025 — existe; 61 artículos; sancionada 5/11/2025, publicada 27/11/2025.
+- [x] Entrada en vigencia y *vacatio legis* — art. 57: 24 meses. **Rige desde el 27/11/2027.**
+- [ ] Decreto reglamentario de la Ley 7593/2025 — **no acreditado** en esta revisión, que no equivale a inexistente. Art. 60 da 24 meses para dictarlo.
+- [ ] Constitución y funcionamiento efectivo de la ANPDP — previsión legal confirmada (art. 34); operación **no acreditada**.
+- [x] Relación entre las leyes — la pregunta estaba mal planteada: la **Ley 6534/2020 derogó la 1682/2001**. Intervienen tres leyes.
+- [~] Régimen aplicable a tratamientos anteriores — sin exclusión general en los arts. 57 a 60; debe distinguirse la fecha del documento de las de captura, indexación y difusión.
+- [x] Reglamento del Expediente Electrónico del JEM — vigente desde el 1/02/2022 (art. 31). Su art. 5 **no concede acceso irrestricto** al expediente completo.
+- [x] Excepción por investigación científica — **no es general**: art. 4 inc. e exige anonimización o seudonimización; art. 20.10 añade necesidad, proporcionalidad y anonimización eficaz para datos sensibles.
+- [~] Régimen de datos de menores — **art. 29 del Código de la Niñez, reformado por la Ley 6083/2018**, prohíbe divulgar por medios digitales datos que permitan identificar a menores víctimas o presuntos autores, con sanción del art. 147 del Código Penal. **16 expedientes del corpus lo activan.**
+- [ ] Revisión del memo por profesional del derecho paraguayo — **pendiente; no se satisface con fuentes web**.
 
 `[Propuesta]` Revisar el estado normativo **otra vez** inmediatamente antes de la
 redacción final (Fase 12). `JEM.md` §11 identifica correctamente el riesgo: una ley

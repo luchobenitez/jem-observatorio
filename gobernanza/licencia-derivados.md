@@ -1,5 +1,16 @@
 # Condiciones de reutilización — borrador
 
+> ### Base legal identificada — 23 de septiembre de 2026
+>
+> El **Decreto 4064/2015, artículo 38 y Anexo II** ya establece la licencia de la
+> información pública no exceptuada: gratuita, perpetua y no exclusiva, permite
+> copiar, extraer, reproducir y **transformar**, con obligación de citar fuente y
+> fecha de actualización y sin simular patrocinio estatal.
+>
+> Propuesta en [`analisis-legal-2026-09.md`](analisis-legal-2026-09.md) §6:
+> adoptar el Anexo II para la **capa documental** y reservar CC BY 4.0 para las
+> capas **derivadas**, que son obra del proyecto.
+
 **Proyecto:** JEM-Full — archivo del Jurado de Enjuiciamiento de Magistrados preparado para IA
 **Fase:** 1 del plan de [`JEM.md`](../../JEM.md)
 **Estado:** **borrador — ninguna licencia ha sido adoptada todavía**
