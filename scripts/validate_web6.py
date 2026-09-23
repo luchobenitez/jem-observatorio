@@ -163,9 +163,21 @@ def revisar_editions(root: Path, errores: list, avisos: list, verbose: bool):
         errores.append(f"{EDITIONS} no declara ninguna edición")
         return
 
+    # «en_uso_por_la_interfaz» puede ser una cadena o un mapa pestaña -> edición:
+    # la página consulta dos ediciones a la vez desde la Fase 2, y un solo valor
+    # no podría decirlo sin mentir.
     for clave in ("vigente", "en_uso_por_la_interfaz"):
         valor = cfg.get(clave)
-        if valor and valor not in ediciones:
+        if isinstance(valor, dict):
+            for panel, ed in valor.items():
+                if ed not in ediciones:
+                    errores.append(
+                        f"{EDITIONS}: «{clave}.{panel}» apunta a «{ed}», que no está declarada")
+                elif not (root / "estadisticas.html").read_text(
+                        encoding="utf-8", errors="replace").count(f'id="{panel}"'):
+                    errores.append(
+                        f"{EDITIONS}: «{clave}» declara «{panel}», que no existe en estadisticas.html")
+        elif valor and valor not in ediciones:
             errores.append(f"{EDITIONS}: «{clave}» apunta a «{valor}», que no está declarada")
 
     for nombre, ed in ediciones.items():
@@ -244,6 +256,96 @@ def revisar_referencias_html(root: Path, errores: list, verbose: bool):
         print(f"  {revisadas} referencias locales del HTML revisadas")
 
 
+ETIQUETAS_VACIAS = {"br", "hr", "img", "input", "meta", "link", "source", "col",
+                    "area", "base", "embed", "param", "track", "wbr"}
+
+
+def revisar_html_balanceado(root: Path, errores: list, verbose: bool):
+    """Las etiquetas de bloque deben abrir y cerrar donde corresponde.
+
+    Se añadió después de que un `</div>` sobrante en `estadisticas.html`
+    atravesara todas las demás comprobaciones: el validador daba verde sobre un
+    HTML que cerraba `<section>` con `</div>`. El navegador no protesta —repara
+    el árbol a su manera— y el resultado es un panel que se dibuja fuera de su
+    sitio sin que nada lo señale.
+    """
+    from html.parser import HTMLParser
+
+    class Balance(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.pila: list[tuple[str, int]] = []
+            self.fallos: list[str] = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag not in ETIQUETAS_VACIAS:
+                self.pila.append((tag, self.getpos()[0]))
+
+        def handle_startendtag(self, tag, attrs):
+            pass
+
+        def handle_endtag(self, tag):
+            if tag in ETIQUETAS_VACIAS:
+                return
+            if not self.pila:
+                self.fallos.append(f"</{tag}> sin apertura en la línea {self.getpos()[0]}")
+                return
+            abierto, linea = self.pila.pop()
+            if abierto != tag:
+                self.fallos.append(
+                    f"</{tag}> en la línea {self.getpos()[0]} cierra "
+                    f"<{abierto}>, abierto en la línea {linea}")
+
+    for pagina in REQUIRED_PAGES:
+        p = root / pagina
+        if not p.is_file():
+            continue
+        b = Balance()
+        b.feed(p.read_text(encoding="utf-8", errors="replace"))
+        for f in b.fallos[:3]:
+            errores.append(f"{pagina}: {f}")
+        for tag, linea in b.pila[:3]:
+            errores.append(f"{pagina}: <{tag}> abierto en la línea {linea} no se cierra")
+    if verbose and not errores:
+        print(f"  {len(REQUIRED_PAGES)} páginas con etiquetas balanceadas")
+
+
+def revisar_ids_js(root: Path, errores: list, verbose: bool):
+    """Ningún JavaScript debe escribir en un elemento que no existe.
+
+    Es la misma clase de fallo que el resto del validador persigue —algo que se
+    declara y nadie contrasta— pero con la peor consecuencia posible en esta
+    página: `textContent` sobre `null` lanza, y una excepción a mitad de un
+    panel deja los demás sin llenar. El lector ve guiones y no sabe si el dato
+    falta o el código falló.
+
+    Se buscan los selectores literales `'#id'` que el JS pasa a sus ayudantes.
+    No cubre ids construidos dinámicamente; se prefiere una comprobación parcial
+    y cierta a ninguna.
+    """
+    ids_html: set[str] = set()
+    for pagina in REQUIRED_PAGES:
+        p = root / pagina
+        if p.is_file():
+            ids_html |= set(re.findall(r'id="([^"]+)"',
+                                       p.read_text(encoding="utf-8", errors="replace")))
+
+    # El literal debe cerrar el argumento: `$('#tab-' + x)` construye el id en
+    # tiempo de ejecución y no se puede comprobar así. Exigir la coma o el
+    # paréntesis evita denunciar el prefijo de una concatenación.
+    patron = re.compile(r"""(?:\$|pon)\(\s*['"]#([A-Za-z][\w-]*)['"]\s*[,)]""")
+    revisados = 0
+    for js in sorted((root / "assets" / "js").glob("*.js")):
+        texto = js.read_text(encoding="utf-8", errors="replace")
+        for ident in sorted(set(patron.findall(texto))):
+            revisados += 1
+            if ident not in ids_html:
+                errores.append(
+                    f"assets/js/{js.name} escribe en #{ident}, que no existe en ningún HTML")
+    if verbose:
+        print(f"  {revisados} identificadores del JS revisados contra el HTML")
+
+
 def main():
     ap=argparse.ArgumentParser(description=__doc__,
                                formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -279,6 +381,8 @@ def main():
     revisar_editions(root, errors, avisos, args.verbose)
     revisar_coherencia_resumen(root, errors, args.verbose)
     revisar_referencias_html(root, errors, args.verbose)
+    revisar_html_balanceado(root, errors, args.verbose)
+    revisar_ids_js(root, errors, args.verbose)
 
     if errors:
         print("ERROR")

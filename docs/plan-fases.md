@@ -128,30 +128,50 @@ un Parquet publicado: el SHA-256 declarado lo detecta.
 
 ---
 
-## Fase 2 — Estadísticas conectadas a la base real (8–12 h)
+## Fase 2 — Estadísticas conectadas a la base real — **hecha**
 
-Reescribir `estadisticas.html` contra los Parquet de la Fase 1. Las pestañas
-actuales (`tab-documental`, `tab-rivas`, `tab-independiente`, `tab-votaciones`)
-se conservan y se agregan las que el corte vigente hace posibles por primera vez:
+Las cuatro pestañas heredadas se conservan intactas y se suman cuatro que el
+corte vigente hace posibles por primera vez:
 
-- **Trazabilidad** — 15.908 páginas por banda de confianza; 91,61 % ancladas.
-- **Quórum** — 655 resoluciones con quórum incompleto por extracción.
-- **FAIR** — las ocho dimensiones, con su escala declarada.
-- **Procedencia** — persistencia de la URL de origen, que es el hallazgo más
-  duro del proyecto: sólo 178 de 4.627 documentos tienen URL persistente.
+| Pestaña | Qué muestra |
+|---|---|
+| **Trazabilidad** | 18.141 fragmentos por tipo de ancla, banda de confianza y motor |
+| **Quórum y decisión** | 655 de 1.670 resoluciones con quórum incompleto por extracción |
+| **Procedencia** | 178 de 4.627 documentos con URL persistente; 1.229 comparten una |
+| **Índice FAIR** | las ocho dimensiones en radar y en barras, sin cifra agregada |
 
-Tres reglas de presentación, no negociables:
+Todo consulta la edición `2026-08-30` con DuckDB-WASM, **reusando la conexión ya
+abierta**: una segunda instancia habría significado otro worker y otra copia del
+WASM en memoria.
 
-1. **`NO_DETERMINABLE` se dibuja como categoría visible, nunca como cero ni como
-   hueco.** Es la regla que gobierna todo el proyecto y donde más fácil es
-   traicionarla es en un gráfico: una barra ausente se lee como «ninguno».
-2. **Banner permanente de estado.** Cero de 25.293 campos revisados por una
-   persona. Mientras siga así, el sitio lo dice en cada página con cifras.
-3. **Ninguna cifra escrita en el HTML.** Todas por consulta, como en el resto
-   del proyecto.
+Las tres reglas se cumplieron:
 
-**Verificación:** extender `verificar_cifras.py` a los HTML del sitio, igual que
-ya cubre Markdown y LaTeX.
+1. **`NO_DETERMINABLE` es una categoría dibujada**, con color propio y junto a
+   `sin_calcular` y `sin_score`. En un gráfico la tentación de omitirla es
+   grande, porque una barra ausente se lee como «ninguno» y nadie la cuestiona.
+2. **Banner permanente** encabezando la página: `0` de `25.293` campos con
+   revisión humana. Los dos números se consultan, de modo que el día que alguien
+   valide, el banner cambia solo.
+3. **Ninguna cifra derivada escrita en el HTML.** Las tres que se me colaron al
+   redactar —1.229 URL compartidas, 7 disidencias, 7,5 puntos de amplitud— se
+   convirtieron en consultas. La de las 1.229 **reproduce sola** el valor que
+   estaba transcrito.
+
+### Verificado
+
+- **16 consultas SQL** ejecutadas contra los Parquet reales antes de escribir el
+  JavaScript: 0 fallos.
+- **26 de 26 identificadores** de los paneles nuevos existen en el HTML,
+  comprobado en ambos sentidos.
+- `verificar_cifras.py --sitio` alcanza ahora el HTML del sitio: **45
+  afirmaciones, 0 discrepancias**.
+- **19 pruebas negativas**, 0 fallos.
+
+Dos comprobaciones nuevas nacieron de fallos propios de esta fase: que el
+JavaScript no escriba en un `id` inexistente, y que el HTML tenga sus etiquetas
+balanceadas. La segunda se añadió **después** de que un `</div>` sobrante
+atravesara todas las demás: el validador daba verde sobre un HTML que cerraba
+`<section>` con `</div>`.
 
 ---
 

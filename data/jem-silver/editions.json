@@ -4,14 +4,26 @@
     "sobrescribe, porque miden corpus distintos y la comparación entre",
     "ambas es en sí misma un resultado.",
     "«vigente» es la edición más reciente publicada.",
-    "«en_uso_por_la_interfaz» es la que el JavaScript lee hoy. Que",
-    "difieran no es un error: es el trabajo pendiente de la Fase 2,",
-    "declarado en vez de disimulado."
+    "«en_uso_por_la_interfaz» dice qué edición consulta cada pestaña de",
+    "estadisticas.html. Es un mapa y no un solo valor porque la página",
+    "lee las dos: las pestañas heredadas siguen sobre la edición de",
+    "agosto y las cuatro nuevas sobre el corte vigente. Mezclar dos",
+    "ediciones sin decirlo sería exactamente la contradicción que este",
+    "archivo existe para impedir."
   ],
-  "version": 1,
+  "version": 2,
   "actualizado": "2026-09-22",
   "vigente": "2026-08-30",
-  "en_uso_por_la_interfaz": "2026-08-24",
+  "en_uso_por_la_interfaz": {
+    "tab-documental": "2026-08-24",
+    "tab-rivas": "2026-08-24",
+    "tab-independiente": "2026-08-24",
+    "tab-votaciones": "2026-08-24",
+    "tab-trazabilidad": "2026-08-30",
+    "tab-quorum": "2026-08-30",
+    "tab-procedencia": "2026-08-30",
+    "tab-fair": "2026-08-30"
+  },
   "ediciones": {
     "2026-08-24": {
       "base": "data/jem-silver/",

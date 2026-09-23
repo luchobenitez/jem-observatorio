@@ -311,12 +311,268 @@ async function loadVotes(db, base) {
   }
 }
 
+/* ==================================================================
+   Edición vigente de la capa Silver
+   ==================================================================
+   Las pestañas Trazabilidad, Quórum, Procedencia y FAIR consultan la
+   edición fechada que declara `data/jem-silver/editions.json`, no la
+   raíz. Reusa la conexión DuckDB ya abierta: una segunda instancia
+   significaría otro worker y otra copia del WASM en memoria.
+
+   Regla que gobierna todo este bloque: NO_DETERMINABLE es una
+   categoría que se dibuja, nunca un cero ni un hueco. En un gráfico
+   la tentación es grande, porque una barra ausente se lee como
+   «ninguno» y nadie la cuestiona.
+   ================================================================== */
+
+const PALETA = {
+  bien:'#2f855a', medio:'#b7791f', mal:'#c05621',
+  nd:'#718096', neutro:'#4a5568'
+};
+const NO_DET = new Set(['NO_DETERMINABLE','sin_calcular','sin_score','SIN_URL']);
+const colorDe = (k) => NO_DET.has(String(k)) ? PALETA.nd : PALETA.neutro;
+const num = (n) => Number(n||0).toLocaleString('es-PY');
+
+function barras(id, titulo, filas, clave, valor) {
+  chart(id, {
+    title:{text:titulo, left:'center', textStyle:{fontSize:14}},
+    tooltip:{trigger:'axis'},
+    grid:{left:'3%', right:'4%', bottom:'12%', containLabel:true},
+    xAxis:{type:'category', data:filas.map(r=>r[clave]),
+           axisLabel:{interval:0, rotate:filas.length>4?28:0, fontSize:10}},
+    yAxis:{type:'value'},
+    series:[{type:'bar', data:filas.map(r=>({
+      value:Number(r[valor]), itemStyle:{color:colorDe(r[clave])}}))}]
+  });
+}
+
+async function filas(sql) {
+  const r = await conn.query(sql);
+  return r.toArray().map(x=>x.toJSON());
+}
+const uno = async (sql) => (await filas(sql))[0] || {};
+const pon = (sel, v) => { const e = $(sel); if (e) e.textContent = v; };
+
+async function loadEdicionVigente(db, base) {
+  let edicion, baseEd;
+  try {
+    const cfg = await fetch(new URL(CFG.jemSilverBase + 'editions.json', base).href)
+      .then(r => { if(!r.ok) throw new Error('editions.json '+r.status); return r.json(); });
+    const uso = cfg.en_uso_por_la_interfaz;
+    edicion = (typeof uso === 'string' ? uso : uso?.['tab-trazabilidad']) || cfg.vigente;
+    baseEd = cfg.ediciones?.[edicion]?.base;
+    if (!baseEd) throw new Error(`la edición ${edicion} no está declarada`);
+  } catch (e) {
+    console.info('No se pudo resolver la edición vigente:', e.message);
+    pon('#edicionEstado', 'Edición: no disponible');
+    return;
+  }
+
+  const TABLAS = ['fragmento','documento','resolucion','voto','procedencia','campo'];
+  try {
+    for (const t of TABLAS) {
+      await registerAndTest(db, `${t}.parquet`, new URL(baseEd + t + '.parquet', base).href);
+    }
+  } catch (e) {
+    console.info('Edición vigente no disponible:', e.message);
+    pon('#edicionEstado', 'Edición: no disponible');
+    return;
+  }
+
+  pon('#edicionEstado', `Edición ${edicion}`);
+  ['#trzEdicion','#qrmEdicion','#prvEdicion'].forEach(s => pon(s, `Edición ${edicion}`));
+
+  // ---- Banner permanente de validación -----------------------------
+  // Es el indicador que ningún código puede mover: cuenta revisiones
+  // humanas, y sólo una persona puede incrementarlo.
+  const v = await uno(`SELECT COUNT(*) total,
+      COUNT(CASE WHEN revision <> 'AUTO' THEN 1 END) revisados
+      FROM read_parquet('campo.parquet')`);
+  pon('#valTotal', num(v.total));
+  pon('#valRevisados', num(v.revisados));
+
+  await panelTrazabilidad();
+  await panelQuorum();
+  await panelProcedencia();
+  await panelFair(base);
+}
+
+async function panelTrazabilidad() {
+  const t = await uno(`SELECT COUNT(*) fragmentos,
+      COUNT(DISTINCT blob_id) documentos,
+      COUNT(CASE WHEN tipo_ancla='PAGINA' AND anclado=1 THEN 1 END) ancladas,
+      COUNT(CASE WHEN tipo_ancla='PAGINA' THEN 1 END) paginas
+      FROM read_parquet('fragmento.parquet')`);
+  pon('#trzFragmentos', num(t.fragmentos));
+  pon('#trzDocumentos', num(t.documentos));
+  pon('#trzAncladas', `${num(t.ancladas)} de ${num(t.paginas)}`);
+
+  const vt = await uno(`SELECT COUNT(*) total, COUNT(pagina) con_pagina
+      FROM read_parquet('voto.parquet')`);
+  pon('#trzVotos', `${num(vt.con_pagina)} de ${num(vt.total)}`);
+
+  const anclas = await filas(`SELECT tipo_ancla, COUNT(*) n
+      FROM read_parquet('fragmento.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+  chart('chartAnclas', {
+    title:{text:'Unidad citable', left:'center', textStyle:{fontSize:14}},
+    tooltip:{trigger:'item'},
+    series:[{type:'pie', radius:['40%','68%'], data:anclas.map(r=>({
+      name:r.tipo_ancla, value:Number(r.n),
+      itemStyle:{color:r.tipo_ancla==='PAGINA'?PALETA.bien:PALETA.medio}}))}]
+  });
+
+  // Las bandas incluyen «sin confianza» como categoría propia: los
+  // fragmentos de documento no tienen score porque no pasaron por OCR,
+  // y eso no es una confianza baja, es la ausencia de la medida.
+  const bandas = await filas(`SELECT CASE
+        WHEN confianza IS NULL THEN 'sin_score'
+        WHEN confianza < 0.50 THEN 'muy baja'
+        WHEN confianza < 0.70 THEN 'baja'
+        WHEN confianza < 0.85 THEN 'media' ELSE 'alta' END banda,
+      COUNT(*) n FROM read_parquet('fragmento.parquet')
+      GROUP BY 1 ORDER BY CASE banda WHEN 'alta' THEN 1 WHEN 'media' THEN 2
+        WHEN 'baja' THEN 3 WHEN 'muy baja' THEN 4 ELSE 5 END`);
+  barras('chartBandas', 'Confianza del reconocimiento por fragmento', bandas, 'banda', 'n');
+
+  const det = await filas(`SELECT f.tipo_ancla,
+      COUNT(*) fragmentos, COUNT(DISTINCT f.blob_id) documentos,
+      ROUND(SUM(LENGTH(f.texto))/1e6, 1) mb,
+      STRING_AGG(DISTINCT d.extension, ', ') formatos
+      FROM read_parquet('fragmento.parquet') f
+      JOIN read_parquet('documento.parquet') d USING (blob_id)
+      GROUP BY 1 ORDER BY 2 DESC`);
+  $('#trzAnclaRows').innerHTML = det.map(r=>`<tr>
+      <td><code>${esc(r.tipo_ancla)}</code></td><td>${num(r.fragmentos)}</td>
+      <td>${num(r.documentos)}</td><td>${esc(r.mb)} MB</td>
+      <td>${esc(r.formatos)}</td></tr>`).join('');
+
+  const motores = await filas(`SELECT COALESCE(motor,'sin motor') motor, COUNT(*) n
+      FROM read_parquet('fragmento.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+  barras('chartMotores', 'Fragmentos por motor de extracción', motores, 'motor', 'n');
+}
+
+async function panelQuorum() {
+  const q = await uno(`SELECT
+      COUNT(CASE WHEN estado_votos='CON_VOTOS' THEN 1 END) con_votos,
+      COUNT(CASE WHEN quorum='COMPLETO' THEN 1 END) completo,
+      COUNT(CASE WHEN quorum='INCOMPLETO_POR_EXTRACCION' THEN 1 END) incompleto,
+      COUNT(CASE WHEN quorum='NO_DETERMINABLE' THEN 1 END) nodet
+      FROM read_parquet('resolucion.parquet')`);
+  pon('#qrmConVotos', num(q.con_votos));
+  pon('#qrmCompleto', num(q.completo));
+  pon('#qrmIncompleto', num(q.incompleto));
+  pon('#qrmNoDet', num(q.nodet));
+
+  const quorum = await filas(`SELECT COALESCE(quorum,'sin_calcular') quorum, COUNT(*) n
+      FROM read_parquet('resolucion.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+  barras('chartQuorum', 'Estado del quórum por resolución', quorum, 'quorum', 'n');
+
+  const sentido = await filas(`SELECT COALESCE(sentido,'sin_calcular') sentido, COUNT(*) n
+      FROM read_parquet('resolucion.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+  barras('chartSentido', 'Sentido de la decisión', sentido, 'sentido', 'n');
+
+  const verbos = await filas(`SELECT verbo, COUNT(*) n
+      FROM read_parquet('resolucion.parquet') WHERE verbo IS NOT NULL
+      GROUP BY 1 ORDER BY 2 DESC LIMIT 12`);
+  $('#qrmVerboRows').innerHTML = verbos.map(r=>`<tr>
+      <td>${esc(r.verbo)}</td><td>${num(r.n)}</td></tr>`).join('');
+
+  const d = await uno(`SELECT COUNT(*) n FROM read_parquet('voto.parquet')
+      WHERE sentido='DISIDENCIA'`);
+  pon('#qrmDisidencias', num(d.n));
+}
+
+async function panelProcedencia() {
+  const p = await uno(`SELECT COUNT(DISTINCT blob_id) registro,
+      COUNT(DISTINCT CASE WHEN persistencia='PERSISTENTE' THEN blob_id END) persistente,
+      COUNT(DISTINCT CASE WHEN persistencia='EFIMERA' THEN blob_id END) efimera,
+      COUNT(DISTINCT CASE WHEN persistencia='SIN_URL' THEN blob_id END) sin_url
+      FROM read_parquet('procedencia.parquet')`);
+  pon('#prvRegistro', num(p.registro));
+  pon('#prvPersistente', num(p.persistente));
+  pon('#prvEfimera', num(p.efimera));
+  pon('#prvSinUrl', num(p.sin_url));
+
+  const docs = await uno(`SELECT COUNT(*) n FROM read_parquet('documento.parquet')`);
+  const pct = docs.n ? (Number(p.persistente)/Number(docs.n)*100) : 0;
+  pon('#prvPct', `${pct.toFixed(1).replace('.', ',')} %`);
+
+  const pers = await filas(`SELECT COALESCE(persistencia,'sin_calcular') persistencia,
+      COUNT(DISTINCT blob_id) n FROM read_parquet('procedencia.parquet')
+      GROUP BY 1 ORDER BY 2 DESC`);
+  barras('chartPersistencia', 'Persistencia de la URL de origen', pers, 'persistencia', 'n');
+
+  // Cuántas resoluciones comparten la URL más repetida: la evidencia
+  // directa de que el sistema de origen no expone identificador por
+  // documento.
+  const rep = await uno(`SELECT COUNT(*) n FROM read_parquet('procedencia.parquet')
+      WHERE url = (SELECT url FROM read_parquet('procedencia.parquet')
+                   WHERE url IS NOT NULL GROUP BY url
+                   ORDER BY COUNT(*) DESC LIMIT 1)`);
+  pon('#prvMismaUrl', num(rep.n));
+
+  const col = await filas(`SELECT COALESCE(coleccion,'sin colección') coleccion,
+      COUNT(*) n, SUM(tiene_paginas) con_paginas
+      FROM read_parquet('documento.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+  $('#prvColeccionRows').innerHTML = col.map(r=>`<tr>
+      <td>${esc(r.coleccion)}</td><td>${num(r.n)}</td>
+      <td>${num(r.con_paginas)}</td></tr>`).join('');
+}
+
+async function panelFair(base) {
+  let d;
+  try {
+    d = await fetch(new URL('data/analysis/jem_full_20260830.json', base).href)
+      .then(r => { if(!r.ok) throw new Error(r.status); return r.json(); });
+  } catch (e) {
+    console.info('Snapshot FAIR no disponible:', e.message);
+    return;
+  }
+  const dim = d.indice_fair?.dimensiones || {};
+  const ent = Object.entries(dim);
+  if (!ent.length) return;
+
+  const vals = ent.map(([,v])=>Number(v));
+  pon('#fairDispersion', (Math.max(...vals)-Math.min(...vals)).toFixed(1).replace('.', ','));
+  pon('#fairIndicadores', num(d.indice_fair?.indicadores));
+  pon('#fairNoComputables', num(d.indice_fair?.no_computables));
+
+  const s = d.indice_fair?.sensibilidad || {};
+  const agregados = Object.values(s).map(Number).filter(Number.isFinite);
+  if (agregados.length > 1) {
+    pon('#fairAmplitud', (Math.max(...agregados)-Math.min(...agregados))
+        .toFixed(1).replace('.', ','));
+  }
+
+  chart('chartFair', {
+    title:{text:'Ocho dimensiones', left:'center', textStyle:{fontSize:14}},
+    tooltip:{},
+    radar:{indicator: ent.map(([k])=>({name:k, max:100})),
+           radius:'62%', axisName:{fontSize:10}},
+    series:[{type:'radar', data:[{value:vals, name:'Puntuación',
+      areaStyle:{opacity:0.25}, lineStyle:{color:PALETA.neutro},
+      itemStyle:{color:PALETA.neutro}}]}]
+  });
+
+  const orden = ent.slice().sort((a,b)=>b[1]-a[1]);
+  barras('chartFairBarras', 'Dimensiones ordenadas',
+         orden.map(([k,v])=>({dim:k, val:v})), 'dim', 'val');
+
+  const lectura = (x) => x>=85 ? 'Sólido'
+    : x>=70 ? 'Aceptable con reservas'
+    : x>=55 ? 'Débil' : 'Crítico';
+  $('#fairRows').innerHTML = orden.map(([k,v])=>`<tr>
+      <td>${esc(k)}</td><td>${String(v).replace('.', ',')}</td>
+      <td>${lectura(Number(v))}</td></tr>`).join('');
+}
+
 (async()=>{
   try {
     const db = await setupDb();
     const base = new URL('.', location.href).href;
     await loadParquetCorpus(db, base);
     await loadVotes(db, base);
+    await loadEdicionVigente(db, base);
   } catch(e) {
     console.info('DuckDB-WASM no disponible; se mantiene el modo JSON:', e.message);
   }

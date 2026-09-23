@@ -25,7 +25,20 @@
 <h1>Estadísticas y explorador documental</h1>
 <p>El portal separa el corpus documental, los datos editoriales del caso y un informe empírico independiente sobre las actuaciones de Hernán Rivas. Las métricas que el informe no puede establecer con rigor se muestran como <code>NO_DETERMINABLE</code>, no como cero.</p>
 <div id="engineStatus" class="status-pill">Inicializando…</div>
+<div id="edicionEstado" class="status-pill">Edición: comprobando…</div>
 </header>
+
+<aside id="validacionBanner" class="report-banner strong-note" role="note">
+<div>
+<span class="status-badge warning">Sin validación humana</span>
+<h2>Ninguna cifra de esta página fue revisada por una persona</h2>
+<p><strong id="valRevisados">—</strong> de <strong id="valTotal">—</strong> campos extraídos tienen revisión humana.
+Las cifras provienen de extracción automática sobre documentos digitalizados. Sirven para
+<em>dimensionar</em> el archivo y sus límites; <strong>no son publicables como resultado</strong>
+sobre la conducta de ninguna persona. Lo que no puede determinarse aparece como
+<code>NO_DETERMINABLE</code> y nunca como cero.</p>
+</div>
+</aside>
 
 <section class="section compact">
 <div class="stats-tabs">
@@ -33,6 +46,10 @@
 <button class="tab" data-tab="rivas">Datos del caso</button>
 <button class="tab" data-tab="independiente">Informe independiente</button>
 <button class="tab" data-tab="votaciones">Votos y decisividad</button>
+<button class="tab" data-tab="trazabilidad">Trazabilidad</button>
+<button class="tab" data-tab="quorum">Quórum y decisión</button>
+<button class="tab" data-tab="procedencia">Procedencia</button>
+<button class="tab" data-tab="fair">Índice FAIR</button>
 </div>
 
 <div id="tab-documental" class="tab-panel active">
@@ -180,6 +197,142 @@
 <div class="kpi"><span>Miembros con votos</span><strong id="voteMembers">—</strong></div>
 </div>
 <div class="chart-grid"><div id="chartOutcomes" class="chart"></div><div id="chartMargins" class="chart"></div></div>
+</div>
+</div>
+
+<!-- ================= Trazabilidad ================= -->
+<div id="tab-trazabilidad" class="tab-panel">
+<div class="report-banner compact-banner">
+<div><span class="status-badge neutral" id="trzEdicion">Edición —</span>
+<h2>De qué se puede citar y con qué precisión</h2>
+<p>Cada fragmento de texto declara a qué puede anclarse una cita. Las páginas
+existen <strong>sólo en PDF</strong>: donde el formato original no pagina —Word, actas en
+JSON— la unidad citable es el documento completo. La página no falta: <strong>no existe</strong>,
+y el dato lo dice en vez de rellenar con un número inventado.</p></div>
+</div>
+
+<div class="kpi-grid">
+<div class="kpi"><span>Fragmentos citables</span><strong id="trzFragmentos">—</strong></div>
+<div class="kpi"><span>Documentos con texto</span><strong id="trzDocumentos">—</strong></div>
+<div class="kpi"><span>Páginas ancladas al texto</span><strong id="trzAncladas">—</strong></div>
+<div class="kpi"><span>Votos citables por página</span><strong id="trzVotos">—</strong></div>
+</div>
+
+<div class="chart-grid"><div id="chartAnclas" class="chart"></div><div id="chartBandas" class="chart"></div></div>
+
+<div class="section-subhead">
+<h2>Cobertura por tipo de ancla</h2>
+<p>Un índice construido sólo sobre páginas buscaría en la mitad del corpus sin advertirlo.</p>
+</div>
+<div class="table-wrap"><table>
+<thead><tr><th>Tipo de ancla</th><th>Fragmentos</th><th>Documentos</th><th>Texto</th><th>Formato de origen</th></tr></thead>
+<tbody id="trzAnclaRows"></tbody></table></div>
+
+<div class="section-subhead"><h2>Motor de extracción</h2>
+<p>Se registran por separado porque un documento con texto nativo no tiene error de OCR:
+mezclarlos haría ininterpretable cualquier tasa de error.</p></div>
+<div class="chart-grid"><div id="chartMotores" class="chart"></div>
+<div class="metric-panel">
+<h3>Tasa de error del OCR</h3>
+<div class="nd-value">NO_DETERMINABLE</div>
+<p>Medir el CER exige transcripción humana de una muestra. Está diseñada
+—375 páginas, ±5,0 % al 95 %— y todavía no ejecutada.</p>
+</div></div>
+</div>
+
+<!-- ================= Quórum y decisión ================= -->
+<div id="tab-quorum" class="tab-panel">
+<div class="report-banner compact-banner">
+<div><span class="status-badge warning" id="qrmEdicion">Edición —</span>
+<h2>El quórum que no se puede leer</h2>
+<p>Una resolución cuyo quórum no se pudo extraer completo <strong>no puede declararse
+unánime</strong>: un quórum ilegible no autoriza a afirmar que nadie disintió. Esa
+distinción es la diferencia entre un dato y una suposición.</p></div>
+</div>
+
+<div class="kpi-grid">
+<div class="kpi"><span>Resoluciones con votación</span><strong id="qrmConVotos">—</strong></div>
+<div class="kpi"><span>Quórum completo</span><strong id="qrmCompleto">—</strong></div>
+<div class="kpi"><span>Incompleto por extracción</span><strong id="qrmIncompleto">—</strong></div>
+<div class="kpi"><span>Quórum no determinable</span><strong id="qrmNoDet">—</strong></div>
+</div>
+
+<div class="chart-grid"><div id="chartQuorum" class="chart"></div><div id="chartSentido" class="chart"></div></div>
+
+<div class="section-subhead"><h2>Verbo resolutivo</h2>
+<p>Qué decidió la resolución, según el verbo que emplea su parte dispositiva.</p></div>
+<div class="table-wrap"><table>
+<thead><tr><th>Verbo</th><th>Resoluciones</th></tr></thead>
+<tbody id="qrmVerboRows"></tbody></table></div>
+
+<div class="data-note strong-note">
+Las tasas de <strong>acuerdo con la mayoría</strong>, <strong>disidencia</strong>,
+<strong>abstención</strong> y <strong>decisividad</strong> permanecen
+<code>NO_DETERMINABLE</code>. No se extraen abstenciones, el texto no declara
+ausencias, y el detector de disidencia halla <span id="qrmDisidencias">—</span> casos: una cifra que puede
+reflejar la práctica del órgano o la debilidad del detector, y el corpus no
+permite distinguirlo.
+</div>
+</div>
+
+<!-- ================= Procedencia ================= -->
+<div id="tab-procedencia" class="tab-panel">
+<div class="report-banner compact-banner">
+<div><span class="status-badge warning" id="prvEdicion">Edición —</span>
+<h2>Sólo una fracción del archivo vuelve a encontrarse</h2>
+<p>El Buscador de Resoluciones entrega los documentos por <em>postback</em> JSF, sin
+exponer una dirección por documento: <strong><span id="prvMismaUrl">—</span> resoluciones distintas comparten
+literalmente la misma URL</strong>. El primer principio FAIR —ser encontrable— falla en el
+sistema de origen, antes que cualquier problema de acceso.</p></div>
+</div>
+
+<div class="kpi-grid">
+<div class="kpi"><span>Documentos con procedencia</span><strong id="prvRegistro">—</strong></div>
+<div class="kpi"><span>URL persistente</span><strong id="prvPersistente">—</strong></div>
+<div class="kpi"><span>URL efímera</span><strong id="prvEfimera">—</strong></div>
+<div class="kpi"><span>Sin URL de origen</span><strong id="prvSinUrl">—</strong></div>
+</div>
+
+<div class="chart-grid"><div id="chartPersistencia" class="chart"></div>
+<div class="metric-panel">
+<h3>Identificador persistente por documento</h3>
+<div class="nd-value" id="prvPct">—</div>
+<p>Proporción del corpus con una dirección que vuelve a resolver al mismo documento.
+Es el diagnóstico más duro del archivo, y su causa no está en la digitalización sino
+en el sistema que lo publica.</p>
+</div></div>
+
+<div class="section-subhead"><h2>Colecciones de origen</h2></div>
+<div class="table-wrap"><table>
+<thead><tr><th>Colección</th><th>Documentos</th><th>Con páginas</th></tr></thead>
+<tbody id="prvColeccionRows"></tbody></table></div>
+</div>
+
+<!-- ================= FAIR ================= -->
+<div id="tab-fair" class="tab-panel">
+<div class="report-banner compact-banner">
+<div><span class="status-badge neutral">Índice ampliado · ocho dimensiones</span>
+<h2>Un promedio ocultaría el diagnóstico</h2>
+<p>Bajo cuatro ponderaciones muy distintas el índice agregado se mueve apenas
+<strong><span id="fairAmplitud">—</span> puntos</strong>. Esa estabilidad no es una virtud: promedia
+<strong id="fairDispersion">—</strong> puntos de dispersión entre dimensiones.
+Por eso <strong>no se publica cifra agregada</strong>; se publican las ocho.</p></div>
+</div>
+
+<div class="chart-grid"><div id="chartFair" class="chart"></div><div id="chartFairBarras" class="chart"></div></div>
+
+<div class="section-subhead"><h2>Dimensiones</h2>
+<p>Las cuatro primeras son los principios FAIR originales. Las cuatro siguientes son una
+ampliación para archivos sobre personas identificables, y <strong>no constituyen un
+estándar validado</strong>: son una decisión metodológica que se publica junto a su resultado.</p></div>
+<div class="table-wrap"><table>
+<thead><tr><th>Dimensión</th><th>Puntuación</th><th>Lectura</th></tr></thead>
+<tbody id="fairRows"></tbody></table></div>
+
+<div class="data-note">
+Indicadores no computables: <strong id="fairNoComputables">—</strong> de
+<strong id="fairIndicadores">—</strong>. Un indicador que no puede calcularse no
+puntúa cero: se excluye y se declara.
 </div>
 </div>
 </section>

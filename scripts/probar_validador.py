@@ -133,6 +133,46 @@ def vigente_inexistente(root: Path) -> str:
     return "no está declarada"
 
 
+def js_a_un_id_inexistente(root: Path) -> str:
+    """Un panel que escribe en un elemento que no existe se corta a la mitad."""
+    p = root / "assets/js/duckdb-stats.js"
+    p.write_text(p.read_text(encoding="utf-8").replace(
+        "pon('#trzFragmentos'", "pon('#trzFragmentosQueNoExiste'"), encoding="utf-8")
+    return "#trzFragmentosQueNoExiste, que no existe"
+
+
+def panel_declarado_que_falta(root: Path) -> str:
+    """editions.json asigna edición a una pestaña que el HTML no tiene."""
+    p = root / EDITIONS
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    cfg["en_uso_por_la_interfaz"]["tab-inventado"] = "2026-08-30"
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "tab-inventado"
+
+
+def panel_con_edicion_inexistente(root: Path) -> str:
+    p = root / EDITIONS
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    cfg["en_uso_por_la_interfaz"]["tab-fair"] = "2025-01-01"
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "tab-fair» apunta a «2025-01-01"
+
+
+def div_sobrante(root: Path) -> str:
+    """El fallo exacto que atravesó todas las comprobaciones anteriores."""
+    p = root / "estadisticas.html"
+    p.write_text(p.read_text(encoding="utf-8").replace(
+        "</section>\n</main>", "</div>\n</section>\n</main>", 1), encoding="utf-8")
+    return "cierra <section>"
+
+
+def div_sin_cerrar(root: Path) -> str:
+    p = root / "caso.html"
+    p.write_text(p.read_text(encoding="utf-8").replace(
+        "<main>", '<main><div class="huerfano">', 1), encoding="utf-8")
+    return "no se cierra"
+
+
 PRUEBAS = [
     ("un conjunto «disponible» que falta",       falta_un_disponible),
     ("filas declaradas que no cuadran",          filas_que_no_cuadran),
@@ -147,6 +187,11 @@ PRUEBAS = [
     ("falta una tabla de la edición",            edicion_a_una_tabla_que_falta),
     ("un Parquet alterado tras publicarse",      parquet_alterado),
     ("«vigente» nombra una edición inexistente", vigente_inexistente),
+    ("el JS escribe en un id inexistente",       js_a_un_id_inexistente),
+    ("se declara una pestaña que no existe",     panel_declarado_que_falta),
+    ("una pestaña con edición inexistente",      panel_con_edicion_inexistente),
+    ("un </div> sobrante en el HTML",            div_sobrante),
+    ("un <div> que no se cierra",                div_sin_cerrar),
 ]
 
 
