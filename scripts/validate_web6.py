@@ -182,7 +182,25 @@ def revisar_editions(root: Path, errores: list, avisos: list, verbose: bool):
 
     for nombre, ed in ediciones.items():
         base = ed.get("base", "")
-        tablas = ed.get("tablas", {})
+        tablas = dict(ed.get("tablas", {}))
+        # El índice BM25 se declara aparte porque lo genera otro script, pero
+        # sus archivos se comprueban igual: filas y SHA-256 contra el disco.
+        indice = ed.get("indice")
+        if indice:
+            tablas.update(indice.get("tablas", {}))
+            for clave in ("num_docs", "longitud_media", "k1", "b"):
+                if indice.get(clave) is None:
+                    errores.append(
+                        f"{EDITIONS} → {nombre}.indice: falta «{clave}», que la página "
+                        "necesita para puntuar")
+            if not indice.get("limitaciones"):
+                errores.append(
+                    f"{EDITIONS} → {nombre}.indice: no declara limitaciones")
+            docs = tablas.get("indice_fragmento", {}).get("filas")
+            if docs is not None and indice.get("num_docs") != docs:
+                errores.append(
+                    f"{EDITIONS} → {nombre}.indice: num_docs={indice.get('num_docs'):,} "
+                    f"no coincide con las {docs:,} filas de indice_fragmento")
         if not tablas:
             errores.append(f"{EDITIONS} → {nombre}: no declara tablas")
             continue

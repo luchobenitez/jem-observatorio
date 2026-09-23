@@ -173,6 +173,41 @@ def div_sin_cerrar(root: Path) -> str:
     return "no se cierra"
 
 
+def indice_sin_parametros(root: Path) -> str:
+    """Sin k1/b/num_docs la página no puede puntuar: fallaría al usarse."""
+    p = root / EDITIONS
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    cfg["ediciones"]["2026-08-30"]["indice"].pop("k1", None)
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "falta «k1»"
+
+
+def indice_sin_limitaciones(root: Path) -> str:
+    """Un índice sin límites declarados se lee como un índice sin límites."""
+    p = root / EDITIONS
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    cfg["ediciones"]["2026-08-30"]["indice"]["limitaciones"] = []
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "no declara limitaciones"
+
+
+def indice_descuadrado(root: Path) -> str:
+    """num_docs debe coincidir con las filas del índice de fragmentos."""
+    p = root / EDITIONS
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    cfg["ediciones"]["2026-08-30"]["indice"]["num_docs"] = 15908
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "no coincide con las 18,141 filas"
+
+
+def posting_alterado(root: Path) -> str:
+    p = root / "data/jem-silver/2026-08-30/indice_posting.parquet"
+    datos = bytearray(p.read_bytes())
+    datos[len(datos) // 3] ^= 0xFF
+    p.write_bytes(bytes(datos))
+    return "SHA-256 declarado no coincide"
+
+
 PRUEBAS = [
     ("un conjunto «disponible» que falta",       falta_un_disponible),
     ("filas declaradas que no cuadran",          filas_que_no_cuadran),
@@ -192,6 +227,10 @@ PRUEBAS = [
     ("una pestaña con edición inexistente",      panel_con_edicion_inexistente),
     ("un </div> sobrante en el HTML",            div_sobrante),
     ("un <div> que no se cierra",                div_sin_cerrar),
+    ("el índice sin parámetro de puntuación",    indice_sin_parametros),
+    ("el índice sin limitaciones declaradas",    indice_sin_limitaciones),
+    ("num_docs que no cuadra con el índice",     indice_descuadrado),
+    ("el posting alterado tras publicarse",      posting_alterado),
 ]
 
 

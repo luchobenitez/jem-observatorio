@@ -354,7 +354,7 @@ const uno = async (sql) => (await filas(sql))[0] || {};
 const pon = (sel, v) => { const e = $(sel); if (e) e.textContent = v; };
 
 async function loadEdicionVigente(db, base) {
-  let edicion, baseEd;
+  let edicion, baseEd, indiceMeta = null;
   try {
     const cfg = await fetch(new URL(CFG.jemSilverBase + 'editions.json', base).href)
       .then(r => { if(!r.ok) throw new Error('editions.json '+r.status); return r.json(); });
@@ -362,6 +362,10 @@ async function loadEdicionVigente(db, base) {
     edicion = (typeof uso === 'string' ? uso : uso?.['tab-trazabilidad']) || cfg.vigente;
     baseEd = cfg.ediciones?.[edicion]?.base;
     if (!baseEd) throw new Error(`la edición ${edicion} no está declarada`);
+    // Los parámetros de BM25 se leen de la declaración en vez de repetirse
+    // aquí: si el índice se reconstruye con otro k1 o b, la página los usa
+    // sin que nadie tenga que acordarse de tocar el JavaScript.
+    indiceMeta = cfg.ediciones[edicion]?.indice || null;
   } catch (e) {
     console.info('No se pudo resolver la edición vigente:', e.message);
     pon('#edicionEstado', 'Edición: no disponible');
@@ -395,6 +399,7 @@ async function loadEdicionVigente(db, base) {
   await panelQuorum();
   await panelProcedencia();
   await panelFair(base);
+  await loadIndiceBM25(db, base, baseEd, indiceMeta);
 }
 
 async function panelTrazabilidad() {
@@ -564,6 +569,184 @@ async function panelFair(base) {
   $('#fairRows').innerHTML = orden.map(([k,v])=>`<tr>
       <td>${esc(k)}</td><td>${String(v).replace('.', ',')}</td>
       <td>${lectura(Number(v))}</td></tr>`).join('');
+}
+
+/* ==================================================================
+   Búsqueda BM25 — Fase 3
+   ==================================================================
+   El índice se construye fuera de línea y viaja como cuatro Parquet.
+   `PRAGMA create_fts_index` materializa el índice en tablas, así que
+   cargar `fts` aquí obligaría a descargar los 53,7 MB de texto y a
+   construirlo en cada visita: está pensada para una base local
+   persistente, no para una sesión sin estado sobre HTTP.
+
+   Lo que sí aprovecha esta página es que el posting está ordenado por
+   `termid`: DuckDB lee por rangos HTTP y, con las estadísticas por
+   grupo de filas, una consulta descarga unos cientos de kilobytes en
+   vez de los 6,4 MB del archivo.
+   ================================================================== */
+
+const IDX = { listo:false, N:0, avgdl:0, k1:1.2, b:0.75 };
+
+// Misma normalización que el índice: minúsculas y sin tildes. El
+// stemmer no viaja aquí; lo sustituye `indice_forma`, que ya trae la
+// familia morfológica de cada forma que aparece en el corpus.
+const normaliza = (s) => String(s||'')
+  .normalize('NFD').replace(/[̀-ͯ]/g,'')
+  .toLowerCase().replace(/[^a-z\s]+/g,' ').trim();
+
+const lit = (s) => "'" + String(s).replace(/'/g, "''") + "'";
+
+async function loadIndiceBM25(db, base, baseEd, meta) {
+  const archivos = ['indice_termino','indice_posting','indice_fragmento','indice_forma'];
+  try {
+    for (const a of archivos) {
+      await registerAndTest(db, `${a}.parquet`, new URL(baseEd + a + '.parquet', base).href);
+    }
+  } catch (e) {
+    console.info('Índice BM25 no disponible:', e.message);
+    pon('#bmEstado', 'Índice no disponible');
+    return;
+  }
+  IDX.listo = true;
+  IDX.N = Number(meta?.num_docs || 0);
+  IDX.avgdl = Number(meta?.longitud_media || 1);
+  IDX.k1 = Number(meta?.k1 ?? 1.2);
+  IDX.b = Number(meta?.b ?? 0.75);
+  pon('#bmEstado', `Índice BM25 · ${num(meta?.tablas?.indice_posting?.filas)} postings`);
+  pon('#bmFragmentos', num(IDX.N));
+
+  const lanzar = () => buscar().catch(e => {
+    console.error('Búsqueda:', e);
+    $('#bmResumen').hidden = false;
+    $('#bmResumen').textContent = 'La búsqueda falló: ' + e.message;
+  });
+  $('#bmBuscar')?.addEventListener('click', lanzar);
+  $('#bmConsulta')?.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') { ev.preventDefault(); lanzar(); }
+  });
+}
+
+async function buscar() {
+  const crudo = $('#bmConsulta')?.value || '';
+  const resumen = $('#bmResumen');
+  const cuerpo = $('#bmResultados');
+  if (!IDX.listo || !cuerpo) return;
+
+  const palabras = normaliza(crudo).split(/\s+/).filter(w => w.length >= 2);
+  const traiaDigitos = /\d/.test(crudo);
+  cuerpo.innerHTML = '';
+  resumen.hidden = false;
+
+  if (!palabras.length) {
+    resumen.textContent = traiaDigitos
+      ? 'El índice no contiene cifras: una consulta sólo numérica no puede resolverse aquí. '
+        + 'Para buscar una causa por su número, usar el explorador de «Corpus documental».'
+      : 'Escribir al menos una palabra de dos letras.';
+    return;
+  }
+  resumen.textContent = 'Buscando…';
+
+  const lista = palabras.map(lit).join(',');
+  // Expansión morfológica en dos pasos. Si una forma escrita no aparece
+  // en el corpus no tiene familia, y entonces se reintenta por prefijo:
+  // sin eso, «destituciones» —que no está— no encontraría «destitución»,
+  // que sí está. Cuando eso ocurre, se dice.
+  const fam = await filas(`
+    WITH escrito AS (SELECT UNNEST([${lista}]) AS f),
+    exacta AS (
+      SELECT e.f, fo.familia FROM escrito e
+      JOIN read_parquet('indice_forma.parquet') fo ON fo.forma = e.f),
+    huerfana AS (SELECT f FROM escrito EXCEPT SELECT f FROM exacta),
+    prefijo AS (
+      SELECT h.f, fo.familia FROM huerfana h
+      JOIN read_parquet('indice_forma.parquet') fo
+        ON fo.forma LIKE SUBSTR(h.f, 1, GREATEST(4, LENGTH(h.f) - 3)) || '%')
+    SELECT DISTINCT familia, f, FALSE AS aprox FROM exacta
+    UNION SELECT DISTINCT familia, f, TRUE FROM prefijo`);
+
+  if (!fam.length) {
+    resumen.textContent = `Ninguna de las palabras buscadas aparece en el corpus`
+      + (traiaDigitos ? '. El índice tampoco contiene cifras.' : '.');
+    return;
+  }
+  const aproximadas = [...new Set(fam.filter(r => r.aprox).map(r => r.f))];
+  const familias = [...new Set(fam.map(r => r.familia))].map(lit).join(',');
+  const filtro = $('#bmAncla')?.value;
+
+  const r = await filas(`
+    WITH term AS (
+      SELECT DISTINCT termid FROM read_parquet('indice_forma.parquet')
+      WHERE familia IN (${familias})),
+    q AS (SELECT t.termid, ti.df FROM term t
+          JOIN read_parquet('indice_termino.parquet') ti USING (termid)),
+    punt AS (
+      SELECT p.docid,
+        SUM(LN((${IDX.N} - q.df + 0.5)/(q.df + 0.5) + 1) *
+            (p.tf * (${IDX.k1} + 1)) /
+            (p.tf + ${IDX.k1} * (1 - ${IDX.b} + ${IDX.b} * d.longitud / ${IDX.avgdl})))
+          AS score,
+        COUNT(DISTINCT p.termid) AS terminos
+      FROM read_parquet('indice_posting.parquet') p
+      JOIN q USING (termid)
+      JOIN read_parquet('indice_fragmento.parquet') d USING (docid)
+      GROUP BY 1)
+    SELECT f.tipo_ancla, f.pagina, f.texto, d.coleccion, d.ruta, d.sha256,
+           ROUND(punt.score, 2) AS score, punt.terminos,
+           (SELECT COUNT(*) FROM punt) AS total
+    FROM punt
+    JOIN read_parquet('indice_fragmento.parquet') df ON df.docid = punt.docid
+    JOIN read_parquet('fragmento.parquet') f ON f.fragmento_id = df.fragmento_id
+    JOIN read_parquet('documento.parquet') d USING (blob_id)
+    ${filtro ? `WHERE f.tipo_ancla = ${lit(filtro)}` : ''}
+    ORDER BY punt.score DESC LIMIT 25`);
+
+  const total = r.length ? Number(r[0].total) : 0;
+  const partes = [`<strong>${num(total)}</strong> fragmentos coinciden; se muestran los ${Math.min(25, r.length)} de mayor relevancia.`];
+  if (aproximadas.length) {
+    partes.push(`No aparecen en el corpus tal cual: <em>${aproximadas.map(esc).join(', ')}</em>. `
+      + `Se buscó por raíz aproximada.`);
+  }
+  if (traiaDigitos) {
+    partes.push('Las cifras de la consulta se ignoraron: el índice no las contiene.');
+  }
+  resumen.innerHTML = partes.join(' ');
+
+  const REPO = (window.PORTAL_CONFIG?.documentsRepoUrl) || '';
+  cuerpo.innerHTML = r.map(x => {
+    const ancla = x.tipo_ancla === 'PAGINA'
+      ? `<code>página ${esc(x.pagina)}</code>`
+      : `<code>documento</code>`;
+    const enlace = REPO && x.ruta
+      ? `<a href="${esc(REPO)}/resolve/main/${encodeURI(String(x.ruta))}" rel="noopener">abrir</a>`
+      : `<span title="${esc(x.sha256||'')}">—</span>`;
+    return `<tr>
+      <td>${ancla}</td><td>${esc(x.coleccion)}</td>
+      <td>${esc(x.score)}<small> · ${esc(x.terminos)} térm.</small></td>
+      <td>${resaltar(x.texto, palabras)}</td>
+      <td>${enlace}</td></tr>`;
+  }).join('') || '<tr><td colspan="5">Sin coincidencias con el filtro aplicado.</td></tr>';
+}
+
+/** Recorta alrededor de la primera coincidencia y la resalta. */
+function resaltar(texto, palabras) {
+  const plano = String(texto || '').replace(/\s+/g, ' ');
+  const sin = normaliza(plano);
+  let pos = -1;
+  for (const w of palabras) {
+    const raiz = w.slice(0, Math.max(4, w.length - 3));
+    const i = sin.indexOf(raiz);
+    if (i >= 0 && (pos < 0 || i < pos)) pos = i;
+  }
+  const desde = Math.max(0, pos - 60);
+  const trozo = plano.slice(desde, desde + 220);
+  let html = esc((desde ? '…' : '') + trozo + (plano.length > desde + 220 ? '…' : ''));
+  for (const w of palabras) {
+    const raiz = w.slice(0, Math.max(4, w.length - 3));
+    html = html.replace(new RegExp(`(${raiz.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\w*)`, 'gi'),
+                        '<mark>$1</mark>');
+  }
+  return html;
 }
 
 (async()=>{

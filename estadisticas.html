@@ -50,6 +50,7 @@ sobre la conducta de ninguna persona. Lo que no puede determinarse aparece como
 <button class="tab" data-tab="quorum">Quórum y decisión</button>
 <button class="tab" data-tab="procedencia">Procedencia</button>
 <button class="tab" data-tab="fair">Índice FAIR</button>
+<button class="tab" data-tab="busqueda">Buscar en el texto</button>
 </div>
 
 <div id="tab-documental" class="tab-panel active">
@@ -333,6 +334,47 @@ estándar validado</strong>: son una decisión metodológica que se publica junt
 Indicadores no computables: <strong id="fairNoComputables">—</strong> de
 <strong id="fairIndicadores">—</strong>. Un indicador que no puede calcularse no
 puntúa cero: se excluye y se declara.
+</div>
+</div>
+
+<!-- ================= Búsqueda BM25 ================= -->
+<div id="tab-busqueda" class="tab-panel">
+<div class="report-banner compact-banner">
+<div><span class="status-badge neutral" id="bmEstado">Índice: comprobando…</span>
+<h2>Búsqueda léxica sobre el texto completo</h2>
+<p>Consulta las <strong id="bmFragmentos">—</strong> unidades citables del archivo con
+BM25, <strong>entera­mente en el navegador</strong>: no hay servidor de búsqueda y ninguna
+consulta sale de esta página. Cada resultado dice a qué puede anclarse una cita —página
+de un PDF o documento completo— y enlaza al original.</p></div>
+</div>
+
+<div class="search-panel">
+<div class="filter-row">
+<input id="bmConsulta" type="search" placeholder="Ej.: destitución magistrado · mal desempeño · recusación con causa" autocomplete="off">
+<select id="bmAncla">
+<option value="">Todo tipo de ancla</option>
+<option value="PAGINA">Sólo páginas (PDF)</option>
+<option value="DOCUMENTO">Sólo documentos completos</option>
+</select>
+<button id="bmBuscar" class="tab">Buscar</button>
+</div>
+<p class="hint" id="bmAviso">El índice reduce cada palabra a su raíz, de modo que «destituir»
+encuentra «destitución». <strong>No indexa números</strong>: para buscar una causa por su
+número, usar el explorador de la pestaña «Corpus documental».</p>
+</div>
+
+<div id="bmResumen" class="data-note" hidden></div>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Ancla</th><th>Colección</th><th>Relevancia</th><th>Fragmento</th><th>Documento</th></tr></thead>
+<tbody id="bmResultados"></tbody></table></div>
+
+<div class="data-note">
+<strong>Qué no hace este índice.</strong> Es una bolsa de palabras: no resuelve frases
+exactas ni proximidad entre términos. No indexa cifras, de modo que un número de causa no
+se encuentra por aquí. Y <strong>su relevancia no ha sido evaluada</strong>: no existen
+juicios de pertinencia sobre este corpus, así que el orden de los resultados es una
+hipótesis del algoritmo y no un resultado medido.
 </div>
 </div>
 </section>

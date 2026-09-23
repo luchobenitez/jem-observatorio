@@ -22,7 +22,8 @@
     "tab-trazabilidad": "2026-08-30",
     "tab-quorum": "2026-08-30",
     "tab-procedencia": "2026-08-30",
-    "tab-fair": "2026-08-30"
+    "tab-fair": "2026-08-30",
+    "tab-busqueda": "2026-08-30"
   },
   "ediciones": {
     "2026-08-24": {
@@ -310,7 +311,54 @@
         "La precisión de los vínculos causa-documento no ha sido medida.",
         "El CER del OCR no ha sido medido.",
         "«fragmento» mezcla dos unidades de cita: página en PDF y documento completo donde el formato no pagina. Ver tipo_ancla."
-      ]
+      ],
+      "indice": {
+        "tipo": "BM25 (Okapi), bolsa de palabras",
+        "generado": "2026-09-22",
+        "generador": "construir_indice_bm25/1.0",
+        "num_docs": 18141,
+        "longitud_media": 461.8347,
+        "k1": 1.2,
+        "b": 0.75,
+        "umbral_df": 0.6,
+        "terminos_omitidos": 18,
+        "tablas": {
+          "indice_termino": {
+            "archivo": "indice_termino.parquet",
+            "filas": 100643,
+            "bytes": 837523,
+            "sha256": "c3f1df424329deb9e2b3fc55c3cfff44aea356dc0992f8fae9df8cd0b5c4f197",
+            "descripcion": "Vocabulario indexado con su frecuencia documental."
+          },
+          "indice_posting": {
+            "archivo": "indice_posting.parquet",
+            "filas": 2781227,
+            "bytes": 6372527,
+            "sha256": "001a38d849dd294efe0653bfa869b568e3e0b1a88ea9693745f5ddcb7b538608",
+            "descripcion": "Postings ordenados por termid. Excluye 18 términos presentes en más del 60% de los fragmentos."
+          },
+          "indice_fragmento": {
+            "archivo": "indice_fragmento.parquet",
+            "filas": 18141,
+            "bytes": 108914,
+            "sha256": "7667baf24408012a6cc8a6764488ebb27bfec2b4ffc191eab1ebd9bb66343b87",
+            "descripcion": "Longitud de cada fragmento, que BM25 usa para normalizar."
+          },
+          "indice_forma": {
+            "archivo": "indice_forma.parquet",
+            "filas": 116418,
+            "bytes": 1151277,
+            "sha256": "2017efff30a951fc4539aa0ce13d026876443ca0fc6c8dd53de21a1a6960f006",
+            "descripcion": "Forma escrita -> término, con su familia morfológica para expandir."
+          }
+        },
+        "limitaciones": [
+          "Bolsa de palabras: no resuelve frases exactas ni proximidad.",
+          "Una forma que no aparece en el corpus no encuentra nada, aunque su familia morfológica sí esté indexada: el stemmer no viaja al navegador.",
+          "El índice ignora las tildes porque el OCR no las reproduce con fiabilidad; la morfología se recupera expandiendo por familia.",
+          "Relevancia no evaluada: no hay juicios de pertinencia sobre este corpus."
+        ]
+      }
     }
   }
 }

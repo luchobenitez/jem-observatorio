@@ -175,22 +175,66 @@ atravesara todas las demás: el validador daba verde sobre un HTML que cerraba
 
 ---
 
-## Fase 3 — Búsqueda léxica sobre las páginas (8–16 h)
+## Fase 3 — Búsqueda léxica sobre el texto — **hecha**
 
-**Aquí empieza lo que se ha llamado «RAG», y conviene empezar por abajo.**
+El plan decía «cargar `fts` en el navegador, sin dependencia nueva». **No
+sirve**: `PRAGMA create_fts_index` *materializa* el índice en tablas, de modo
+que el cliente tendría que descargar los 53,7 MB de texto y construirlo en cada
+visita. `fts` está pensada para una base local persistente, no para una sesión
+sin estado sobre HTTP.
 
-DuckDB-WASM ya está cargado y trae la extensión `fts`: BM25 sobre
-`pagina.texto`, sin una sola dependencia nueva y sin descarga adicional. Para un
-archivo jurídico en español —números de causa, apellidos, fórmulas fijas como
-«ENJUICIAMIENTO» o «se resuelve»— la búsqueda léxica exacta no es un escalón
-previo a lo bueno: **es lo que más se va a usar**.
+La extensión sí se usa, **fuera de línea**, para no reimplementar el tokenizador
+ni el stemmer Snowball. Lo que viaja son cuatro Parquet:
 
-Y encaja con la unidad natural del corpus: el resultado es una **página**, con
-su documento, su número de página y su enlace a HuggingFace. Eso ya existe
-—14.573 páginas ancladas— y es lo que hace la cita verificable.
+| archivo | filas | tamaño |
+|---|---:|---:|
+| `indice_posting` | 2.781.227 | 6,4 MB |
+| `indice_forma` | 116.418 | 1,2 MB |
+| `indice_termino` | 100.643 | 0,8 MB |
+| `indice_fragmento` | 18.141 | 0,1 MB |
+| | | **8,5 MB** |
 
-**Verificación:** conjunto fijo de consultas con resultado esperado conocido,
-corriendo en CI con Playwright.
+El posting va **ordenado por `termid` y en grupos de 40.000 filas**: DuckDB lee
+por rangos HTTP y descarga unos cientos de kilobytes por consulta, no los 6,4 MB.
+BM25 se calcula con SQL corriente y `k1`/`b` se leen de `editions.json`, así que
+reconstruir el índice con otros parámetros no obliga a tocar el JavaScript.
+
+### Las tildes, decididas midiendo
+
+El stemmer español necesita el acento: `stem('destitución')` da `destitu`, pero
+`stem('destitucion')` da `destitucion`. Sobre seis familias de palabras,
+conservar la tilde agrupa mejor —«destitución/destituciones/destituir» cae en un
+grupo en vez de dos—.
+
+Aun así el índice **quita** las tildes, porque este corpus viene de OCR y sus
+acentos no son fiables: un índice sensible a la tilde no encontraría el
+documento mal reconocido, que es justo el más difícil de hallar por otros
+medios. La morfología se recupera en la consulta, expandiendo por la familia que
+`indice_forma` trae calculada con el stemmer que sí ve los acentos.
+
+### Dos límites medidos, no supuestos
+
+**El índice no contiene cifras.** El diccionario de `fts` no tiene un solo
+término con dígitos: `94`, `2020` y `942020` no existen. En un archivo judicial
+eso importa, así que la interfaz lo detecta y lo dice en vez de devolver cero
+resultados en silencio.
+
+**Una forma que no aparece en el corpus no encuentra nada** aunque su familia sí
+esté indexada, porque el stemmer no viaja al navegador. Se compensa con respaldo
+por prefijo —«destituciones», que no está, alcanza «destitución» por la raíz
+`destitu`— y cuando eso ocurre la página lo declara.
+
+El primer tokenizador propio sólo alcanzaba al **78,5 %** de las formas, porque
+partía por no-alfanumérico y generaba tokens como «312020» que nunca podrían
+unirse. Partir por letras subió la correspondencia al **96,7 %**.
+
+**Verificado:** las consultas se ejecutaron contra los Parquet reales
+(0,26–0,53 s), el validador custodia los cuatro archivos por filas y SHA-256 más
+los parámetros de puntuación, y **23 pruebas negativas** pasan.
+
+Lo que **no** está verificado, y se declara en la propia página: la relevancia.
+No hay juicios de pertinencia sobre este corpus, así que el orden de los
+resultados es una hipótesis del algoritmo y no un resultado medido.
 
 ---
 
