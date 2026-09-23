@@ -623,6 +623,113 @@
       }
     },
     {
+      "name": "metrica_juez",
+      "path": "data/jem-silver/2026-08-30/metrica_juez.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 10692,
+      "description": "",
+      "schema": {
+        "fields": [
+          {
+            "name": "entidad_id",
+            "type": "integer",
+            "description": "Identificador del integrante del órgano."
+          },
+          {
+            "name": "nombre",
+            "type": "string",
+            "description": "Forma canónica del nombre del integrante."
+          },
+          {
+            "name": "clave",
+            "type": "string",
+            "description": "Forma normalizada que sirve para agrupar variantes."
+          },
+          {
+            "name": "votos",
+            "type": "integer",
+            "description": "Votos atribuidos a esta entidad. Mide presencia en el corpus, NO ejercicio del cargo."
+          },
+          {
+            "name": "ponente",
+            "type": "integer",
+            "description": "Votos en que redactó la ponencia."
+          },
+          {
+            "name": "adhesion",
+            "type": "integer",
+            "description": "Votos en que se adhirió a la ponencia ajena."
+          },
+          {
+            "name": "disidencia",
+            "type": "integer",
+            "description": "Votos registrados como disidentes."
+          },
+          {
+            "name": "resoluciones",
+            "type": "integer",
+            "description": "Resoluciones distintas en que se le registró voto."
+          },
+          {
+            "name": "primer_voto",
+            "type": "string",
+            "description": "Fecha de la primera resolución en que se le registró voto. Marca presencia en el corpus, NO el inicio de su mandato."
+          },
+          {
+            "name": "ultimo_voto",
+            "type": "string",
+            "description": "Fecha de la última resolución con voto registrado. No indica cese: sólo que después no se le halló otro."
+          },
+          {
+            "name": "citables",
+            "type": "integer",
+            "description": "Votos con página de origen, es decir verificables contra el documento."
+          },
+          {
+            "name": "revisados",
+            "type": "integer",
+            "description": "Votos de esta entidad comprobados por una persona contra el documento original."
+          },
+          {
+            "name": "indice_verificacion",
+            "type": "number",
+            "description": "Proporción de sus votos revisada por una persona, entre 0 y 1. Califica todas las demás cifras de la fila: con índice cero son hipótesis del extractor."
+          },
+          {
+            "name": "errores",
+            "type": "integer",
+            "description": "Revisiones que concluyeron que el dato extraído era incorrecto."
+          },
+          {
+            "name": "tasa_error",
+            "type": "any",
+            "description": "Errores sobre revisados. Nulo mientras no haya revisiones: un cero sugeriría ausencia de errores cuando lo que hay es ausencia de comprobación."
+          },
+          {
+            "name": "correcciones",
+            "type": "integer",
+            "description": "Revisiones que aportaron un valor corregido."
+          },
+          {
+            "name": "acuerdo_aparente",
+            "type": "number",
+            "description": "Proporción de sus votos que no son disidencia. Se llama «aparente» porque el extractor sólo reconoce ponencia, adhesión y disidencia, y «adhesión» significa acuerdo: mide lo que el extractor pudo distinguir, no la deliberación."
+          },
+          {
+            "name": "tasa_disidencia",
+            "type": "number",
+            "description": "Disidencias sobre votos. Sobre 9.956 votos sólo se detectaron 7 en total, de modo que esta tasa puede reflejar la práctica del órgano o el techo del detector."
+          },
+          {
+            "name": "posibles_duplicados",
+            "type": "integer",
+            "description": "Otras entidades que comparten al menos dos componentes del nombre con ésta. El OCR fragmenta un mismo nombre en varios registros, de modo que un valor alto significa que los votos de esta persona están repartidos y la fila subestima."
+          }
+        ]
+      }
+    },
+    {
       "name": "procedencia",
       "path": "data/jem-silver/2026-08-30/procedencia.parquet",
       "format": "parquet",

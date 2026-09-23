@@ -1,0 +1,38 @@
+{
+  "generado": "2026-09-23",
+  "generador": "calcular_metricas_juez/1.0",
+  "edicion": "2026-08-30",
+  "verificacion": {
+    "votos_totales": 9943,
+    "revisados": 0,
+    "indice": 0.0,
+    "errores_hallados": 0,
+    "correcciones": 0,
+    "tasa_error": null,
+    "archivo": "docs/validacion/revision-votos.csv (en jem-full)",
+    "nota": "El índice califica cada cifra. Una tasa calculada sobre registros con verificación cero es una hipótesis del extractor; la misma tasa con verificación alta y error bajo es una medición."
+  },
+  "concordancia_dictamen_resolucion": {
+    "coincide": 443,
+    "difiere": 61,
+    "sin_recomendacion": 287,
+    "sin_equivalencia": 0,
+    "comparables": 504,
+    "vinculos": 791,
+    "tasa_coincidencia": 0.879,
+    "metodo": "Se clasifica el verbo dispositivo del último tramo del dictamen y se compara con result_verb de la resolución. Mirar sólo la cola evita confundir la recomendación propia con los pedidos de las partes que el dictamen cita en su cuerpo.",
+    "limitacion": "Sin verificación humana. La equivalencia entre verbos es una decisión del proyecto, no una categoría del órgano."
+  },
+  "decisividad": {
+    "potencialmente_decisivos": 0,
+    "nota": "Un voto sólo puede ser decisivo donde hay disidencia registrada. Con 7 disidencias en 9.956 votos, este número mide sobre todo la sensibilidad del detector de disidencia."
+  },
+  "sin_voto_registrado": {
+    "casos": 39116,
+    "advertencia": "NO son ausencias. Un integrante activo en el período sin voto en una resolución puede estar ausente, recusado, o su voto puede no haberse extraído. El corpus no permite distinguirlo."
+  },
+  "abstenciones": {
+    "valor": null,
+    "motivo": "El esquema no tiene categoría de abstención y el texto no las declara. Cero información: no se publica un cero que parecería un hallazgo."
+  }
+}

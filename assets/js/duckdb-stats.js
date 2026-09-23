@@ -307,22 +307,53 @@ async function loadVotes(db, base, baseEd) {
       COUNT(*) n FROM read_parquet('voto.parquet') GROUP BY 1 ORDER BY 2 DESC`);
   barras('chartOutcomes', 'Sentido del voto individual', sentido, 'sentido', 'n');
 
-  const porMiembro = await filas(`SELECT e.nombre,
-      COUNT(*) votos,
-      COUNT(CASE WHEN v.sentido='PONENTE' THEN 1 END) ponente,
-      COUNT(CASE WHEN v.sentido='ADHESION' THEN 1 END) adhesion,
-      MIN(e.primer_voto) desde, MAX(e.ultimo_voto) hasta
-    FROM read_parquet('voto.parquet') v
-    JOIN read_parquet('entidad.parquet') e ON e.entidad_id = v.entidad_id
-    GROUP BY 1 ORDER BY 2 DESC LIMIT 20`);
-  barras('chartVotesPerMember', 'Votos por integrante (20 primeros)',
-         porMiembro.slice(0, 12).map(r => ({
+  // Métricas por integrante, ya calculadas con su verificación al lado.
+  try {
+    await registerAndTest(db, 'metrica_juez.parquet',
+      new URL(baseEd + 'metrica_juez.parquet', base).href);
+  } catch (e) {
+    console.info('Métricas por integrante no disponibles:', e.message);
+    return;
+  }
+  const m = await filas(`SELECT * FROM read_parquet('metrica_juez.parquet')
+      ORDER BY votos DESC LIMIT 40`);
+  barras('chartVotesPerMember', 'Votos por integrante (12 primeros)',
+         m.slice(0, 12).map(r => ({
            n: String(r.nombre).split(' ').slice(-2).join(' '), v: Number(r.votos) })),
          'n', 'v');
-  $('#voteMemberRows').innerHTML = porMiembro.map(r => `<tr>
+  const pct = (x) => x === null || x === undefined
+    ? '—' : (Number(x) * 100).toFixed(1).replace('.', ',') + ' %';
+  $('#voteMemberRows').innerHTML = m.map(r => `<tr>
       <td>${esc(r.nombre)}</td><td>${num(r.votos)}</td>
-      <td>${num(r.ponente)}</td><td>${num(r.adhesion)}</td>
-      <td>${esc(r.desde || '—')}</td><td>${esc(r.hasta || '—')}</td></tr>`).join('');
+      <td>${num(r.ponente)}</td><td>${num(r.adhesion)}</td><td>${num(r.disidencia)}</td>
+      <td>${num(r.resoluciones)}</td>
+      <td>${pct(r.acuerdo_aparente)}</td>
+      <td>${pct(r.indice_verificacion)}</td>
+      <td>${num(r.errores)}</td>
+      <td>${Number(r.posibles_duplicados) ? `<strong title="Entidades que comparten apellidos con ésta">${num(r.posibles_duplicados)}</strong>` : '—'}</td>
+    </tr>`).join('');
+
+  // Índice de verificación y concordancia, del resumen que acompaña la edición.
+  try {
+    const met = await fetch(new URL(baseEd + 'metricas.json', base).href)
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+    const v = met.verificacion || {};
+    pon('#verIndice', pct(v.indice));
+    pon('#verRevisados', num(v.revisados));
+    pon('#verTotal', num(v.votos_totales));
+    pon('#verErrores', num(v.errores_hallados));
+    pon('#verCorrecciones', num(v.correcciones));
+    pon('#verTasaError', v.tasa_error === null || v.tasa_error === undefined
+        ? 'sin datos: no hay revisiones' : pct(v.tasa_error));
+    const c = met.concordancia_dictamen_resolucion || {};
+    pon('#concCoincide', c.comparables
+        ? `${num(c.coincide)} · ${pct(c.tasa_coincidencia)}` : '—');
+    pon('#concDifiere', num(c.difiere));
+    pon('#concComparables', `${num(c.comparables)} de ${num(c.vinculos)}`);
+    pon('#concSinRec', num(c.sin_recomendacion));
+  } catch (e) {
+    console.info('Resumen de métricas no disponible:', e.message);
+  }
 
   $('#voteStatus').hidden = true;
   $('#voteDashboard').hidden = false;

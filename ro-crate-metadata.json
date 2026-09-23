@@ -67,6 +67,9 @@
           "@id": "data/jem-silver/2026-08-30/indice_termino.parquet"
         },
         {
+          "@id": "data/jem-silver/2026-08-30/metrica_juez.parquet"
+        },
+        {
           "@id": "data/jem-silver/2026-08-30/procedencia.parquet"
         },
         {
@@ -197,6 +200,14 @@
       "description": "Vocabulario indexado con su frecuencia documental.",
       "encodingFormat": "application/vnd.apache.parquet",
       "contentSize": "837523"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/metrica_juez.parquet",
+      "@type": "File",
+      "name": "metrica_juez",
+      "description": "",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "10692"
     },
     {
       "@id": "data/jem-silver/2026-08-30/procedencia.parquet",

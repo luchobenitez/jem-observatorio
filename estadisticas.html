@@ -230,13 +230,58 @@ del 24/08/2026 y se conservan tal cual; las de aquí abajo salen de los datos.</
 </div>
 <div class="chart-grid"><div id="chartOutcomes" class="chart"></div><div id="chartVotesPerMember" class="chart"></div></div>
 
-<div class="section-subhead"><h2>Integrantes por volumen de voto</h2>
-<p>El recuento mide <strong>presencia en el corpus</strong>, no ejercicio del cargo:
-un integrante con pocos votos puede haber servido poco tiempo, o sus votos pueden no
-haberse extraído. El OCR además fragmenta un mismo nombre en varias entidades.</p></div>
+<div class="report-banner strong-note">
+<div><span class="status-badge warning">Índice de verificación humana</span>
+<h2><span id="verIndice">—</span> de los votos revisados por una persona</h2>
+<p><strong id="verRevisados">—</strong> de <strong id="verTotal">—</strong> registros
+comprobados contra el documento original. Errores hallados:
+<strong id="verErrores">—</strong>. Correcciones aplicadas:
+<strong id="verCorrecciones">—</strong>. Tasa de error observada:
+<strong id="verTasaError">—</strong>.
+<br>
+Este índice <strong>califica cada cifra de esta página</strong>. Una tasa calculada
+sobre registros sin verificar es una hipótesis del extractor; la misma tasa con
+verificación alta y error bajo es una medición. El índice sube a medida que avanza la
+revisión, y las correcciones quedan registradas para poder medir la calidad de la
+extracción automática.</p></div>
+</div>
+
+<div class="section-subhead"><h2>Métricas por integrante</h2>
+<p>Todo lo calculable, calculado. Cada fila lleva su propia verificación. Dos
+advertencias que no se pueden separar de estas cifras: el recuento mide
+<strong>presencia en el corpus</strong> y no ejercicio del cargo, y el OCR
+<strong>fragmenta un mismo nombre en varias entidades</strong> —la columna «dup.»
+señala cuántas otras entidades comparten apellidos con ésta—.</p></div>
 <div class="table-wrap"><table>
-<thead><tr><th>Integrante</th><th>Votos</th><th>Como ponente</th><th>Por adhesión</th><th>Primer voto</th><th>Último voto</th></tr></thead>
+<thead><tr><th>Integrante</th><th>Votos</th><th>Ponente</th><th>Adhesión</th><th>Disid.</th>
+<th>Resoluc.</th><th>Acuerdo aparente</th><th>Verificado</th><th>Errores</th><th>Dup.</th></tr></thead>
 <tbody id="voteMemberRows"></tbody></table></div>
+<div class="data-note">
+<strong>«Acuerdo aparente»</strong> se llama así a propósito. El extractor sólo reconoce
+ponencia, adhesión y disidencia, y «adhesión» <em>significa</em> acuerdo: la cifra
+describe lo que el extractor pudo distinguir, no la deliberación del órgano. Mientras la
+verificación siga en cero, esa columna no debe citarse como conducta de nadie.
+</div>
+
+<div class="section-subhead"><h2>Concordancia dictamen–resolución</h2>
+<p>Qué proporción de resoluciones siguió el sentido que recomendaba el dictamen de la
+asesoría jurídica.</p></div>
+<div class="kpi-grid">
+<div class="kpi"><span>Coinciden en sentido</span><strong id="concCoincide">—</strong></div>
+<div class="kpi"><span>Difieren</span><strong id="concDifiere">—</strong></div>
+<div class="kpi"><span>Comparables</span><strong id="concComparables">—</strong></div>
+<div class="kpi"><span>Sin recomendación legible</span><strong id="concSinRec">—</strong></div>
+</div>
+<div class="data-note">
+Se compara el <strong>sentido</strong> —favorable o desfavorable al denunciado— y no el
+verbo literal: un dictamen dice «corresponde el rechazo» donde la resolución dice «NO
+HACER LUGAR», y comparar palabras produciría divergencias de vocabulario, no de criterio.
+<br>
+<strong>La equivalencia entre verbos es una decisión de este proyecto, no una categoría
+del órgano</strong>, y no ha sido validada. Una primera versión de este cálculo daba
+74,1 % de divergencia por un error de método: el patrón casaba con «Enjuiciamiento», que
+es el nombre del propio Jurado y aparece en todos los documentos.
+</div>
 
 <div class="data-note strong-note">
 <strong>Lo que sigue sin poder calcularse.</strong> Las tasas de acuerdo con la
