@@ -5,7 +5,7 @@
   "description": "Capa de datos estructurados derivada del archivo público del Jurado de Enjuiciamiento de Magistrados de Paraguay, con trazabilidad hasta página y fragmento. Ninguna cifra ha sido validada por una persona: el indicador de revisión humana vale cero sobre 25.293 campos extraídos, y los datos sobre votos NO son publicables como resultado sobre la conducta de ninguna persona.",
   "version": "2026-08-30",
   "created": "2026-09-23",
-  "homepage": "https://luchobenitez.github.io/jem-observatorio/",
+  "homepage": "https://abogadomau.com/",
   "licenses": [
     {
       "name": "GPL-3.0-or-later",
@@ -198,8 +198,8 @@
       "path": "data/jem-silver/2026-08-30/documento.parquet",
       "format": "parquet",
       "mediatype": "application/vnd.apache.parquet",
-      "bytes": 312989,
-      "description": "Un documento por contenido único (SHA-256), con su colección y su motor de extracción.",
+      "bytes": 514564,
+      "description": "Un documento por contenido único (SHA-256), con su colección, su motor de extracción y la ruta pública donde puede abrirse, si la hay.",
       "schema": {
         "fields": [
           {
@@ -230,7 +230,7 @@
           {
             "name": "ruta",
             "type": "string",
-            "description": "Ruta relativa dentro de la colección de origen."
+            "description": "Ruta relativa dentro de la colección de origen, tal como está en el archivo de trabajo. NO sirve como enlace: el repositorio público nombra las carpetas con guion bajo."
           },
           {
             "name": "coleccion",
@@ -261,6 +261,21 @@
             "name": "tiene_paginas",
             "type": "integer",
             "description": "1 si el documento admite cita por página. Los Word y las actas JSON valen 0: la página no falta, no existe."
+          },
+          {
+            "name": "ruta_hf",
+            "type": "string",
+            "description": "Ruta del documento en el repositorio público de HuggingFace. Nula cuando la colección no está subida."
+          },
+          {
+            "name": "url_publica",
+            "type": "string",
+            "description": "Dirección donde puede abrirse el documento original. Nula cuando no hay copia pública."
+          },
+          {
+            "name": "accesible",
+            "type": "integer",
+            "description": "1 si el documento puede abrirse desde el portal. Vale 0 en las colecciones «expedientes» y «orden del día», que no están subidas: 663 documentos y 2,71 GB. Sus datos sí cuentan en las estadísticas —el texto está extraído— pero el original no se puede consultar."
           }
         ]
       }
@@ -867,7 +882,7 @@
       "format": "parquet",
       "mediatype": "application/vnd.apache.parquet",
       "bytes": 15608645,
-      "description": "Vector int8 por trozo, con su desplazamiento dentro del fragmento.",
+      "description": "",
       "schema": {
         "fields": [
           {

@@ -66,7 +66,7 @@ jobs:
           # Metadatos legibles por máquina y marco de gobernanza. Sin
           # desplegarlos, un marco que nadie puede leer no gobierna nada y
           # unos metadatos que no se sirven no describen nada.
-          cp ro-crate-metadata.json codemeta.json CITATION.cff _site/
+          cp ro-crate-metadata.json codemeta.json CITATION.cff CNAME _site/
           cp -r assets data gobernanza _site/
 
       - name: Upload GitHub Pages artifact

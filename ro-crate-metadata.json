@@ -18,7 +18,7 @@
       "description": "Capa de datos estructurados derivada del archivo público del Jurado de Enjuiciamiento de Magistrados de Paraguay, con trazabilidad hasta página y fragmento. Ninguna cifra ha sido validada por una persona: el indicador de revisión humana vale cero sobre 25.293 campos extraídos, y los datos sobre votos NO son publicables como resultado sobre la conducta de ninguna persona.",
       "datePublished": "2026-09-23",
       "version": "2026-08-30",
-      "url": "https://luchobenitez.github.io/jem-observatorio/",
+      "url": "https://abogadomau.com/",
       "author": {
         "@id": "mailto:luchobenitez@gmail.com"
       },
@@ -130,9 +130,9 @@
       "@id": "data/jem-silver/2026-08-30/documento.parquet",
       "@type": "File",
       "name": "documento",
-      "description": "Un documento por contenido único (SHA-256), con su colección y su motor de extracción.",
+      "description": "Un documento por contenido único (SHA-256), con su colección, su motor de extracción y la ruta pública donde puede abrirse, si la hay.",
       "encodingFormat": "application/vnd.apache.parquet",
-      "contentSize": "312989"
+      "contentSize": "514564"
     },
     {
       "@id": "data/jem-silver/2026-08-30/documento_logico.parquet",
@@ -226,7 +226,7 @@
       "@id": "data/jem-silver/2026-08-30/vector.parquet",
       "@type": "File",
       "name": "vector",
-      "description": "Vector int8 por trozo, con su desplazamiento dentro del fragmento.",
+      "description": "",
       "encodingFormat": "application/vnd.apache.parquet",
       "contentSize": "15608645"
     },

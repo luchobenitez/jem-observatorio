@@ -12,7 +12,7 @@
     "archivo existe para impedir."
   ],
   "version": 2,
-  "actualizado": "2026-09-22",
+  "actualizado": "2026-09-23",
   "vigente": "2026-08-30",
   "en_uso_por_la_interfaz": {
     "tab-documental": "2026-08-24",
@@ -62,8 +62,8 @@
       "base": "data/jem-silver/2026-08-30/",
       "origen": "Repositorio jem-full, corte corte-2026-08-30.",
       "manifest_sha256": "5ec45cc3fd023ebedf7f464e7060a1d70b03aef0057c48dcb6086556cbc71626",
-      "generado": "2026-09-22",
-      "generador": "exportar_parquet/1.0",
+      "generado": "2026-09-23",
+      "generador": "exportar_parquet/1.1",
       "tablas": {
         "documento": {
           "archivo": "documento.parquet",
@@ -80,11 +80,14 @@
             "motor",
             "motor_version",
             "paginas",
-            "tiene_paginas"
+            "tiene_paginas",
+            "ruta_hf",
+            "url_publica",
+            "accesible"
           ],
-          "bytes": 312989,
-          "sha256": "d6b02a39aec2e136c6789b67aed9a790aef55837e9346d04ed88355bb0eaa077",
-          "descripcion": "Un documento por contenido único (SHA-256), con su colección y su motor de extracción."
+          "bytes": 514564,
+          "sha256": "e6e2cb90b26b09a6dc7bb7811c7ed237c3d72a5b526417c438575218240481bf",
+          "descripcion": "Un documento por contenido único (SHA-256), con su colección, su motor de extracción y la ruta pública donde puede abrirse, si la hay."
         },
         "fragmento": {
           "archivo": "fragmento.parquet",
@@ -357,36 +360,6 @@
           "Una forma que no aparece en el corpus no encuentra nada, aunque su familia morfológica sí esté indexada: el stemmer no viaja al navegador.",
           "El índice ignora las tildes porque el OCR no las reproduce con fiabilidad; la morfología se recupera expandiendo por familia.",
           "Relevancia no evaluada: no hay juicios de pertinencia sobre este corpus."
-        ]
-      },
-      "vectores": {
-        "modelo": "intfloat/multilingual-e5-small",
-        "licencia_modelo": "MIT",
-        "dimensiones": 384,
-        "cuantizacion": "int8 con escala por vector",
-        "prefijo_corpus": "passage: ",
-        "prefijo_consulta": "query: ",
-        "ventana": 1800,
-        "solape": 200,
-        "generado": "2026-09-23",
-        "generador": "construir_embeddings/1.0",
-        "tablas": {
-          "vector": {
-            "archivo": "vector.parquet",
-            "filas": 41405,
-            "bytes": 15608645,
-            "sha256": "e6938e83f782517d559a7ddfbee6a64b1d6ebda4455e70e0afd432188cb2a576",
-            "descripcion": "Vector int8 por trozo, con su desplazamiento dentro del fragmento."
-          }
-        },
-        "apto_para_ranking_en_el_sitio": false,
-        "limitaciones": [
-          "MEDIDO: el coseno no discrimina sobre este corpus. Entre el mejor pasaje y el número 200 hay 0,012 de diferencia (0,894 frente a 0,872). El orden dentro de esa banda no responde a la consulta.",
-          "MEDIDO: el orden no es reproducible. Ante nueve reformulaciones triviales de tres consultas, el top-10 se conserva al 60 %; escribir «quorum de la sesion» sin tildes cambia 8 de 10 resultados. BM25 conserva el 100 % en las mismas nueve.",
-          "MEDIDO: el tamaño del trozo no es la causa. Con ventanas de 300, 700 y 1.800 caracteres la amplitud del coseno se mantiene en 0,027-0,035.",
-          "Por lo anterior estos vectores NO se usan para ordenar resultados en el sitio. Se publican como dato: sirven para experimentar con otros modelos, reagrupar o comparar, no para decidir qué se muestra.",
-          "Causa probable: el español jurídico de este corpus es muy formulario y un vector que promedia un pasaje entero se parece a cualquier otro. Un modelo de dominio jurídico podría comportarse distinto; no se probó.",
-          "La cuantización int8 es casi sin pérdida (coseno 0,99998 sobre muestra de 256) y NO explica lo anterior: su error es el 0,2 % del rango discriminativo disponible."
         ]
       }
     }

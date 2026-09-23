@@ -740,7 +740,7 @@ async function buscar() {
       JOIN q USING (termid)
       JOIN read_parquet('indice_fragmento.parquet') d USING (docid)
       GROUP BY 1)
-    SELECT f.tipo_ancla, f.pagina, f.texto, d.coleccion, d.ruta, d.sha256,
+    SELECT f.tipo_ancla, f.pagina, f.texto, d.coleccion, d.url_publica, d.accesible,
            ROUND(punt.score, 2) AS score, punt.terminos,
            (SELECT COUNT(*) FROM punt) AS total
     FROM punt
@@ -761,14 +761,18 @@ async function buscar() {
   }
   resumen.innerHTML = partes.join(' ');
 
-  const REPO = (window.PORTAL_CONFIG?.documentsRepoUrl) || '';
   cuerpo.innerHTML = r.map(x => {
     const ancla = x.tipo_ancla === 'PAGINA'
       ? `<code>página ${esc(x.pagina)}</code>`
       : `<code>documento</code>`;
-    const enlace = REPO && x.ruta
-      ? `<a href="${esc(REPO)}/resolve/main/${encodeURI(String(x.ruta))}" rel="noopener">abrir</a>`
-      : `<span title="${esc(x.sha256||'')}">—</span>`;
+    // La dirección viene calculada y verificada en el dato. Antes se armaba
+    // aquí concatenando la ruta local, que lleva espacios donde el
+    // repositorio público lleva guiones bajos: daba 404 en los 4.051
+    // documentos que sí están subidos. Y donde no hay copia se dice, en vez
+    // de ofrecer un enlace que no lleva a ninguna parte.
+    const enlace = x.accesible && x.url_publica
+      ? `<a href="${esc(x.url_publica)}" rel="noopener">abrir</a>`
+      : `<span title="Esta colección no está publicada todavía">sin copia</span>`;
     return `<tr>
       <td>${ancla}</td><td>${esc(x.coleccion)}</td>
       <td>${esc(x.score)}<small> · ${esc(x.terminos)} térm.</small></td>
