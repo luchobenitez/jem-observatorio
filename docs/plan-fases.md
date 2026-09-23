@@ -238,30 +238,66 @@ resultados es una hipótesis del algoritmo y no un resultado medido.
 
 ---
 
-## Fase 4 — Recuperación semántica, local y sin servidor (16–24 h)
+## Fase 4 — Recuperación semántica — **medida y descartada para ordenar**
 
-Lo que BM25 no hace: encontrar «apartamiento del cargo» buscando «destitución».
+El plan la cerraba con una condición: «si el híbrido no mejora, la fase no se
+despliega». Se cumplió la condición, en el sentido desfavorable.
 
-Diseño, todo del lado del cliente:
+### Lo que se construyó
 
-| Pieza | Herramienta | Coste |
-|---|---|---|
-| Embeddings del corpus | `sentence-transformers`, offline | 0 |
-| Modelo | `multilingual-e5-small`, 384 dim, Apache-2.0 | 0 |
-| Formato | Parquet, int8 cuantizado | **~6 MB** para 15.908 páginas |
-| Consulta en el navegador | Transformers.js + ONNX Runtime Web | ~30 MB, cacheado |
-| Ranking | RRF sobre BM25 + coseno | 0 |
+41.405 vectores de 384 dimensiones en `int8`, **15,6 MB**, con
+`multilingual-e5-small` (MIT). Trocear fue necesario y medirlo lo demostró: el
+modelo admite 512 tokens y los fragmentos `DOCUMENTO` promedian 10.603
+caracteres, de modo que truncar habría conservado el **15,9 %** del texto de los
+dictámenes. Ventanas de 1.800 con 200 de solape, guardando el desplazamiento
+para que un resultado siga siendo citable.
 
-Los embeddings del corpus se calculan **una vez, fuera de línea**, y se publican
-como dato. El navegador sólo codifica la consulta: una frase corta. 15.908
-vectores es un problema pequeño —producto escalar en JavaScript basta, sin
-índice ANN—.
+La cuantización `int8` resultó casi sin pérdida: coseno **0,99998** con el vector
+original y top-20 sin cambios de composición.
 
-**Sigue sin haber generación de texto.** El resultado es un pasaje literal con
-su página.
+### Por qué no ordena nada en el sitio
 
-**Verificación:** 30 consultas con juicio de relevancia hecho a mano; medir
-recall@10 contra BM25 solo. Si el híbrido no mejora, la fase no se despliega.
+Tres medidas, en este orden:
+
+| Medida | Resultado |
+|---|---|
+| Amplitud del coseno entre el resultado 1 y el 200 | **0,012** (0,894 → 0,872) |
+| Estabilidad del top-10 ante nueve reformulaciones triviales | **60 %** · BM25: **100 %** |
+| Amplitud con ventanas de 300 / 700 / 1.800 caracteres | 0,0275 / 0,0346 / 0,0288 |
+
+La primera dice que el modelo ve casi todos los pasajes igual de parecidos: el
+orden dentro de esa banda no responde a la consulta. La segunda lo confirma
+desde el uso —escribir «quorum de la sesion» sin tildes cambia **ocho de cada
+diez** resultados—. La tercera descarta que la culpa sea del troceado.
+
+**Un archivo que responde distinto a la misma pregunta no es consultable.** Eso
+contradice lo único que este proyecto promete, así que la interfaz no ofrece
+búsqueda semántica y explica por qué en la propia página.
+
+Causa probable: el español jurídico de este corpus es extremadamente formulario
+y un vector que promedia un pasaje entero se parece a cualquier otro. Un modelo
+de dominio jurídico podría comportarse distinto; **no se probó**.
+
+### Lo que sí queda
+
+Los vectores **se publican como dato**, con modelo, dimensión, prefijos,
+cuantización y límites declarados en `editions.json`, y con
+`apto_para_ranking_en_el_sitio: false`. Sirven para experimentar con otros
+modelos, reagrupar el corpus o comparar; no para decidir qué se muestra.
+
+Se descartó también, antes y por medición, la alternativa barata de expandir la
+consulta con vecinos semánticos precomputados por término: devuelve variantes
+morfológicas —«magistrado → magistrados, magistrada»— que la expansión por
+familia de BM25 ya cubría.
+
+### Una corrección al plan
+
+Este documento estimaba «~30 MB, cacheado» para el codificador de consultas. El
+ONNX más pequeño pesa **118 MB**, más 17 del vocabulario: **135 MB**, cuatro
+veces y media la estimación. En un modelo multilingüe pequeño la tabla de
+embeddings del vocabulario domina y no se comprime —`model_q4.onnx` pesa 398 MB
+porque sólo cuantiza las capas—. Aunque el ranking hubiera funcionado, ese coste
+habría exigido discutirlo.
 
 ---
 

@@ -356,20 +356,7 @@ de un PDF o documento completo— y enlaza al original.</p></div>
 <option value="PAGINA">Sólo páginas (PDF)</option>
 <option value="DOCUMENTO">Sólo documentos completos</option>
 </select>
-<select id="bmModo">
-<option value="lexico">Léxico (BM25)</option>
-<option value="semantico">Semántico</option>
-<option value="hibrido">Híbrido</option>
-</select>
 <button id="bmBuscar" class="tab">Buscar</button>
-</div>
-<div id="bmModelo" class="data-note" hidden>
-<strong>El modo semántico exige descargar un modelo de lenguaje al navegador.</strong>
-Son <strong>135 MB</strong> —118 MB del codificador y 17 MB del vocabulario— más
-<strong>17 MB</strong> de vectores del corpus. Queda en la caché del navegador, pero la
-primera vez se descarga entero. El modo léxico no necesita nada de esto y funciona ya.
-<div><button id="bmCargarModelo" class="tab">Descargar el modelo y activar</button>
-<span id="bmModeloEstado"></span></div>
 </div>
 <p class="hint" id="bmAviso">El índice reduce cada palabra a su raíz, de modo que «destituir»
 encuentra «destitución». <strong>No indexa números</strong>: para buscar una causa por su
@@ -388,6 +375,21 @@ exactas ni proximidad entre términos. No indexa cifras, de modo que un número 
 se encuentra por aquí. Y <strong>su relevancia no ha sido evaluada</strong>: no existen
 juicios de pertinencia sobre este corpus, así que el orden de los resultados es una
 hipótesis del algoritmo y no un resultado medido.
+</div>
+
+<div class="data-note strong-note">
+<strong>Por qué no hay búsqueda semántica.</strong> Se calcularon 41.405 vectores del
+corpus y se midió si servían para ordenar resultados. No sirven:
+entre el mejor pasaje y el número doscientos hay <strong>0,012</strong> de diferencia de
+similitud, y ante nueve reformulaciones triviales de la misma pregunta el orden se
+conserva sólo al <strong>60 %</strong> —escribir «quorum de la sesion» sin tildes cambia
+ocho de cada diez resultados—. La búsqueda léxica de arriba conserva el <strong>100 %</strong>
+en esas mismas nueve. Un archivo que responde distinto a la misma pregunta no es
+consultable, así que esos vectores <strong>no ordenan nada en esta página</strong>.
+<br>
+Se publican igual, como dato, con su modelo y sus límites declarados en
+<a href="data/jem-silver/editions.json">editions.json</a>: sirven para experimentar con
+otros modelos o reagrupar el corpus, no para decidir qué se muestra aquí.
 </div>
 </div>
 </section>
