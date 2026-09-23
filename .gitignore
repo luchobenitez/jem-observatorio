@@ -23,3 +23,7 @@ Thumbs.db
 # IMPORTANTE:
 # NO ignorar data/jem-silver/*.parquet.
 # Esos archivos forman parte de GitHub Pages en Web6.
+
+# Partes intermedias del cálculo de vectores. Existen sólo para poder
+# reanudar una corrida de ~3,6 h; el resultado versionado es vector.parquet.
+data/jem-silver/*/vectores_parciales/
