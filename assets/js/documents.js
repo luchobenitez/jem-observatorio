@@ -1,5 +1,6 @@
 const CFG=window.PORTAL_CONFIG||{
   portalDataBase:'data/portal/',
+  jemSilverBase:'data/jem-silver/',
   catalogBase:'data/catalog/',
   storageProvider:'huggingface'
 };
@@ -46,11 +47,30 @@ async function initRepository(){
   }catch(_){}
 
   try{
-    const payload=await fetch(CFG.catalogBase+'documents_manifest.json')
-      .then(r=>{if(!r.ok) throw new Error(`HTTP ${r.status}`);return r.json();});
+    // Catálogo de la edición vigente. El anterior, `documents_manifest.json`,
+    // listaba 3.964 documentos —el linaje de agosto— y por tanto no alcanzaba
+    // a «expedientes» ni a «orden del día». Se prefiere el nuevo y se cae al
+    // viejo si no estuviera, para no dejar la página en blanco.
+    let payload=null, origen='';
+    try{
+      const ed=await fetch(CFG.jemSilverBase+'editions.json').then(r=>r.json());
+      const base=ed.ediciones?.[ed.vigente]?.base;
+      if(base){
+        payload=await fetch(base+'catalogo.json').then(r=>{if(!r.ok)throw 0;return r.json();});
+        origen=` · edición ${ed.vigente}`;
+      }
+    }catch(_){}
+    if(!payload){
+      payload=await fetch(CFG.catalogBase+'documents_manifest.json')
+        .then(r=>{if(!r.ok) throw new Error(`HTTP ${r.status}`);return r.json();});
+      origen=' · catálogo anterior';
+    }
     docs=Array.isArray(payload)?payload:(payload.documents||[]);
     const linked=docs.filter(d=>d.view_url||d.download_url).length;
-    status.textContent=`${docs.length.toLocaleString()} documentos únicos · ${linked.toLocaleString()} con enlace Hugging Face`;
+    const faltan=docs.length-linked;
+    status.textContent=`${docs.length.toLocaleString()} documentos únicos · `
+      +`${linked.toLocaleString()} con enlace`
+      +(faltan?` · ${faltan.toLocaleString()} sin copia pública`:'')+origen;
   }catch(e){
     status.textContent='El catálogo documental no está disponible.';
     table.innerHTML='<tr><td colspan="7">Sin catálogo disponible.</td></tr>';

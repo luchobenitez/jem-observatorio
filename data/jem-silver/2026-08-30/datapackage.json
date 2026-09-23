@@ -198,7 +198,7 @@
       "path": "data/jem-silver/2026-08-30/documento.parquet",
       "format": "parquet",
       "mediatype": "application/vnd.apache.parquet",
-      "bytes": 514564,
+      "bytes": 526045,
       "description": "Un documento por contenido único (SHA-256), con su colección, su motor de extracción y la ruta pública donde puede abrirse, si la hay.",
       "schema": {
         "fields": [

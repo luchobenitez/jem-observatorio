@@ -186,18 +186,42 @@ sobre la conducta de ninguna persona. Lo que no puede determinarse aparece como
 <strong>Resultado global:</strong> <code>total_votos_pivotal</code> y <code>pivotal_vote_rate</code> permanecen <code>NO_DETERMINABLE</code>. Para calcularlos habría que reconstruir votantes, posiciones, integración habilitada, recusaciones/sustituciones y la regla jurídica aplicable a cada decisión.
 </div>
 
-<div id="voteStatus" class="empty-state optional-layer">
-<h2>Capa Parquet futura</h2>
-<p>Si posteriormente se publican <code>data/jem-silver/votacion.parquet</code> y <code>data/jem-silver/miembro_voto.parquet</code>, el portal puede añadir una capa exploratoria adicional. Esa capa no sustituirá los controles metodológicos del informe independiente.</p>
+<div id="voteStatus" class="empty-state optional-layer" hidden>
+<h2>Capa de votos no disponible</h2>
+<p>No se pudieron cargar los datos de votos de la edición vigente.</p>
 </div>
 <div id="voteDashboard" hidden>
-<div class="kpi-grid">
-<div class="kpi"><span>Decisiones analizadas</span><strong id="voteTotal">—</strong></div>
-<div class="kpi"><span>Votos decisivos de Rivas</span><strong id="voteDecisive">—</strong></div>
-<div class="kpi"><span>Empates/desempates</span><strong id="voteTies">—</strong></div>
-<div class="kpi"><span>Miembros con votos</span><strong id="voteMembers">—</strong></div>
+<div class="section-subhead">
+<h2>Lo que el corpus completo sí permite contar</h2>
+<p>Esta sección ya no espera una «capa futura». Consulta la edición vigente, que
+cubre el corpus entero. Las cifras de arriba provienen del informe independiente
+del 24/08/2026 y se conservan tal cual; las de aquí abajo salen de los datos.</p>
 </div>
-<div class="chart-grid"><div id="chartOutcomes" class="chart"></div><div id="chartMargins" class="chart"></div></div>
+<div class="kpi-grid">
+<div class="kpi"><span>Votos individuales extraídos</span><strong id="voteTotal">—</strong></div>
+<div class="kpi"><span>Integrantes con votos</span><strong id="voteMembers">—</strong></div>
+<div class="kpi"><span>Resoluciones con votación</span><strong id="voteDecisions">—</strong></div>
+<div class="kpi"><span>Votos citables por página</span><strong id="voteCitable">—</strong></div>
+</div>
+<div class="chart-grid"><div id="chartOutcomes" class="chart"></div><div id="chartVotesPerMember" class="chart"></div></div>
+
+<div class="section-subhead"><h2>Integrantes por volumen de voto</h2>
+<p>El recuento mide <strong>presencia en el corpus</strong>, no ejercicio del cargo:
+un integrante con pocos votos puede haber servido poco tiempo, o sus votos pueden no
+haberse extraído. El OCR además fragmenta un mismo nombre en varias entidades.</p></div>
+<div class="table-wrap"><table>
+<thead><tr><th>Integrante</th><th>Votos</th><th>Como ponente</th><th>Por adhesión</th><th>Primer voto</th><th>Último voto</th></tr></thead>
+<tbody id="voteMemberRows"></tbody></table></div>
+
+<div class="data-note strong-note">
+<strong>Lo que sigue sin poder calcularse.</strong> Las tasas de acuerdo con la
+mayoría, de disidencia, de abstención y de <em>decisividad</em> permanecen
+<code>NO_DETERMINABLE</code>, y ningún dato de esta página las sustituye. No se
+extraen abstenciones, el texto no declara ausencias, y el detector de disidencia
+halla <span id="voteDissent">—</span> casos sobre <span id="voteTotal2">—</span>:
+una cifra que puede reflejar la práctica del órgano o la debilidad del detector,
+y el corpus no permite distinguirlo. Nada de esto ha sido revisado por una persona.
+</div>
 </div>
 </div>
 

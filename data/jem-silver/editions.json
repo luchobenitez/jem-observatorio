@@ -18,7 +18,7 @@
     "tab-documental": "2026-08-24",
     "tab-rivas": "2026-08-24",
     "tab-independiente": "2026-08-24",
-    "tab-votaciones": "2026-08-24",
+    "tab-votaciones": "2026-08-30",
     "tab-trazabilidad": "2026-08-30",
     "tab-quorum": "2026-08-30",
     "tab-procedencia": "2026-08-30",
@@ -85,8 +85,8 @@
             "url_publica",
             "accesible"
           ],
-          "bytes": 514564,
-          "sha256": "e6e2cb90b26b09a6dc7bb7811c7ed237c3d72a5b526417c438575218240481bf",
+          "bytes": 526045,
+          "sha256": "acdc57e2b695ed6215ae2be0622b51e9631968a2f0366372d3c18095905ffe0a",
           "descripcion": "Un documento por contenido único (SHA-256), con su colección, su motor de extracción y la ruta pública donde puede abrirse, si la hay."
         },
         "fragmento": {

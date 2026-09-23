@@ -263,76 +263,69 @@ async function loadParquetCorpus(db, base) {
   }
 }
 
-async function loadVotes(db, base) {
+/** Votos y decisividad, sobre la edición vigente.
+ *
+ *  Antes esta sección esperaba `votacion.parquet` y `miembro_voto.parquet`,
+ *  dos archivos que nunca se publicaron y que no deberían publicarse con ese
+ *  esquema: pedían una columna `rivas_decisivo`, que es exactamente la métrica
+ *  que el proyecto declara NO_DETERMINABLE. Un Parquet con esa columna sería
+ *  una respuesta inventada a una pregunta que el corpus no responde.
+ *
+ *  Se sustituye por lo que los datos sí sostienen: cuántos votos hay, de
+ *  quiénes, en qué resoluciones y con qué ancla. Lo indeterminable sigue
+ *  declarado como tal en la propia sección.
+ */
+async function loadVotes(db, base, baseEd) {
+  if (!baseEd) return;
   try {
-    await registerAndTest(
-      db,
-      'votacion.parquet',
-      new URL(CFG.jemSilverBase + 'votacion.parquet', base).href
-    );
-    await registerAndTest(
-      db,
-      'miembro_voto.parquet',
-      new URL(CFG.jemSilverBase + 'miembro_voto.parquet', base).href
-    );
-
-    const vd = await conn.query("DESCRIBE SELECT * FROM read_parquet('votacion.parquet')");
-    const vs = new Set(vd.toArray().map(r=>r.toJSON().column_name));
-    const total = await conn.query("SELECT COUNT(*) n FROM read_parquet('votacion.parquet')");
-    $('#voteTotal').textContent = Number(total.toArray()[0].toJSON().n).toLocaleString();
-
-    if (vs.has('rivas_decisivo')) {
-      const r = await conn.query(
-        "SELECT COUNT(CASE WHEN rivas_decisivo THEN 1 END) n FROM read_parquet('votacion.parquet')"
-      );
-      $('#voteDecisive').textContent = Number(r.toArray()[0].toJSON().n||0).toLocaleString();
+    for (const t of ['voto', 'entidad', 'resolucion']) {
+      await registerAndTest(db, `${t}.parquet`,
+        new URL(baseEd + t + '.parquet', base).href);
     }
-    if (vs.has('hubo_desempate')) {
-      const r = await conn.query(
-        "SELECT COUNT(CASE WHEN hubo_desempate THEN 1 END) n FROM read_parquet('votacion.parquet')"
-      );
-      $('#voteTies').textContent = Number(r.toArray()[0].toJSON().n||0).toLocaleString();
-    }
-
-    const md = await conn.query(
-      "DESCRIBE SELECT * FROM read_parquet('miembro_voto.parquet')"
-    );
-    const ms = new Set(md.toArray().map(r=>r.toJSON().column_name));
-    if (ms.has('miembro')) {
-      const r = await conn.query(
-        "SELECT COUNT(DISTINCT miembro) n FROM read_parquet('miembro_voto.parquet')"
-      );
-      $('#voteMembers').textContent = Number(r.toArray()[0].toJSON().n||0).toLocaleString();
-    }
-    if (vs.has('resultado')) {
-      const r=await conn.query(
-        "SELECT resultado,COUNT(*) c FROM read_parquet('votacion.parquet') GROUP BY resultado ORDER BY c DESC"
-      );
-      const d=r.toArray().map(x=>x.toJSON());
-      chart('chartOutcomes',{
-        title:{text:'Resultados',left:'center'},
-        xAxis:{type:'category',data:d.map(x=>x.resultado)},
-        yAxis:{type:'value'},
-        series:[{type:'bar',data:d.map(x=>Number(x.c))}]
-      });
-    }
-    if (vs.has('margen_votos')) {
-      const r=await conn.query(
-        "SELECT CAST(margen_votos AS INT) margen,COUNT(*) c FROM read_parquet('votacion.parquet') GROUP BY margen ORDER BY margen"
-      );
-      const d=r.toArray().map(x=>x.toJSON());
-      chart('chartMargins',{
-        title:{text:'Distribución del margen de votos',left:'center'},
-        xAxis:{type:'category',data:d.map(x=>x.margen)},
-        yAxis:{type:'value'},
-        series:[{type:'bar',data:d.map(x=>Number(x.c))}]
-      });
-    }
-    $('#voteStatus').hidden = true;
-    $('#voteDashboard').hidden = false;
   } catch (e) {
-    console.info('Parquet de votaciones opcional no disponible:', e.message);
+    console.info('Capa de votos no disponible:', e.message);
+    $('#voteStatus').hidden = false;
+    return;
   }
+
+  const k = await uno(`SELECT
+      (SELECT COUNT(*) FROM read_parquet('voto.parquet')) votos,
+      (SELECT COUNT(*) FROM read_parquet('voto.parquet') WHERE pagina IS NOT NULL) citables,
+      (SELECT COUNT(DISTINCT entidad_id) FROM read_parquet('voto.parquet')) integrantes,
+      (SELECT COUNT(*) FROM read_parquet('resolucion.parquet')
+         WHERE estado_votos='CON_VOTOS') decisiones,
+      (SELECT COUNT(*) FROM read_parquet('voto.parquet')
+         WHERE sentido='DISIDENCIA') disidencias`);
+  pon('#voteTotal', num(k.votos));
+  pon('#voteTotal2', num(k.votos));
+  pon('#voteMembers', num(k.integrantes));
+  pon('#voteDecisions', num(k.decisiones));
+  pon('#voteCitable', `${num(k.citables)} de ${num(k.votos)}`);
+  pon('#voteDissent', num(k.disidencias));
+
+  const sentido = await filas(`SELECT COALESCE(sentido,'sin_calcular') sentido,
+      COUNT(*) n FROM read_parquet('voto.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+  barras('chartOutcomes', 'Sentido del voto individual', sentido, 'sentido', 'n');
+
+  const porMiembro = await filas(`SELECT e.nombre,
+      COUNT(*) votos,
+      COUNT(CASE WHEN v.sentido='PONENTE' THEN 1 END) ponente,
+      COUNT(CASE WHEN v.sentido='ADHESION' THEN 1 END) adhesion,
+      MIN(e.primer_voto) desde, MAX(e.ultimo_voto) hasta
+    FROM read_parquet('voto.parquet') v
+    JOIN read_parquet('entidad.parquet') e ON e.entidad_id = v.entidad_id
+    GROUP BY 1 ORDER BY 2 DESC LIMIT 20`);
+  barras('chartVotesPerMember', 'Votos por integrante (20 primeros)',
+         porMiembro.slice(0, 12).map(r => ({
+           n: String(r.nombre).split(' ').slice(-2).join(' '), v: Number(r.votos) })),
+         'n', 'v');
+  $('#voteMemberRows').innerHTML = porMiembro.map(r => `<tr>
+      <td>${esc(r.nombre)}</td><td>${num(r.votos)}</td>
+      <td>${num(r.ponente)}</td><td>${num(r.adhesion)}</td>
+      <td>${esc(r.desde || '—')}</td><td>${esc(r.hasta || '—')}</td></tr>`).join('');
+
+  $('#voteStatus').hidden = true;
+  $('#voteDashboard').hidden = false;
 }
 
 /* ==================================================================
@@ -420,6 +413,7 @@ async function loadEdicionVigente(db, base) {
   pon('#valTotal', num(v.total));
   pon('#valRevisados', num(v.revisados));
 
+  await loadVotes(db, base, baseEd);
   await panelTrazabilidad();
   await panelQuorum();
   await panelProcedencia();
@@ -807,7 +801,6 @@ function resaltar(texto, palabras) {
     const db = await setupDb();
     const base = new URL('.', location.href).href;
     await loadParquetCorpus(db, base);
-    await loadVotes(db, base);
     await loadEdicionVigente(db, base);
   } catch(e) {
     console.info('DuckDB-WASM no disponible; se mantiene el modo JSON:', e.message);

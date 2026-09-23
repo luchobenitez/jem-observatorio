@@ -40,12 +40,12 @@
     "votacion": {
       "ruta": "data/jem-silver/votacion.parquet",
       "estado": "ausente",
-      "motivo": "Previsto. assets/js/duckdb-stats.js lo intenta y degrada al aviso «Capa Parquet futura» de estadisticas.html si falta."
+      "motivo": "DESCARTADO, no pendiente. Su esquema exigía una columna «rivas_decisivo», que es exactamente la métrica que el proyecto declara NO_DETERMINABLE: publicarla sería inventar la respuesta a una pregunta que el corpus no responde. La pestaña de votos consulta ahora voto.parquet y resolucion.parquet de la edición vigente."
     },
     "miembro_voto": {
       "ruta": "data/jem-silver/miembro_voto.parquet",
       "estado": "ausente",
-      "motivo": "Previsto, junto con votacion.parquet."
+      "motivo": "DESCARTADO junto con votacion.parquet. Su función la cumple entidad.parquet de la edición vigente, que además declara que el OCR fragmenta un mismo nombre en varias entidades."
     }
   },
   "silver": {
@@ -53,15 +53,38 @@
       "ruta": "data/jem-silver/editions.json",
       "estado": "disponible",
       "nota": "Declara cada edición fechada con sus tablas, filas y SHA-256. Las entradas «parquet» de arriba son la edición 2026-08-24, que es la que lee hoy el JavaScript."
+    },
+    "catalogo_vigente": {
+      "ruta": "data/jem-silver/2026-08-30/catalogo.json",
+      "estado": "disponible",
+      "nota": "Catálogo del corpus vigente que consume documentos.html: 4.627 documentos con su enlace verificado. Sustituye a documents_manifest.json, que sólo cubría los 3.964 del linaje de agosto."
     }
   },
   "json": {
-    "sources": { "ruta": "data/portal/sources.json", "estado": "disponible" },
-    "timeline": { "ruta": "data/portal/timeline.json", "estado": "disponible" },
-    "exams": { "ruta": "data/portal/exams.json", "estado": "disponible" },
-    "document": { "ruta": "data/portal/document.json", "estado": "disponible" },
-    "causa": { "ruta": "data/portal/causa.json", "estado": "disponible" },
-    "curated_sources": { "ruta": "data/portal/curated_sources.json", "estado": "disponible" }
+    "sources": {
+      "ruta": "data/portal/sources.json",
+      "estado": "disponible"
+    },
+    "timeline": {
+      "ruta": "data/portal/timeline.json",
+      "estado": "disponible"
+    },
+    "exams": {
+      "ruta": "data/portal/exams.json",
+      "estado": "disponible"
+    },
+    "document": {
+      "ruta": "data/portal/document.json",
+      "estado": "disponible"
+    },
+    "causa": {
+      "ruta": "data/portal/causa.json",
+      "estado": "disponible"
+    },
+    "curated_sources": {
+      "ruta": "data/portal/curated_sources.json",
+      "estado": "disponible"
+    }
   },
   "analysis": {
     "rivas_2026_08_24": {

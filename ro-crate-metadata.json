@@ -132,7 +132,7 @@
       "name": "documento",
       "description": "Un documento por contenido único (SHA-256), con su colección, su motor de extracción y la ruta pública donde puede abrirse, si la hay.",
       "encodingFormat": "application/vnd.apache.parquet",
-      "contentSize": "514564"
+      "contentSize": "526045"
     },
     {
       "@id": "data/jem-silver/2026-08-30/documento_logico.parquet",
