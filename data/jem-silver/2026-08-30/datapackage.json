@@ -519,7 +519,7 @@
       "path": "data/jem-silver/2026-08-30/fusion_entidad.parquet",
       "format": "parquet",
       "mediatype": "application/vnd.apache.parquet",
-      "bytes": 5678,
+      "bytes": 5869,
       "description": "",
       "schema": {
         "fields": [
@@ -561,7 +561,7 @@
           {
             "name": "decision",
             "type": "string",
-            "description": "AUTO se aplicó; REVISAR espera decisión humana y mientras tanto los votos siguen repartidos; DESCARTAR excluye la entidad porque no es un nombre sino una frase del texto que el extractor capturó."
+            "description": "AUTO se aplicó por puntuación alta y bajo impacto; APROBADA la revisó una persona y se aplica; RECHAZADA la revisó una persona y NO se aplica —son dos personas con apellido común—; REVISAR espera decisión y mientras tanto los votos siguen repartidos; DESCARTAR excluye la entidad porque no es un nombre sino una frase que el extractor tomó del texto."
           }
         ]
       }
@@ -679,7 +679,7 @@
       "path": "data/jem-silver/2026-08-30/metrica_juez.parquet",
       "format": "parquet",
       "mediatype": "application/vnd.apache.parquet",
-      "bytes": 9822,
+      "bytes": 8741,
       "description": "",
       "schema": {
         "fields": [

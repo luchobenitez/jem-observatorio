@@ -178,7 +178,7 @@
       "name": "fusion_entidad",
       "description": "",
       "encodingFormat": "application/vnd.apache.parquet",
-      "contentSize": "5678"
+      "contentSize": "5869"
     },
     {
       "@id": "data/jem-silver/2026-08-30/indice_forma.parquet",
@@ -218,7 +218,7 @@
       "name": "metrica_juez",
       "description": "",
       "encodingFormat": "application/vnd.apache.parquet",
-      "contentSize": "9822"
+      "contentSize": "8741"
     },
     {
       "@id": "data/jem-silver/2026-08-30/procedencia.parquet",
