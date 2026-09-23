@@ -49,11 +49,20 @@
 @media(max-width:760px){.source-item{align-items:flex-start;flex-direction:column}}
 
 /* ---------------------------------------------------------------------------
-   Marca. Sustituye a la insignia de texto «JEM» por el logotipo horizontal.
-   El `height` fijo y el `width:auto` mantienen la proporción sin que la barra
-   dependa del tamaño intrínseco del archivo; los atributos width/height del
-   <img> reservan el espacio y evitan que el contenido salte al cargar.
-   En pantallas estrechas se reduce para no comerse el ancho del menú.
+   Marca: isotipo reducido más el nombre como texto vivo.
+
+   Se intentó antes con el logotipo horizontal completo a 38 px de alto y el
+   resultado era ilegible, por la misma razón que ya se había medido para el
+   favicon: la marca lleva cinco elementos y por debajo de 48 px se convierte
+   en una mancha. Encima el texto del logotipo va a dos líneas, de modo que
+   cada renglón quedaba en unos 13 px, más pequeño que los enlaces del menú.
+
+   El nombre como texto vivo es nítido a cualquier tamaño, se adapta solo,
+   pesa cero y se puede seleccionar y leer con un lector de pantalla. El
+   logotipo completo sigue publicado y se usa donde hay sitio: la tarjeta
+   social, que se sirve a 900 px.
 --------------------------------------------------------------------------- */
-.brand img{height:38px;width:auto;display:block}
-@media(max-width:560px){.brand img{height:30px}}
+.brand img{height:36px;width:36px;display:block;flex:none}
+.brand-name{font-size:17px;font-weight:800;letter-spacing:-.015em;color:#0A2A4A;white-space:nowrap;line-height:1}
+.brand-name b{color:#1B7F8C;font-weight:800}
+@media(max-width:560px){.brand img{height:30px;width:30px}.brand-name{font-size:14px}}
