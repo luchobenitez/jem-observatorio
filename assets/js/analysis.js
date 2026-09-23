@@ -89,11 +89,73 @@
       }]
     });
 
+    // Las doce métricas del informe de agosto venían bajo una sola etiqueta,
+    // como si fallaran por el mismo motivo. Se clasifican por CAUSA, porque
+    // «no calculable» y «no calculado todavía» son cosas distintas y sólo una
+    // de las dos es un límite del corpus.
+    //
+    // Contrastado contra la edición vigente el 23/09/2026: una ya está
+    // resuelta —y de hecho se publica en la pestaña de Votos, de modo que el
+    // panel se contradecía con el resto del sitio—.
+    const MOTIVO = {
+      resuelto: {
+        etiqueta: 'YA RESUELTO', clase: 'ok',
+        nota: 'Calculado en la edición vigente. Ver la pestaña «Votos y decisividad».'
+      },
+      instrumento: {
+        etiqueta: 'MEDIRÍA LA HERRAMIENTA', clase: 'warning',
+        nota: 'Se puede calcular, pero el extractor sólo reconoce ponencia, adhesión y '
+            + 'disidencia, y «adhesión» significa acuerdo. El resultado describiría la '
+            + 'expresión regular, no la conducta del juzgador.'
+      },
+      sin_dato: {
+        etiqueta: 'SIN DATO EN EL CORPUS', clase: 'warning',
+        nota: 'El texto de las resoluciones no registra este hecho. No es que se haya '
+            + 'perdido en la extracción: no está escrito en el documento.'
+      },
+      bloqueado: {
+        etiqueta: 'BLOQUEADO', clase: 'warning',
+        nota: 'Exige saber quién podía votar, quién estaba presente y qué mayoría regía. '
+            + '655 de 1.670 resoluciones tienen quórum incompleto por extracción.'
+      },
+      pendiente: {
+        etiqueta: 'PENDIENTE DE TRABAJO', clase: 'neutral',
+        nota: 'Hacible: el vínculo dictamen-resolución existe en 1.202 casos. Falta '
+            + 'extraer la recomendación del dictamen para poder compararla.'
+      }
+    };
+    const CLASIFICACION = {
+      'total_votos_identificables': ['resuelto', '9.956 votos · 110 integrantes'],
+      'total_votos_mayoria': ['instrumento', 'daría 9.949'],
+      'total_votos_minoria': ['instrumento', 'daría 7'],
+      'total_disidencias (mínimo verificado: 1)': ['instrumento', 'daría 7'],
+      'agreement_with_majority_rate': ['instrumento', 'daría 99,93 %'],
+      'dissent_rate': ['instrumento', 'daría 0,070 %'],
+      'total_abstenciones': ['sin_dato', 'el esquema no tiene la categoría'],
+      'abstention_rate': ['sin_dato', 'el esquema no tiene la categoría'],
+      'total_ausencias': ['sin_dato', 'el texto no declara ausencias'],
+      'total_votos_pivotal': ['bloqueado', ''],
+      'pivotal_vote_rate': ['bloqueado', ''],
+      'concordance_rate dictamen-resolución': ['pendiente', '']
+    };
+    const ORDEN = ['resuelto', 'pendiente', 'bloqueado', 'sin_dato', 'instrumento'];
+
     const nd = document.getElementById('ndMetrics');
     if (nd) {
-      nd.innerHTML = d.non_determinable_metrics.map(x =>
-        `<div class="nd-card"><span>${esc(x)}</span><strong>NO_DETERMINABLE</strong></div>`
-      ).join('');
+      const metricas = d.non_determinable_metrics.slice()
+        .sort((a, b) => ORDEN.indexOf((CLASIFICACION[a] || ['instrumento'])[0])
+                      - ORDEN.indexOf((CLASIFICACION[b] || ['instrumento'])[0]));
+      let ultimo = null;
+      nd.innerHTML = metricas.map(x => {
+        const [clave, valor] = CLASIFICACION[x] || ['instrumento', ''];
+        const m = MOTIVO[clave];
+        const cabecera = clave !== ultimo
+          ? `<div class="nd-group"><span class="status-badge ${m.clase}">${m.etiqueta}</span>
+             <p>${esc(m.nota)}</p></div>` : '';
+        ultimo = clave;
+        return cabecera + `<div class="nd-card"><span>${esc(x)}</span>
+          <strong>${valor ? esc(valor) : 'NO_DETERMINABLE'}</strong></div>`;
+      }).join('');
     }
 
     const review = document.getElementById('reviewRows');

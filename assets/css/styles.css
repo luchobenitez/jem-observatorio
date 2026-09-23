@@ -105,3 +105,8 @@
 /* Advertencias de verdad. Aquí el rojo sí identifica correctamente: señala
    que un dato no se pudo determinar o que un control falló. */
 .metric-row.critical strong,.nd-card strong,.nd-value{color:var(--alerta)}
+
+/* Agrupación del panel de métricas por causa. Ocupa la fila entera de la
+   cuadrícula para separar visualmente un motivo del siguiente. */
+.nd-group{grid-column:1/-1;margin:18px 0 2px}
+.nd-group p{margin:8px 0 0;color:var(--muted);font-size:13px;max-width:70ch}
