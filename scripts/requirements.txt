@@ -1,3 +1,9 @@
 pandas>=2.0
 pyarrow>=14
 huggingface_hub>=0.30
+# Las pruebas de navegador comparan lo que la página muestra contra lo que da
+# la base. `probar_buscador_voto.py` calcula esa verdad con DuckDB, igual que
+# lo hace el navegador: sin esta dependencia la prueba falla en CI y pasa en
+# local, que es la forma más cara de descubrir que falta algo.
+duckdb>=1.0
+playwright>=1.40

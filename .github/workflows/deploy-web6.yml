@@ -57,9 +57,7 @@ jobs:
       # en inglés, con los cuatro contadores en «—», durante días y con el CI
       # en verde. Este paso abre la página en un navegador real.
       - name: Install browser for the rendering test
-        run: |
-          pip install playwright
-          python -m playwright install --with-deps chromium
+        run: python -m playwright install --with-deps chromium
 
       - name: Test that the page actually renders
         run: python scripts/probar_pagina.py .
