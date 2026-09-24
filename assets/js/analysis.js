@@ -84,11 +84,27 @@
     render();
   }
 
+  let datos = null;
+  const base = window.PORTAL_CONFIG?.analysisBase || 'data/analysis/';
+
   async function load() {
-    const base = window.PORTAL_CONFIG?.analysisBase || 'data/analysis/';
     const response = await fetch(base + 'analisis-vigente.json');
     if (!response.ok) throw new Error('HTTP ' + response.status);
-    const d = await response.json();
+    datos = await response.json();
+
+    // El filtro se declara desde acá porque acá están los datos que lo
+    // definen: las entidades salen del mapa de fusión, y fijarlas en el
+    // JavaScript las dejaría obsoletas en cuanto se aprobara una fusión.
+    window.JemFiltro?.declarar(datos.filtro_periodo);
+    window.JemFiltro?.alCambiar(() => pintar());
+    pintar();
+  }
+
+  function pintar() {
+    // Los dos estados vienen precalculados por el mismo código, de modo que
+    // conmutar no puede producir una cifra que no exista en los datos.
+    const activo = window.JemFiltro?.activo;
+    const d = (activo && datos.periodo) ? datos.periodo : datos;
 
     // El estado ya no es una etiqueta heredada del informe: se deriva de lo
     // que de verdad limita al corpus hoy, que es la verificación humana.
@@ -194,8 +210,12 @@
     // inglés: el archivo original en inglés sigue descargable como fuente
     // primaria, pero no se pinta. Si esto falla, se dice que falló en vez de
     // rellenar la tabla con texto que el visitante no puede leer.
+    // La cola de revisión no depende del filtro: enumera incidencias del
+    // archivo, no cifras del corpus. Se carga una sola vez, y cambiar el
+    // interruptor no la vuelve a pedir.
     const review = document.getElementById('reviewRows');
-    if (review) {
+    if (review && !review.dataset.cargada) {
+      review.dataset.cargada = '1';
       fetch(base + 'cola-revision-auditada.json')
         .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(a => pintarCola(a, review))

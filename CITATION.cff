@@ -5,7 +5,7 @@ message: >-
 title: "Observatorio Cívico JEM — archivo del Jurado de Enjuiciamiento de Magistrados de Paraguay"
 type: dataset
 version: "2026-08-30"
-date-released: "2026-09-23"
+date-released: "2026-09-24"
 url: "https://abogadomau.com/"
 repository-code: "https://github.com/luchobenitez/jem-observatorio"
 license: GPL-3.0-or-later

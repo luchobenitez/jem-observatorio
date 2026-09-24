@@ -15,6 +15,11 @@ const CFG = window.PORTAL_CONFIG || {
   catalogBase:'data/catalog/'
 };
 let conn = null, schema = new Set();
+// Repintados que el filtro de período dispara. Se asignan cuando sus
+// datos están cargados; antes de eso el interruptor no tiene nada que
+// recalcular y estas funciones no hacen nada.
+let panelCorpus = async () => {};
+let repintarPaneles = async () => {};
 let activeDocumentFile = 'document.parquet';
 
 function scalarNumber(value, fallback = 0) {
@@ -92,6 +97,69 @@ async function resolverEdicion(base) {
   return EDICION_VIGENTE;
 }
 
+/** Monta las vistas que consultan todos los paneles.
+ *
+ *  El filtro de período no se escribe en cada consulta: se escribe una vez,
+ *  acá, y las cuarenta consultas de este archivo leen `v_voto`, `v_resolucion`
+ *  y compañía sin saber cuál de los dos estados están midiendo. Repetir el
+ *  predicado en cada consulta habría garantizado que tarde o temprano una se
+ *  quedara sin él, y una sola pestaña sin filtrar en una página filtrada es
+ *  indistinguible de publicar una cifra falsa.
+ */
+async function montarVistas() {
+  if (!conn) return;
+  const f = window.JemFiltro;
+  const activo = f?.activo && f.entidades?.length;
+  const ids = activo ? f.entidades.join(',') : '';
+  const resFiltro = activo
+    ? `WHERE resolucion_id IN (SELECT DISTINCT resolucion_id`
+      + ` FROM read_parquet('voto.parquet') WHERE entidad_id IN (${ids}))`
+    : '';
+  const docFiltro = activo
+    ? `WHERE blob_id IN (SELECT r.document_id FROM read_parquet('resolucion.parquet') r`
+      + ` WHERE r.resolucion_id IN (SELECT DISTINCT resolucion_id`
+      + ` FROM read_parquet('voto.parquet') WHERE entidad_id IN (${ids})))`
+    : '';
+
+  const defs = {
+    v_voto:        `SELECT * FROM read_parquet('voto.parquet') ${resFiltro}`,
+    v_resolucion:  `SELECT * FROM read_parquet('resolucion.parquet') ${resFiltro}`,
+    v_documento:   `SELECT * FROM read_parquet('documento.parquet') ${docFiltro}`,
+    v_fragmento:   `SELECT * FROM read_parquet('fragmento.parquet') ${docFiltro}`,
+    v_campo:       `SELECT * FROM read_parquet('campo.parquet') ${docFiltro}`,
+    // Las causas se recortan por sus documentos, no por sí mismas.
+    // El recorte de causas va por `vinculo`, que es la relación
+    // documento-causa. Un primer intento usó `campo`, que también trae
+    // `causa_id` pero como campo extraído: daba 1.033 causas donde el cálculo
+    // de referencia da 1.097. Dos caminos de join, dos cifras del mismo hecho.
+    v_causa: activo
+      ? `SELECT * FROM read_parquet('causa.parquet') WHERE causa_id IN (
+           SELECT n.causa_id FROM read_parquet('vinculo.parquet') n
+           WHERE n.document_id IN (SELECT r.document_id
+             FROM read_parquet('resolucion.parquet') r
+             WHERE r.resolucion_id IN (SELECT DISTINCT resolucion_id
+               FROM read_parquet('voto.parquet') WHERE entidad_id IN (${ids}))))`
+      : `SELECT * FROM read_parquet('causa.parquet')`,
+    // El catálogo llama `document_id` a lo que la capa Silver llama `blob_id`,
+    // de modo que el predicado se escribe aparte en vez de derivarse por
+    // sustitución de texto del otro: una sustitución que dejara de coincidir
+    // no fallaría, devolvería el corpus entero con el filtro puesto.
+    v_catalogo: activo
+      ? `SELECT * FROM read_parquet('${activeDocumentFile}')
+         WHERE document_id IN (SELECT r.document_id
+           FROM read_parquet('resolucion.parquet') r
+           WHERE r.resolucion_id IN (SELECT DISTINCT resolucion_id
+             FROM read_parquet('voto.parquet') WHERE entidad_id IN (${ids})))`
+      : `SELECT * FROM read_parquet('${activeDocumentFile}')`,
+    v_metrica_juez: `SELECT * FROM read_parquet('${activo
+      ? 'metrica_juez_periodo.parquet' : 'metrica_juez.parquet'}')`,
+  };
+  for (const [nombre, sql] of Object.entries(defs)) {
+    try { await conn.query(`CREATE OR REPLACE VIEW ${nombre} AS ${sql}`); }
+    catch (e) { console.error(`No se pudo montar ${nombre}:`, e.message); }
+  }
+}
+
 async function loadParquetCorpus(db, base) {
   try {
     await resolverEdicion(base);
@@ -125,18 +193,33 @@ async function loadParquetCorpus(db, base) {
     );
     schema = new Set(desc.toArray().map(r => r.toJSON().column_name));
 
+    // Vista del catálogo, recortable por el filtro igual que las demás. El
+    // recorte va por documento: los del catálogo que pertenecen a alguna
+    // resolución del período.
+    await conn.query(`CREATE OR REPLACE VIEW v_catalogo AS
+      SELECT * FROM read_parquet('${activeDocumentFile}')`);
+    // `causa.parquet` queda disponible como vista antes de que el resto de las
+    // tablas exista: esta función corre primero y necesita contar expedientes.
+    await conn.query(`CREATE OR REPLACE VIEW v_causa AS
+      SELECT * FROM read_parquet('causa.parquet')`);
+
     const linkExpr = schema.has('download_url')
       ? "COALESCE(download_url,'') <> ''"
       : schema.has('relative_path')
         ? "COALESCE(relative_path,'') <> ''"
         : 'FALSE';
 
+    // Las cifras del corpus se repintan cuando cambia el filtro. Se aíslan
+    // acá en vez de quedarse sueltas dentro del arranque porque si no, el
+    // interruptor cambiaría las cifras de las demás pestañas y dejaría ésta
+    // —la primera que se ve— mostrando el corpus entero.
+    panelCorpus = async () => {
     const k = await conn.query(`SELECT
-      (SELECT COUNT(*) FROM read_parquet('causa.parquet')) total_causas,
+      (SELECT COUNT(*) FROM v_causa) total_causas,
       COUNT(*) total_docs,
       AVG(${schema.has('body_quality') ? 'body_quality' : 'NULL'}) avg_quality,
       COUNT(CASE WHEN ${linkExpr} THEN 1 END) linkable
-      FROM read_parquet('${activeDocumentFile}')`);
+      FROM v_catalogo`);
     const o = k.toArray()[0].toJSON();
 
     const totalCausas = scalarNumber(o.total_causas);
@@ -168,7 +251,7 @@ async function loadParquetCorpus(db, base) {
 
     if (schema.has('kind')) {
       const r = await conn.query(
-        `SELECT kind,COUNT(*) c FROM read_parquet('${activeDocumentFile}')
+        `SELECT kind,COUNT(*) c FROM v_catalogo
          GROUP BY kind ORDER BY c DESC`
       );
       const d = r.toArray().map(x => x.toJSON());
@@ -190,7 +273,7 @@ async function loadParquetCorpus(db, base) {
     if (schema.has('year')) {
       const r = await conn.query(
         `SELECT CAST(year AS INT) y,COUNT(*) c
-         FROM read_parquet('${activeDocumentFile}')
+         FROM v_catalogo
          WHERE year IS NOT NULL GROUP BY y ORDER BY y`
       );
       const d = r.toArray().map(x=>x.toJSON());
@@ -206,6 +289,8 @@ async function loadParquetCorpus(db, base) {
         `<option value="${x.y}">${x.y}</option>`
       ));
     }
+    };
+    // roto a proposito
 
     async function searchDocs() {
       const term = $('#docSearch').value || '';
@@ -256,7 +341,7 @@ async function loadParquetCorpus(db, base) {
         ${col('storage_provider',"''")},
         ${col('file_sha256',"''")},
         ${snippet} snippet
-        FROM read_parquet('${activeDocumentFile}')
+        FROM v_catalogo
         ${wh.length ? 'WHERE '+wh.join(' AND ') : ''}
         ORDER BY ${schema.has('year') ? 'year DESC NULLS LAST' : '1'}
         LIMIT 100`;
@@ -331,12 +416,17 @@ async function loadVotes(db, base, baseEd) {
   }
 
   const k = await uno(`SELECT
-      (SELECT COUNT(*) FROM read_parquet('voto.parquet')) votos,
-      (SELECT COUNT(*) FROM read_parquet('voto.parquet') WHERE pagina IS NOT NULL) citables,
-      (SELECT COUNT(DISTINCT entidad_id) FROM read_parquet('voto.parquet')) integrantes,
-      (SELECT COUNT(*) FROM read_parquet('resolucion.parquet')
+      (SELECT COUNT(*) FROM v_voto) votos,
+      (SELECT COUNT(*) FROM v_voto WHERE pagina IS NOT NULL) citables,
+      -- Integrantes DESPUÉS de fusionar las variantes del OCR. Contando
+      -- entidad_id en crudo daban 110, mientras la tabla de más abajo de
+      -- esta misma pestaña mostraba 50: el mismo hecho con dos cifras a un
+      -- palmo de distancia. Las 60 de diferencia no son personas, son
+      -- «Hemán», «Her nán» y «Hernán Davis» contados aparte.
+      (SELECT COUNT(*) FROM v_metrica_juez) integrantes,
+      (SELECT COUNT(*) FROM v_resolucion
          WHERE estado_votos='CON_VOTOS') decisiones,
-      (SELECT COUNT(*) FROM read_parquet('voto.parquet')
+      (SELECT COUNT(*) FROM v_voto
          WHERE sentido='DISIDENCIA') disidencias`);
   pon('#voteTotal', num(k.votos));
   pon('#voteTotal2', num(k.votos));
@@ -346,7 +436,7 @@ async function loadVotes(db, base, baseEd) {
   pon('#voteDissent', num(k.disidencias));
 
   const sentido = await filas(`SELECT COALESCE(sentido,'sin_calcular') sentido,
-      COUNT(*) n FROM read_parquet('voto.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+      COUNT(*) n FROM v_voto GROUP BY 1 ORDER BY 2 DESC`);
   barras('chartOutcomes', 'Sentido del voto individual', sentido, 'sentido', 'n');
 
   // Métricas por integrante, ya calculadas con su verificación al lado.
@@ -357,7 +447,7 @@ async function loadVotes(db, base, baseEd) {
     console.info('Métricas por integrante no disponibles:', e.message);
     return;
   }
-  const m = await filas(`SELECT * FROM read_parquet('metrica_juez.parquet')
+  const m = await filas(`SELECT * FROM v_metrica_juez
       ORDER BY votos DESC LIMIT 40`);
   barras('chartVotesPerMember', 'Votos por integrante (12 primeros)',
          m.slice(0, 12).map(r => ({
@@ -464,9 +554,16 @@ async function loadEdicionVigente(db, base) {
     return;
   }
 
-  const TABLAS = ['fragmento','documento','resolucion','voto','procedencia','campo'];
+  const TABLAS = ['fragmento','documento','resolucion','voto','procedencia','campo','vinculo'];
   try {
     for (const t of TABLAS) {
+      await registerAndTest(db, `${t}.parquet`, new URL(baseEd + t + '.parquet', base).href);
+    }
+    // Las dos tablas de métricas por integrante: la del corpus entero y la
+    // del período. Se calculan fuera, donde vive el mapa de fusión, porque
+    // reimplementar esa agrupación en SQL del lado del cliente sería tener dos
+    // definiciones de «quién es quién» que pueden separarse.
+    for (const t of ['metrica_juez', 'metrica_juez_periodo']) {
       await registerAndTest(db, `${t}.parquet`, new URL(baseEd + t + '.parquet', base).href);
     }
   } catch (e) {
@@ -474,6 +571,8 @@ async function loadEdicionVigente(db, base) {
     pon('#edicionEstado', 'Edición: no disponible');
     return;
   }
+
+  await montarVistas();
 
   window.__db = db;
   pon('#edicionEstado', `Edición ${edicion}`);
@@ -484,16 +583,32 @@ async function loadEdicionVigente(db, base) {
   // humanas, y sólo una persona puede incrementarlo.
   const v = await uno(`SELECT COUNT(*) total,
       COUNT(CASE WHEN revision <> 'AUTO' THEN 1 END) revisados
-      FROM read_parquet('campo.parquet')`);
+      FROM v_campo`);
   pon('#valTotal', num(v.total));
   pon('#valRevisados', num(v.revisados));
 
-  await loadVotes(db, base, baseEd);
-  await panelTrazabilidad();
-  await panelQuorum();
+  // Los paneles se agrupan para poder repintarlos enteros cuando cambia el
+  // filtro. Repintar sólo algunos dejaría la página con unas cifras del corpus
+  // completo y otras del recorte, que es la contradicción que el filtro
+  // existe para evitar, no para crear.
+  repintarPaneles = async () => {
+    await montarVistas();
+    await loadVotes(db, base, baseEd);
+    await panelTrazabilidad();
+    await panelQuorum();
+    await panelCorpus();
+    // La procedencia y el índice FAIR no se filtran: uno describe de dónde
+    // salió cada archivo y el otro mide el conjunto publicado, no un
+    // subconjunto del corpus. La página lo declara en vez de callarlo.
+  };
+  await repintarPaneles();
   await panelProcedencia();
   await panelFair(base);
   await loadIndiceBM25(db, base, baseEd, indiceMeta);
+
+  window.JemFiltro?.alCambiar(() => {
+    repintarPaneles().catch(e => console.error('Al repintar con el filtro:', e));
+  });
 }
 
 async function panelTrazabilidad() {
@@ -501,17 +616,17 @@ async function panelTrazabilidad() {
       COUNT(DISTINCT blob_id) documentos,
       COUNT(CASE WHEN tipo_ancla='PAGINA' AND anclado=1 THEN 1 END) ancladas,
       COUNT(CASE WHEN tipo_ancla='PAGINA' THEN 1 END) paginas
-      FROM read_parquet('fragmento.parquet')`);
+      FROM v_fragmento`);
   pon('#trzFragmentos', num(t.fragmentos));
   pon('#trzDocumentos', num(t.documentos));
   pon('#trzAncladas', `${num(t.ancladas)} de ${num(t.paginas)}`);
 
   const vt = await uno(`SELECT COUNT(*) total, COUNT(pagina) con_pagina
-      FROM read_parquet('voto.parquet')`);
+      FROM v_voto`);
   pon('#trzVotos', `${num(vt.con_pagina)} de ${num(vt.total)}`);
 
   const anclas = await filas(`SELECT tipo_ancla, COUNT(*) n
-      FROM read_parquet('fragmento.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+      FROM v_fragmento GROUP BY 1 ORDER BY 2 DESC`);
   chart('chartAnclas', {
     title:{text:'Unidad citable', left:'center', textStyle:{fontSize:14}},
     tooltip:{trigger:'item'},
@@ -528,7 +643,7 @@ async function panelTrazabilidad() {
         WHEN confianza < 0.50 THEN 'muy baja'
         WHEN confianza < 0.70 THEN 'baja'
         WHEN confianza < 0.85 THEN 'media' ELSE 'alta' END banda,
-      COUNT(*) n FROM read_parquet('fragmento.parquet')
+      COUNT(*) n FROM v_fragmento
       GROUP BY 1 ORDER BY CASE banda WHEN 'alta' THEN 1 WHEN 'media' THEN 2
         WHEN 'baja' THEN 3 WHEN 'muy baja' THEN 4 ELSE 5 END`);
   barras('chartBandas', 'Confianza del reconocimiento por fragmento', bandas, 'banda', 'n');
@@ -537,8 +652,8 @@ async function panelTrazabilidad() {
       COUNT(*) fragmentos, COUNT(DISTINCT f.blob_id) documentos,
       ROUND(SUM(LENGTH(f.texto))/1e6, 1) mb,
       STRING_AGG(DISTINCT d.extension, ', ') formatos
-      FROM read_parquet('fragmento.parquet') f
-      JOIN read_parquet('documento.parquet') d USING (blob_id)
+      FROM v_fragmento f
+      JOIN v_documento d USING (blob_id)
       GROUP BY 1 ORDER BY 2 DESC`);
   $('#trzAnclaRows').innerHTML = det.map(r=>`<tr>
       <td><code>${esc(r.tipo_ancla)}</code></td><td>${num(r.fragmentos)}</td>
@@ -546,7 +661,7 @@ async function panelTrazabilidad() {
       <td>${esc(r.formatos)}</td></tr>`).join('');
 
   const motores = await filas(`SELECT COALESCE(motor,'sin motor') motor, COUNT(*) n
-      FROM read_parquet('fragmento.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+      FROM v_fragmento GROUP BY 1 ORDER BY 2 DESC`);
   barras('chartMotores', 'Fragmentos por motor de extracción', motores, 'motor', 'n');
 }
 
@@ -556,27 +671,27 @@ async function panelQuorum() {
       COUNT(CASE WHEN quorum='COMPLETO' THEN 1 END) completo,
       COUNT(CASE WHEN quorum='INCOMPLETO_POR_EXTRACCION' THEN 1 END) incompleto,
       COUNT(CASE WHEN quorum='NO_DETERMINABLE' THEN 1 END) nodet
-      FROM read_parquet('resolucion.parquet')`);
+      FROM v_resolucion`);
   pon('#qrmConVotos', num(q.con_votos));
   pon('#qrmCompleto', num(q.completo));
   pon('#qrmIncompleto', num(q.incompleto));
   pon('#qrmNoDet', num(q.nodet));
 
   const quorum = await filas(`SELECT COALESCE(quorum,'sin_calcular') quorum, COUNT(*) n
-      FROM read_parquet('resolucion.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+      FROM v_resolucion GROUP BY 1 ORDER BY 2 DESC`);
   barras('chartQuorum', 'Estado del quórum por resolución', quorum, 'quorum', 'n');
 
   const sentido = await filas(`SELECT COALESCE(sentido,'sin_calcular') sentido, COUNT(*) n
-      FROM read_parquet('resolucion.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+      FROM v_resolucion GROUP BY 1 ORDER BY 2 DESC`);
   barras('chartSentido', 'Sentido de la decisión', sentido, 'sentido', 'n');
 
   const verbos = await filas(`SELECT verbo, COUNT(*) n
-      FROM read_parquet('resolucion.parquet') WHERE verbo IS NOT NULL
+      FROM v_resolucion WHERE verbo IS NOT NULL
       GROUP BY 1 ORDER BY 2 DESC LIMIT 12`);
   $('#qrmVerboRows').innerHTML = verbos.map(r=>`<tr>
       <td>${esc(r.verbo)}</td><td>${num(r.n)}</td></tr>`).join('');
 
-  const d = await uno(`SELECT COUNT(*) n FROM read_parquet('voto.parquet')
+  const d = await uno(`SELECT COUNT(*) n FROM v_voto
       WHERE sentido='DISIDENCIA'`);
   pon('#qrmDisidencias', num(d.n));
 }
@@ -592,7 +707,7 @@ async function panelProcedencia() {
   pon('#prvEfimera', num(p.efimera));
   pon('#prvSinUrl', num(p.sin_url));
 
-  const docs = await uno(`SELECT COUNT(*) n FROM read_parquet('documento.parquet')`);
+  const docs = await uno(`SELECT COUNT(*) n FROM v_documento`);
   const pct = docs.n ? (Number(p.persistente)/Number(docs.n)*100) : 0;
   pon('#prvPct', `${pct.toFixed(1).replace('.', ',')} %`);
 
@@ -612,7 +727,7 @@ async function panelProcedencia() {
 
   const col = await filas(`SELECT COALESCE(coleccion,'sin colección') coleccion,
       COUNT(*) n, SUM(tiene_paginas) con_paginas
-      FROM read_parquet('documento.parquet') GROUP BY 1 ORDER BY 2 DESC`);
+      FROM v_documento GROUP BY 1 ORDER BY 2 DESC`);
   $('#prvColeccionRows').innerHTML = col.map(r=>`<tr>
       <td>${esc(r.coleccion)}</td><td>${num(r.n)}</td>
       <td>${num(r.con_paginas)}</td></tr>`).join('');
@@ -814,8 +929,8 @@ async function buscar() {
            (SELECT COUNT(*) FROM punt) AS total
     FROM punt
     JOIN read_parquet('indice_fragmento.parquet') df ON df.docid = punt.docid
-    JOIN read_parquet('fragmento.parquet') f ON f.fragmento_id = df.fragmento_id
-    JOIN read_parquet('documento.parquet') d USING (blob_id)
+    JOIN v_fragmento f ON f.fragmento_id = df.fragmento_id
+    JOIN v_documento d USING (blob_id)
     ${filtro ? `WHERE f.tipo_ancla = ${lit(filtro)}` : ''}
     ORDER BY punt.score DESC LIMIT 25`);
 

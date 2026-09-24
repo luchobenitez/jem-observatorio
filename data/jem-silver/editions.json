@@ -1,12 +1,13 @@
 {
  "_comentario": [
   "Ediciones de la capa Silver.",
-  "El portal consulta UNA SOLA: la declarada en «vigente». Antes existía",
-  "«en_uso_por_la_interfaz», un mapa que mandaba unas pestañas a la edición",
-  "anterior y otras al corte vigente, de modo que la primera pestaña contaba",
-  "663 documentos menos que la siguiente sin explicar por qué.",
-  "Las ediciones anteriores se conservan declaradas como procedencia: no se",
-  "sobrescriben, pero tampoco se muestran. Un visitante ve un solo análisis."
+  "El portal consulta UNA SOLA: la declarada en «vigente». Antes había",
+  "un mapa «en_uso_por_la_interfaz» que mandaba unas pestañas a la",
+  "edición anterior y otras al corte vigente, de modo que la primera",
+  "pestaña contaba 663 documentos menos que la siguiente sin explicar",
+  "por qué. El mapa se eliminó y validate_web6.py falla si reaparece.",
+  "Las ediciones anteriores se conservan declaradas como procedencia:",
+  "no se sobrescriben, pero tampoco se muestran."
  ],
  "version": 2,
  "actualizado": "2026-09-24",
@@ -49,7 +50,7 @@
    "base": "data/jem-silver/2026-08-30/",
    "origen": "Repositorio jem-full, corte corte-2026-08-30.",
    "manifest_sha256": "5ec45cc3fd023ebedf7f464e7060a1d70b03aef0057c48dcb6086556cbc71626",
-   "generado": "2026-09-23",
+   "generado": "2026-09-24",
    "generador": "exportar_parquet/1.1",
    "tablas": {
     "documento": {

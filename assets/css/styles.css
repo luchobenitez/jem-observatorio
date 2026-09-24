@@ -110,3 +110,36 @@
    cuadrícula para separar visualmente un motivo del siguiente. */
 .nd-group{grid-column:1/-1;margin:18px 0 2px}
 .nd-group p{margin:8px 0 0;color:var(--muted);font-size:13px;max-width:70ch}
+
+/* ---------------------------------------------------------------------------
+   Filtro de período
+   ---------------------------------------------------------------------------
+   El interruptor cambia TODAS las cifras de la página, de modo que tiene que
+   verse antes que ellas y notarse cuando está puesto. Un filtro discreto que
+   recorta el 40 % de las resoluciones es una forma de mentir por omisión: el
+   visitante leería cifras de un subconjunto creyéndolas del corpus entero. */
+.filtro-caja{background:var(--white);border:1px solid var(--line);border-radius:14px;
+  padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;
+  gap:18px;flex-wrap:wrap}
+.filtro-periodo{display:flex;align-items:center;gap:10px;font-weight:700;cursor:pointer;
+  white-space:nowrap}
+.filtro-periodo input{width:18px;height:18px;accent-color:var(--teal);cursor:pointer}
+.filtro-nota{margin:0;color:var(--muted);font-size:13px}
+.filtro-nota strong{color:var(--ink)}
+
+/* Con el filtro puesto, una banda del color de acento recorre la caja y el
+   cuerpo lleva una marca: así ninguna pestaña puede parecer sin filtrar. */
+.filtro-periodo-activo .filtro-caja{border-color:var(--teal);
+  box-shadow:inset 4px 0 0 var(--teal)}
+.filtro-periodo-activo .kpi strong,
+.filtro-periodo-activo .mini-stats strong{color:var(--teal)}
+
+/* Etiqueta que cada sección puede incrustar para decir sobre qué se calculó.
+   Va junto a la cifra, no en una leyenda al pie: una cifra sin su alcance al
+   lado se cita sin él. */
+[data-filtro-etiqueta]{display:inline-block;font-size:11px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+  border:1px solid var(--line);border-radius:999px;padding:2px 9px;
+  background:var(--paper);white-space:nowrap}
+.filtro-periodo-activo [data-filtro-etiqueta]{color:var(--teal);
+  border-color:var(--teal)}

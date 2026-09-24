@@ -79,6 +79,66 @@ def servir(raiz: Path):
     return httpd
 
 
+def numero(texto: str):
+    t = (texto or "").strip().replace(".", "").replace(",", "")
+    return int(t.split()[0]) if t and t.split() and t.split()[0].isdigit() else None
+
+
+def probar_filtro(pag, raiz: Path) -> list[str]:
+    """El filtro de período debe cambiar todas las cifras, y las correctas.
+
+    Es la comprobación que más falta hace: un filtro que recorta el 40 % de las
+    resoluciones y se olvida de una pestaña no produce ningún error visible.
+    Deja esa pestaña mostrando el corpus entero junto a otras recortadas, y el
+    visitante no tiene forma de notarlo.
+    """
+    errores: list[str] = []
+    datos = json.loads((raiz / "data" / "analysis" / "analisis-vigente.json")
+                       .read_text(encoding="utf-8"))
+    alcance = datos.get("filtro_periodo", {}).get("alcance")
+    if not alcance:
+        return ["analisis-vigente.json no declara el alcance del filtro de período"]
+
+    control = pag.query_selector("[data-filtro-control] input")
+    if control is None:
+        return ["no hay control del filtro de período en la página"]
+
+    # Las cifras que el filtro DEBE mover, con el valor que debe dejar.
+    ESPERADO = {
+        "kpiDocs": alcance["documentos"]["periodo"],
+        "kpiCausas": alcance["causas"]["periodo"],
+        "voteTotal": alcance["votos"]["periodo"],
+        "voteDecisions": alcance["resoluciones"]["periodo"],
+    }
+    antes = {k: numero(pag.inner_text(f"#{k}")) for k in ESPERADO}
+
+    control.check()
+    pag.wait_for_timeout(7_000)
+
+    for ident, quiere in ESPERADO.items():
+        hay = numero(pag.inner_text(f"#{ident}"))
+        if hay == antes[ident]:
+            errores.append(f"#{ident} no cambió con el filtro puesto ({hay})")
+        elif hay != quiere:
+            errores.append(f"#{ident} da {hay} y el análisis declara {quiere}")
+
+    if "periodo=1" not in pag.url:
+        errores.append("el filtro no queda en la URL: el enlace no es compartible")
+
+    # Las actuaciones del integrante no pueden cambiar: por construcción todos
+    # sus votos están dentro de sus propias resoluciones. Si cambiaran, el
+    # recorte estaría mal definido.
+    propio = numero(pag.inner_text("#indActions"))
+    control.uncheck()
+    pag.wait_for_timeout(5_000)
+    if numero(pag.inner_text("#indActions")) != propio:
+        errores.append("las actuaciones del integrante cambian con el filtro; "
+                       "deberían ser las mismas en los dos estados")
+    if "periodo=1" in pag.url:
+        errores.append("el filtro no se quita de la URL al apagarlo")
+    return errores
+
+
 def main() -> int:
     raiz = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
     ed = json.loads((raiz / "data" / "jem-silver" / "editions.json")
@@ -134,6 +194,7 @@ def main() -> int:
             if len(filas) < 5:
                 errores.append(f"la cola de revisión pintó {len(filas)} filas")
 
+            errores += probar_filtro(pag, raiz)
             nav.close()
     finally:
         httpd.shutdown()
@@ -145,7 +206,9 @@ def main() -> int:
         print(f"\n  {len(errores)} problemas\n")
         return 1
     print(f"\n  OK: la página se pinta · {len(INDICADORES)} indicadores con valor · "
-          f"sin inglés visible · sin errores de consola\n")
+          f"sin inglés visible · sin errores de consola")
+    print("      el filtro de período mueve las cuatro cifras de control "
+          "a los valores declarados\n")
     return 0
 
 

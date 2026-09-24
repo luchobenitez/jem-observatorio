@@ -93,7 +93,13 @@ async function initRepository(){
   function render(){
     const q=(search.value||'').trim().toLocaleLowerCase('es');
     const y=year.value,k=kind.value;
+    // El filtro de período recorta también acá. El catálogo trae la marca por
+    // documento en vez de calcularse en el navegador: esta página no consulta
+    // la capa Silver, y sin la marca el mismo interruptor habría recortado las
+    // estadísticas y dejado la lista de documentos entera.
+    const periodo=window.JemFiltro?.activo;
     const rows=docs.filter(d=>{
+      if(periodo&&!d.periodo) return false;
       const hay=`${d.filename||''} ${d.caratula||''} ${d.causa_id||''} ${d.kind||''} ${d.category||''} ${d.sha256||''} ${d.hf_path||''}`.toLocaleLowerCase('es');
       return (!q||hay.includes(q))&&(!y||String(d.year||'')===y)&&(!k||(d.kind||d.category||'')===k);
     });
@@ -116,6 +122,14 @@ async function initRepository(){
       rows.length>200?'Mostrando los primeros 200 resultados. Refine la búsqueda para reducir la lista.':'';
   }
   [search,year,kind].forEach(el=>el.addEventListener(el.tagName==='SELECT'?'change':'input',render));
+  // El catálogo declara su alcance para que el interruptor muestre cuántos
+  // documentos recorta antes de que nadie lo pulse.
+  window.JemFiltro?.declarar({
+    unidad:'documentos',
+    alcance:{documentos:{todo:docs.length,
+                         periodo:docs.filter(d=>d.periodo).length}},
+  });
+  window.JemFiltro?.alCambiar(render);
   render();
 }
 

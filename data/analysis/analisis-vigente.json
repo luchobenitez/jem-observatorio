@@ -20,8 +20,63 @@
   "resoluciones_con_votacion": 1670,
   "integrantes_con_voto": 50
  },
+ "filtro_periodo": {
+  "nombre": "Resoluciones con Hernán Rivas",
+  "definicion": "Resoluciones en las que el integrante estudiado emitió voto, según el mapa de fusión de entidades.",
+  "entidades": [
+   12,
+   44,
+   53,
+   54,
+   59,
+   62,
+   104,
+   112
+  ],
+  "por_que_no_por_anios": "Entre 2020 y 2023 caen 9.917 de los 9.956 votos del corpus, el 99,6 %. Un filtro por años quitaría 39 votos y no respondería ninguna pregunta. Éste deja 1.078 de 1.816 resoluciones y permite comparar cómo votó el órgano con él y sin él.",
+  "alcance": {
+   "resoluciones": {
+    "todo": 1816,
+    "periodo": 1078
+   },
+   "votos": {
+    "todo": 9956,
+    "periodo": 7312
+   },
+   "documentos": {
+    "todo": 4627,
+    "periodo": 1034
+   },
+   "causas": {
+    "todo": 2908,
+    "periodo": 1097
+   },
+   "disidencias": {
+    "todo": 7,
+    "periodo": 6
+   },
+   "fragmentos": {
+    "todo": 18141,
+    "periodo": 3737
+   }
+  },
+  "no_se_filtra": {
+   "Índice FAIR": "mide el conjunto de datos publicado, no un subconjunto del corpus.",
+   "Procedencia": "describe de dónde salió cada archivo; el recorte no cambia su origen."
+  }
+ },
  "integrante": {
   "entidad_id": 12,
+  "entidades": [
+   12,
+   44,
+   53,
+   54,
+   59,
+   62,
+   104,
+   112
+  ],
   "variantes_ocr_fusionadas": 8,
   "votos": 1083,
   "resoluciones": 1078,
@@ -73,10 +128,10 @@
  },
  "organo": {
   "quorum": {
-   "Sin dato": 146,
-   "Incompleto por extracción": 655,
    "Completo": 870,
-   "No determinable": 145
+   "No determinable": 145,
+   "Incompleto por extracción": 655,
+   "Sin dato": 146
   },
   "resoluciones_con_presentes_menores_que_votos": 0
  },
@@ -251,5 +306,313 @@
     "clasificacion": "No decisivo"
    }
   ]
+ },
+ "periodo": {
+  "generado": "2026-09-24",
+  "generador": "consolidar_analisis/1.0",
+  "edicion": "2026-08-30",
+  "nota": "Todas las cifras se calculan desde la edición vigente, la misma que consulta el resto del sitio. Los dos hallazgos verificados por persona se conservan del trabajo de lectura manual y están rotulados como tales.",
+  "corpus": {
+   "documentos": 1034,
+   "documentos_accesibles": 1034,
+   "causas": 1097,
+   "resoluciones": 1078,
+   "filas_voto": 7312,
+   "dictamenes": 88,
+   "documentos_sin_causa": 62
+  },
+  "votos": {
+   "filas": 7312,
+   "con_pagina_de_origen": 7311,
+   "sin_pagina_de_origen": 1,
+   "marcados_disidencia": 6,
+   "resoluciones_con_votacion": 1078,
+   "integrantes_con_voto": 36
+  },
+  "filtro_periodo": {
+   "nombre": "Resoluciones con Hernán Rivas",
+   "definicion": "Resoluciones en las que el integrante estudiado emitió voto, según el mapa de fusión de entidades.",
+   "entidades": [
+    12,
+    44,
+    53,
+    54,
+    59,
+    62,
+    104,
+    112
+   ],
+   "por_que_no_por_anios": "Entre 2020 y 2023 caen 9.917 de los 9.956 votos del corpus, el 99,6 %. Un filtro por años quitaría 39 votos y no respondería ninguna pregunta. Éste deja 1.078 de 1.816 resoluciones y permite comparar cómo votó el órgano con él y sin él.",
+   "alcance": {
+    "resoluciones": {
+     "todo": 1816,
+     "periodo": 1078
+    },
+    "votos": {
+     "todo": 9956,
+     "periodo": 7312
+    },
+    "documentos": {
+     "todo": 4627,
+     "periodo": 1034
+    },
+    "causas": {
+     "todo": 2908,
+     "periodo": 1097
+    },
+    "disidencias": {
+     "todo": 7,
+     "periodo": 6
+    },
+    "fragmentos": {
+     "todo": 18141,
+     "periodo": 3737
+    }
+   },
+   "no_se_filtra": {
+    "Índice FAIR": "mide el conjunto de datos publicado, no un subconjunto del corpus.",
+    "Procedencia": "describe de dónde salió cada archivo; el recorte no cambia su origen."
+   }
+  },
+  "integrante": {
+   "entidad_id": 12,
+   "entidades": [
+    12,
+    44,
+    53,
+    54,
+    59,
+    62,
+    104,
+    112
+   ],
+   "variantes_ocr_fusionadas": 8,
+   "votos": 1083,
+   "resoluciones": 1078,
+   "causas": 1097,
+   "anio_con_mas_actuaciones": "2021"
+  },
+  "roles": [
+   {
+    "rol": "Adhesión",
+    "filas": 938
+   },
+   {
+    "rol": "Ponente",
+    "filas": 145
+   }
+  ],
+  "actuaciones_por_anio": [
+   {
+    "anio": "2018",
+    "valor": 1
+   },
+   {
+    "anio": "2020",
+    "valor": 172
+   },
+   {
+    "anio": "2021",
+    "valor": 573
+   },
+   {
+    "anio": "2022",
+    "valor": 248
+   },
+   {
+    "anio": "2023",
+    "valor": 88
+   },
+   {
+    "anio": "Sin año",
+    "valor": 1
+   }
+  ],
+  "fechado": {
+   "resoluciones_comparables": 1020,
+   "acierta_anio_de_numero": 946,
+   "acierta_anio_de_fecha": 852,
+   "testigo": "año de la carpeta en que está archivado el documento",
+   "nota": "El año del número de resolución y el año de su fecha discrepan en una de cada once resoluciones. Contrastados contra la carpeta de archivo, que no pasó por el OCR del cuerpo, el número acierta más, pero ninguno de los dos está limpio."
+  },
+  "organo": {
+   "quorum": {
+    "Completo": 707,
+    "No determinable": 28,
+    "Incompleto por extracción": 343
+   },
+   "resoluciones_con_presentes_menores_que_votos": 0
+  },
+  "trazabilidad": {
+   "votos_con_pagina": 7311,
+   "votos_sin_pagina": 1,
+   "cobertura": 0.999863,
+   "documentos_con_enlace_publico": 1034
+  },
+  "dictamenes": {
+   "documentos": 88,
+   "relaciones_derivadas": 1280,
+   "dictamenes_distintos_vinculados": 1089,
+   "por_determinacion": {
+    "Confirmada": 619,
+    "Ambigua": 398,
+    "Probable": 251,
+    "No determinable": 12
+   },
+   "concordancia": "NO_DETERMINABLE",
+   "nota_concordancia": "No se calcula una tasa global: la cardinalidad es muchos a muchos y falta extraer la recomendación del dictamen para poder compararla."
+  },
+  "metricas_indeterminables": {
+   "causas": {
+    "resuelto": {
+     "etiqueta": "YA RESUELTO",
+     "clase": "ok",
+     "nota": "Calculado en la edición vigente. Ver la pestaña «Votos y decisividad»."
+    },
+    "instrumento": {
+     "etiqueta": "MEDIRÍA LA HERRAMIENTA",
+     "clase": "warning",
+     "nota": "Se puede calcular, pero el extractor sólo reconoce ponencia, adhesión y disidencia, y «adhesión» significa acuerdo. El resultado describiría la expresión regular, no la conducta del juzgador."
+    },
+    "sin_dato": {
+     "etiqueta": "SIN DATO EN EL CORPUS",
+     "clase": "warning",
+     "nota": "El texto de las resoluciones no registra este hecho. No es que se haya perdido en la extracción: no está escrito en el documento."
+    },
+    "bloqueado": {
+     "etiqueta": "BLOQUEADO",
+     "clase": "warning",
+     "nota": "Exige saber quién podía votar, quién estaba presente y qué mayoría regía. 343 de 1.078 resoluciones con votación tienen quórum incompleto por extracción."
+    },
+    "pendiente": {
+     "etiqueta": "PENDIENTE DE TRABAJO",
+     "clase": "neutral",
+     "nota": "Hacible: el vínculo dictamen-resolución existe con determinación firme en 870 casos. Falta extraer la recomendación del dictamen para poder compararla."
+    }
+   },
+   "orden": [
+    "resuelto",
+    "pendiente",
+    "bloqueado",
+    "sin_dato",
+    "instrumento"
+   ],
+   "metricas": [
+    {
+     "metrica": "Total de votos identificables",
+     "causa": "resuelto",
+     "valor": "7.312 votos · 36 integrantes"
+    },
+    {
+     "metrica": "Votos con la mayoría",
+     "causa": "instrumento",
+     "valor": "daría 7.306"
+    },
+    {
+     "metrica": "Votos en minoría",
+     "causa": "instrumento",
+     "valor": "daría 6"
+    },
+    {
+     "metrica": "Total de disidencias",
+     "causa": "instrumento",
+     "valor": "daría 6"
+    },
+    {
+     "metrica": "Tasa de acuerdo con la mayoría",
+     "causa": "instrumento",
+     "valor": "daría 99,92%"
+    },
+    {
+     "metrica": "Tasa de disidencia",
+     "causa": "instrumento",
+     "valor": "daría 0,082%"
+    },
+    {
+     "metrica": "Total de abstenciones",
+     "causa": "sin_dato",
+     "valor": "el esquema no tiene la categoría"
+    },
+    {
+     "metrica": "Tasa de abstención",
+     "causa": "sin_dato",
+     "valor": "el esquema no tiene la categoría"
+    },
+    {
+     "metrica": "Total de ausencias",
+     "causa": "sin_dato",
+     "valor": "el texto no declara ausencias"
+    },
+    {
+     "metrica": "Total de votos decisivos",
+     "causa": "bloqueado",
+     "valor": ""
+    },
+    {
+     "metrica": "Tasa de voto decisivo",
+     "causa": "bloqueado",
+     "valor": ""
+    },
+    {
+     "metrica": "Concordancia dictamen-resolución",
+     "causa": "pendiente",
+     "valor": ""
+    }
+   ]
+  },
+  "hallazgos_verificados_por_persona": {
+   "procedencia": "Lectura manual de las resoluciones citadas durante el trabajo de análisis. No proviene de extracción automática.",
+   "casos": [
+    {
+     "tipo": "Disidencia verificada",
+     "resolucion": "AI 738/2021",
+     "causa": "94/2020",
+     "hallazgo": "Disidencia explícita verificable de Rivas: votó por el inicio del enjuiciamiento, mientras la resolución rechazó el enjuiciamiento de oficio."
+    },
+    {
+     "tipo": "Votación dividida",
+     "resolucion": "SD 35/2022",
+     "causa": "311/2021",
+     "hallazgo": "El texto registra a Rivas adhiriendo a la absolución en una votación dividida; la tabla derivada no reconstruye adecuadamente esa intervención."
+    }
+   ]
+  },
+  "decisividad": {
+   "procedencia": "Reconstrucción manual caso por caso, contrastada contra la regla de mayoría vigente en cada fecha.",
+   "casos": [
+    {
+     "resolucion": "AI 592/2021",
+     "causa": "181/2020",
+     "votos_alineados": "Al menos 7",
+     "sin_el_integrante": "Al menos 6",
+     "regla": "Ley 3759/2009: cinco votos coincidentes",
+     "clasificacion": "No decisivo"
+    },
+    {
+     "resolucion": "AI 710/2021",
+     "causa": "148/1/2016",
+     "votos_alineados": "6",
+     "sin_el_integrante": "5",
+     "regla": "Ley 3759/2009 por régimen transitorio",
+     "clasificacion": "No decisivo"
+    },
+    {
+     "resolucion": "AI 402/2022",
+     "causa": "81/2022",
+     "votos_alineados": "6",
+     "sin_el_integrante": "5",
+     "regla": "Ley 6814/2021: mayoría simple",
+     "clasificacion": "No decisivo"
+    },
+    {
+     "resolucion": "AI 5/2023",
+     "causa": "122/2022",
+     "votos_alineados": "6",
+     "sin_el_integrante": "5",
+     "regla": "Ley 6814/2021: mayoría simple",
+     "clasificacion": "No decisivo"
+    }
+   ]
+  }
  }
 }

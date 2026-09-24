@@ -16,7 +16,7 @@
       "@type": "Dataset",
       "name": "Observatorio Cívico JEM — archivo del Jurado de Enjuiciamiento de Magistrados de Paraguay",
       "description": "Capa de datos estructurados derivada del archivo público del Jurado de Enjuiciamiento de Magistrados de Paraguay, con trazabilidad hasta página y fragmento. Ninguna cifra ha sido validada por una persona: el indicador de revisión humana vale cero sobre 25.293 campos extraídos, y los datos sobre votos NO son publicables como resultado sobre la conducta de ninguna persona.",
-      "datePublished": "2026-09-23",
+      "datePublished": "2026-09-24",
       "version": "2026-08-30",
       "url": "https://abogadomau.com/",
       "author": {
@@ -71,6 +71,9 @@
         },
         {
           "@id": "data/jem-silver/2026-08-30/metrica_juez.parquet"
+        },
+        {
+          "@id": "data/jem-silver/2026-08-30/metrica_juez_periodo.parquet"
         },
         {
           "@id": "data/jem-silver/2026-08-30/procedencia.parquet"
@@ -218,7 +221,15 @@
       "name": "metrica_juez",
       "description": "",
       "encodingFormat": "application/vnd.apache.parquet",
-      "contentSize": "8741"
+      "contentSize": "9883"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/metrica_juez_periodo.parquet",
+      "@type": "File",
+      "name": "metrica_juez_periodo",
+      "description": "",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "9284"
     },
     {
       "@id": "data/jem-silver/2026-08-30/procedencia.parquet",
