@@ -42,12 +42,21 @@ Uso:
 from pathlib import Path
 import argparse, json, re, sys
 
+# Las tablas que el portal necesita para funcionar, dentro de la edición
+# vigente. Antes esta lista nombraba los parquet sueltos del pipeline anterior
+# —`document.parquet`, `party.parquet`— que vivían en la raíz de
+# `data/jem-silver/`. Exigirlos obligaba a conservar el corpus viejo al lado del
+# nuevo, que es justo lo que hacía que la primera pestaña contara 3.964
+# documentos y la siguiente 4.627.
 REQUIRED_PARQUETS = [
+    "documento.parquet",
     "causa.parquet",
-    "document.parquet",
-    "link.parquet",
-    "party.parquet",
-    "party_conflict.parquet",
+    "voto.parquet",
+    "resolucion.parquet",
+    "entidad.parquet",
+]
+REQUIRED_CATALOG = [
+    "document_public.parquet",
 ]
 REQUIRED_PAGES = [
     "index.html","caso.html","estadisticas.html",
@@ -163,22 +172,32 @@ def revisar_editions(root: Path, errores: list, avisos: list, verbose: bool):
         errores.append(f"{EDITIONS} no declara ninguna edición")
         return
 
-    # «en_uso_por_la_interfaz» puede ser una cadena o un mapa pestaña -> edición:
-    # la página consulta dos ediciones a la vez desde la Fase 2, y un solo valor
-    # no podría decirlo sin mentir.
-    for clave in ("vigente", "en_uso_por_la_interfaz"):
-        valor = cfg.get(clave)
-        if isinstance(valor, dict):
-            for panel, ed in valor.items():
-                if ed not in ediciones:
-                    errores.append(
-                        f"{EDITIONS}: «{clave}.{panel}» apunta a «{ed}», que no está declarada")
-                elif not (root / "estadisticas.html").read_text(
-                        encoding="utf-8", errors="replace").count(f'id="{panel}"'):
-                    errores.append(
-                        f"{EDITIONS}: «{clave}» declara «{panel}», que no existe en estadisticas.html")
-        elif valor and valor not in ediciones:
-            errores.append(f"{EDITIONS}: «{clave}» apunta a «{valor}», que no está declarada")
+    # El portal consulta UNA SOLA edición.
+    #
+    # Hasta el 24/09/2026 `en_uso_por_la_interfaz` era un mapa de pestaña a
+    # edición, y las pestañas heredadas apuntaban a la anterior: la primera
+    # contaba 3.964 documentos y la siguiente 4.627, sin que nada lo explicara.
+    # El mapa se eliminó, y esta comprobación impide que vuelva: repartir
+    # pestañas entre ediciones es indistinguible, para el visitante, de publicar
+    # dos cifras distintas del mismo hecho.
+    if cfg.get("en_uso_por_la_interfaz") is not None:
+        errores.append(
+            f"{EDITIONS}: «en_uso_por_la_interfaz» reparte pestañas entre ediciones. "
+            "El portal consulta una sola: la declarada en «vigente»")
+
+    vigente = cfg.get("vigente")
+    if not vigente:
+        errores.append(f"{EDITIONS}: no declara una edición «vigente»")
+    elif vigente not in ediciones:
+        errores.append(f"{EDITIONS}: «vigente» apunta a «{vigente}», que no está declarada")
+
+    # Las ediciones que no son la vigente son procedencia histórica y deben
+    # decirlo, para que nadie las tome por datos publicados.
+    for nombre, ed in ediciones.items():
+        esperado = "vigente" if nombre == vigente else "historica"
+        if ed.get("estado") != esperado:
+            errores.append(
+                f"{EDITIONS} → {nombre}: estado «{ed.get('estado')}», se esperaba «{esperado}»")
 
     for nombre, ed in ediciones.items():
         base = ed.get("base", "")
@@ -251,7 +270,10 @@ def revisar_coherencia_resumen(root: Path, errores: list, verbose: bool):
         return
 
     error_silver = resumen.get("silver_load_error")
-    silver = root / "data/jem-silver/document.parquet"
+    # El catálogo del portal sustituyó a `data/jem-silver/document.parquet`,
+    # que era del pipeline anterior. Apuntando al archivo viejo, estas dos
+    # comprobaciones se saltaban en silencio en cuanto se retiró.
+    silver = root / "data/catalog/document_public.parquet"
     if error_silver and silver.is_file():
         errores.append(
             f"{MANIFEST_SUMMARY}: dice «{error_silver}» pero el archivo existe. "
@@ -478,21 +500,47 @@ def main():
         if not (root/name).is_file():
             errors.append(f"Falta {name}")
 
-    manifest=root/"data/catalog/documents_manifest.json"
-    if not manifest.is_file():
-        errors.append("Falta data/catalog/documents_manifest.json")
+    # La edición se resuelve del propio editions.json en vez de fijarse acá:
+    # una ruta con la fecha escrita a mano caducaría en la siguiente edición y
+    # nadie se enteraría hasta que el portal dejara de encontrar sus tablas.
+    try:
+        ed = json.loads((root/"data/jem-silver/editions.json").read_text(encoding="utf-8"))
+        vigente = ed.get("vigente", "")
+    except Exception:
+        vigente = ""
+
+    # El catálogo que consume documentos.html, dentro de la edición vigente.
+    # Antes se exigía `data/catalog/documents_manifest.json`, del pipeline de
+    # agosto: 3.964 documentos, ninguno con enlace público. Era la reserva de
+    # la página, y exigirla obligaba a conservarla.
+    catalogo = root/"data/jem-silver"/vigente/"catalogo.json" if vigente else None
+    if catalogo is None or not catalogo.is_file():
+        errors.append(f"Falta el catálogo de la edición vigente: {catalogo}")
     else:
         try:
-            obj=json.loads(manifest.read_text(encoding="utf-8"))
-            docs=obj.get("documents",[])
+            obj=json.loads(catalogo.read_text(encoding="utf-8"))
+            docs=obj if isinstance(obj,list) else obj.get("documentos") or obj.get("documents") or []
             if not docs:
-                errors.append("documents_manifest.json no contiene documentos")
+                errors.append("catalogo.json no contiene documentos")
+            else:
+                sin=[d for d in docs if not (d.get("view_url") or d.get("download_url"))]
+                if sin:
+                    errors.append(
+                        f"catalogo.json: {len(sin):,} de {len(docs):,} documentos sin enlace "
+                        "público. La página los mostraría como «pendiente de sincronización»")
         except Exception as e:
-            errors.append(f"Manifest JSON inválido: {e}")
+            errors.append(f"catalogo.json inválido: {e}")
 
-    missing=[x for x in REQUIRED_PARQUETS if not (root/"data/jem-silver"/x).is_file()]
+    base_ed = root/"data/jem-silver"/vigente if vigente else root/"data/jem-silver"
+    missing=[x for x in REQUIRED_PARQUETS if not (base_ed/x).is_file()]
     if missing and not args.allow_missing_parquet:
-        errors.append("Faltan Parquet locales en data/jem-silver/: "+", ".join(missing))
+        errors.append(f"Faltan Parquet de la edición vigente en {base_ed.name}/: "
+                      +", ".join(missing))
+
+    faltan_cat=[x for x in REQUIRED_CATALOG if not (root/"data/catalog"/x).is_file()]
+    if faltan_cat and not args.allow_missing_parquet:
+        errors.append("Falta el catálogo del portal en data/catalog/: "+", ".join(faltan_cat)
+                      +". Sin él, la pestaña del corpus no tiene de dónde leer")
 
     revisar_stats_config(root, errors, avisos, args.verbose)
     revisar_editions(root, errors, avisos, args.verbose)

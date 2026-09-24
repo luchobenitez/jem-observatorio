@@ -28,32 +28,52 @@ from pathlib import Path
 CONFIG = "data/portal/stats_config.json"
 RESUMEN = "data/catalog/manifest_summary.json"
 
+# El conjunto declarado «ausente» que usan tres pruebas. Se nombra una sola vez
+# porque cambia cuando cambia lo que está pendiente: antes era «votacion», del
+# pipeline anterior, y quedó obsoleto al publicarse `voto`.
+AUSENTE = "verificacion_humana"
+
 
 # --- perturbaciones: cada una devuelve el fragmento que debe aparecer ---------
 
 def falta_un_disponible(root: Path) -> str:
-    (root / "data/jem-silver/link.parquet").unlink()
+    """Borra una tabla que el config declara disponible.
+
+    Apuntaba a `data/jem-silver/link.parquet`, un archivo suelto del pipeline
+    anterior. Al pasar el portal a una sola edición dejó de estar declarado, de
+    modo que borrarlo disparaba otro error y la prueba pasaba por el motivo
+    equivocado. Ahora se resuelve desde el config, y sigue al día solo.
+    """
+    p = root / CONFIG
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    ruta = next(v["ruta"] for v in cfg["parquet"].values()
+                if v["estado"] == "disponible")
+    (root / ruta).unlink()
     return "declara «disponible» pero no existe"
 
 
 def filas_que_no_cuadran(root: Path) -> str:
     p = root / CONFIG
     cfg = json.loads(p.read_text(encoding="utf-8"))
-    cfg["parquet"]["causa"]["filas"] = 1670          # el valor real es 1.669
+    real = cfg["parquet"]["causa"]["filas"]
+    cfg["parquet"]["causa"]["filas"] = real + 1
     p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
-    return "declara 1,670 filas"
+    return f"declara {real + 1:,} filas"
 
 
 def ausente_que_ya_existe(root: Path) -> str:
-    shutil.copy(root / "data/jem-silver/link.parquet",
-                root / "data/jem-silver/votacion.parquet")
+    p = root / CONFIG
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    destino = root / cfg["parquet"][AUSENTE]["ruta"]
+    origen = next(destino.parent.glob("*.parquet"))
+    shutil.copy(origen, destino)
     return "declara «ausente» pero"
 
 
 def ausente_sin_motivo(root: Path) -> str:
     p = root / CONFIG
     cfg = json.loads(p.read_text(encoding="utf-8"))
-    cfg["parquet"]["votacion"].pop("motivo", None)
+    cfg["parquet"][AUSENTE].pop("motivo", None)
     p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
     return "sin «motivo»"
 
@@ -61,17 +81,24 @@ def ausente_sin_motivo(root: Path) -> str:
 def resumen_que_niega_el_parquet(root: Path) -> str:
     p = root / RESUMEN
     r = json.loads(p.read_text(encoding="utf-8"))
-    r["silver_load_error"] = "no existe data/jem-silver/document.parquet"
+    r["silver_load_error"] = "no existe data/catalog/document_public.parquet"
     p.write_text(json.dumps(r, ensure_ascii=False, indent=2), encoding="utf-8")
     return "pero el archivo existe"
 
 
 def resumen_con_filas_falsas(root: Path) -> str:
+    """El resumen declara las filas del pipeline anterior.
+
+    Usaba 4.627 como «cifra del otro linaje». Al unificarse el portal sobre la
+    edición vigente, 4.627 pasó a ser la cifra correcta y la prueba dejó de
+    probar nada. Ahora usa 3.964, que es la del corpus retirado: exactamente el
+    número que reaparecería si alguien volviera a apuntar al catálogo viejo.
+    """
     p = root / RESUMEN
     r = json.loads(p.read_text(encoding="utf-8"))
-    r["silver_rows"] = 4627                          # cifra del otro linaje
+    r["silver_rows"] = 3964
     p.write_text(json.dumps(r, ensure_ascii=False, indent=2), encoding="utf-8")
-    return "declara silver_rows=4,627"
+    return "declara silver_rows=3,964"
 
 
 def html_a_un_archivo_inexistente(root: Path) -> str:
@@ -141,21 +168,38 @@ def js_a_un_id_inexistente(root: Path) -> str:
     return "#trzFragmentosQueNoExiste, que no existe"
 
 
-def panel_declarado_que_falta(root: Path) -> str:
-    """editions.json asigna edición a una pestaña que el HTML no tiene."""
+def vuelve_la_doble_edicion(root: Path) -> str:
+    """Reaparece el mapa que repartía pestañas entre dos ediciones.
+
+    Es la regresión que más caro costó encontrar: no rompe nada, no da error en
+    consola y deja al visitante con dos corpus distintos en pestañas contiguas.
+    """
     p = root / EDITIONS
     cfg = json.loads(p.read_text(encoding="utf-8"))
-    cfg["en_uso_por_la_interfaz"]["tab-inventado"] = "2026-08-30"
+    cfg["en_uso_por_la_interfaz"] = {"tab-documental": "2026-08-24",
+                                     "tab-fair": "2026-08-30"}
     p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
-    return "tab-inventado"
+    return "reparte pestañas entre ediciones"
 
 
-def panel_con_edicion_inexistente(root: Path) -> str:
+def vigente_que_no_existe(root: Path) -> str:
     p = root / EDITIONS
     cfg = json.loads(p.read_text(encoding="utf-8"))
-    cfg["en_uso_por_la_interfaz"]["tab-fair"] = "2025-01-01"
+    cfg["vigente"] = "2025-01-01"
     p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
-    return "tab-fair» apunta a «2025-01-01"
+    return "apunta a «2025-01-01»"
+
+
+def historica_sin_rotular(root: Path) -> str:
+    """Una edición anterior que no se declara histórica se lee como publicada."""
+    p = root / EDITIONS
+    cfg = json.loads(p.read_text(encoding="utf-8"))
+    for nombre, ed in cfg["ediciones"].items():
+        if nombre != cfg["vigente"]:
+            ed["estado"] = "vigente"
+            break
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    return "se esperaba «historica»"
 
 
 def div_sobrante(root: Path) -> str:
@@ -294,8 +338,9 @@ PRUEBAS = [
     ("un Parquet alterado tras publicarse",      parquet_alterado),
     ("«vigente» nombra una edición inexistente", vigente_inexistente),
     ("el JS escribe en un id inexistente",       js_a_un_id_inexistente),
-    ("se declara una pestaña que no existe",     panel_declarado_que_falta),
-    ("una pestaña con edición inexistente",      panel_con_edicion_inexistente),
+    ("vuelve el reparto por pestañas",           vuelve_la_doble_edicion),
+    ("la edición vigente no existe",             vigente_que_no_existe),
+    ("una edición anterior sin rotular",         historica_sin_rotular),
     ("un </div> sobrante en el HTML",            div_sobrante),
     ("un <div> que no se cierra",                div_sin_cerrar),
     ("el índice sin parámetro de puntuación",    indice_sin_parametros),

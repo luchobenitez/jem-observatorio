@@ -1,204 +1,241 @@
+// Pinta la pestaña de actuaciones y calidad desde el análisis consolidado.
+//
+// Antes leía `rivas_jem_20260824.json`, el informe del 24 de agosto, con su
+// propio corpus de 3.964 documentos y 8.355 votos, mientras el resto del sitio
+// consultaba la edición vigente con 4.627 y 9.956. Dos análisis del mismo hecho
+// en la misma pantalla.
+//
+// Ahora lee `analisis-vigente.json`, calculado desde el mismo Parquet que
+// consulta DuckDB-WASM en las demás pestañas. Una sola cifra por hecho.
 (() => {
   const P = window.PortalStats || {};
-  const $ = P.$ || ((s) => document.querySelector(s));
   const esc = P.esc || ((s) => String(s ?? ''));
   const chart = P.chart || (() => {});
   const n = (v) => Number(v || 0).toLocaleString('es-PY');
+  const pct = (v) => (Number(v || 0) * 100).toLocaleString('es-PY',
+    { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' %';
 
   function setText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value;
   }
 
-  function statusClass(value) {
-    if (String(value).includes('NO_DETERMINABLE')) return 'nd-chip';
-    return 'status-badge neutral';
+  const ESTADO = {
+    RESUELTO:      { etiqueta: 'Resuelto',       clase: 'ok' },
+    MEJORADO:      { etiqueta: 'Mejorado',       clase: 'neutral' },
+    VIGENTE:       { etiqueta: 'Sigue vigente',  clase: 'warning' },
+    NO_LOCALIZADA: { etiqueta: 'No localizada',  clase: 'neutral' }
+  };
+
+  // Pinta la cola de revisión traducida y contrastada.
+  //
+  // Esta función faltaba. El commit que tradujo la cola añadió la llamada y no
+  // el cuerpo, de modo que `pintarCola` lanzaba ReferenceError, la promesa se
+  // rechazaba y el `.catch()` pintaba la reserva en inglés. El resultado es que
+  // la traducción nunca llegó a verse: el sitio publicado mostraba
+  // `SYSTEMIC_TRACEABILITY_FAILURE` en una página en castellano, y los cuatro
+  // contadores de arriba se quedaban en «—».
+  function pintarCola(datos, tbody) {
+    const inc = datos.incidencias || [];
+    const r = datos.resumen || {};
+    setText('colaResuelto', r.RESUELTO || 0);
+    setText('colaMejorado', r.MEJORADO || 0);
+    setText('colaVigente', r.VIGENTE || 0);
+    setText('colaNoLoc', r.NO_LOCALIZADA || 0);
+
+    // Las 40 decisiones cuyo texto expresa disidencia sin que se extrajera
+    // ninguna. Es el hallazgo más revelador de la cola, y el conteo se deriva
+    // de los datos en vez de escribirse a mano.
+    const disidencia = inc.filter(x => /isidencia/.test(x.categoria || ''));
+    const resueltas = disidencia.filter(x => x.estado !== 'VIGENTE').length;
+    setText('colaDisResueltas', resueltas);
+    setText('colaDisVigentes', disidencia.length - resueltas);
+
+    const selEstado = document.getElementById('colaEstado');
+    const selPrio = document.getElementById('colaPrioridad');
+
+    function render() {
+      const e = selEstado?.value || '';
+      const p = selPrio?.value || '';
+      // Se filtra por la prioridad en castellano, no por el código original
+      // en inglés. El `<option value="P0_BLOCKER">` obligaba a que esas
+      // cadenas vivieran en el HTML de una página en castellano, y el JSON ya
+      // trae las dos: el código queda como procedencia en el archivo, no en
+      // la interfaz.
+      const filas = inc.filter(x => (!e || x.estado === e)
+                                 && (!p || x.prioridad === p));
+      if (!filas.length) {
+        tbody.innerHTML = '<tr><td colspan="5">Ninguna incidencia con ese filtro.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = filas.map(x => {
+        const s = ESTADO[x.estado] || { etiqueta: x.estado, clase: 'neutral' };
+        return `<tr>
+          <td><span class="status-badge ${s.clase}">${esc(s.etiqueta)}</span></td>
+          <td><span class="priority-chip">${esc(x.prioridad)}</span></td>
+          <td><strong>${esc(x.categoria)}</strong><small>${esc(x.motivo || '')}</small></td>
+          <td>${esc(x.causa || '—')}</td>
+          <td>${esc(x.comprobacion || '—')}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    [selEstado, selPrio].forEach(el => el && el.addEventListener('change', render));
+    render();
   }
 
   async function load() {
     const base = window.PORTAL_CONFIG?.analysisBase || 'data/analysis/';
-    const response = await fetch(base + 'rivas_jem_20260824.json');
+    const response = await fetch(base + 'analisis-vigente.json');
     if (!response.ok) throw new Error('HTTP ' + response.status);
     const d = await response.json();
 
-    setText('indStatus', d.metadata.status.replaceAll('_', ' '));
-    setText('indNote', d.metadata.note);
+    // El estado ya no es una etiqueta heredada del informe: se deriva de lo
+    // que de verdad limita al corpus hoy, que es la verificación humana.
+    setText('indStatus', 'Sin verificación humana');
+    setText('indNote', d.nota);
 
-    setText('indActions', n(d.rivas.action_rows));
-    setText('indCases', n(d.rivas.distinct_valid_case_ids));
-    setText('indTurns', n(d.vote_extraction.decisions_with_explicit_rivas_speaking_turn));
-    setText('indDissents', '≥ ' + n(d.rivas.verified_explicit_dissents_minimum));
+    const ponencias = (d.roles.find(x => x.rol === 'Ponente') || {}).filas || 0;
+    setText('indActions', n(d.integrante.votos));
+    setText('indCases', n(d.integrante.causas));
+    setText('indPonencias', n(ponencias));
+    setText('indVariantes', n(d.integrante.variantes_ocr_fusionadas));
 
     chart('chartRivasRoles', {
-      title: { text: 'Roles derivados de Rivas', left: 'center' },
+      title: { text: 'Cómo se registró cada actuación', left: 'center' },
       tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
       legend: { type: 'scroll', bottom: 0 },
       series: [{
         type: 'pie',
         radius: ['38%', '68%'],
         center: ['50%', '46%'],
-        data: d.roles.map(x => ({ name: x.role, value: x.rows }))
+        data: d.roles.map(x => ({ name: x.rol, value: x.filas }))
       }]
     });
 
     chart('chartRivasYears', {
-      title: { text: 'Actuaciones derivadas por año', left: 'center' },
+      title: { text: 'Actuaciones por año', left: 'center' },
       tooltip: { trigger: 'axis' },
-      xAxis: { type: 'category', data: d.rivas_actions_by_year.map(x => x.year) },
+      xAxis: { type: 'category', data: d.actuaciones_por_anio.map(x => x.anio) },
       yAxis: { type: 'value' },
-      series: [{ type: 'bar', data: d.rivas_actions_by_year.map(x => x.value) }]
+      series: [{ type: 'bar', data: d.actuaciones_por_anio.map(x => x.valor) }]
     });
 
-    chart('chartVoteCoverage', {
-      title: { text: 'Turnos explícitos de Rivas vs tabla votes', left: 'center' },
-      tooltip: { trigger: 'item' },
+    // Fiabilidad del fechado. Sustituye al gráfico que comparaba los turnos
+    // textuales del informe de agosto con su tabla de votos: esa brecha era un
+    // defecto del pipeline anterior y hoy no existe, de modo que el gráfico
+    // sólo podía mostrar un 100 % sin contenido.
+    const f = d.fechado;
+    chart('chartFechado', {
+      title: { text: 'Qué campo fecha mejor una resolución', left: 'center' },
+      tooltip: { trigger: 'axis' },
+      xAxis: { type: 'category', data: ['Año del número', 'Año de la fecha'] },
+      yAxis: { type: 'value', max: f.resoluciones_comparables },
       series: [{
-        type: 'pie',
-        radius: ['42%', '72%'],
-        data: [
-          { name: 'Con fila de voto', value: d.vote_extraction.explicit_rivas_turns_with_vote_row },
-          { name: 'Sin fila de voto', value: d.vote_extraction.explicit_rivas_turns_without_vote_row }
-        ]
+        type: 'bar',
+        data: [f.acierta_anio_de_numero, f.acierta_anio_de_fecha],
+        label: { show: true, position: 'top',
+                 formatter: (x) => pct(x.value / f.resoluciones_comparables) }
       }]
     });
+    setText('fecComparables', n(f.resoluciones_comparables));
+    setText('fecNumero', pct(f.acierta_anio_de_numero / f.resoluciones_comparables));
+    setText('fecFecha', pct(f.acierta_anio_de_fecha / f.resoluciones_comparables));
+    setText('fecTestigo', f.testigo);
 
-    setText('indVoteRows', n(d.corpus.vote_rows));
-    setText('indDissentLanguage', n(d.vote_extraction.decisions_with_dissent_language));
-    setText('indTurnsCovered', n(d.vote_extraction.explicit_rivas_turns_with_vote_row));
-    setText('indTurnsMissing', n(d.vote_extraction.explicit_rivas_turns_without_vote_row));
+    setText('qMissingCase', n(d.corpus.documentos_sin_causa));
+    setText('qOrganMismatch', n(d.organo.resoluciones_con_presentes_menores_que_votos));
+    setText('qQuorum', n(d.organo.quorum['Incompleto por extracción'] || 0));
+    setText('qEvidencePath', n(d.trazabilidad.votos_sin_pagina));
 
-    setText('qMissingCase', n(d.corpus.documents_without_valid_case));
-    setText('qOrganMismatch', n(d.organ_and_quorum.decisions_with_present_members_below_votes_cast));
-    setText('qQuorum', n(d.organ_and_quorum.decisions_marked_quorum_invalid));
-    setText('qEvidencePath', n(d.traceability.evidence_spans_without_file_path));
+    setText('dictTotal', n(d.dictamenes.documentos));
+    setText('dictLinks', n(d.dictamenes.relaciones_derivadas));
+    setText('dictLinked', n(d.dictamenes.dictamenes_distintos_vinculados));
+    setText('dictSinCorresp', n(d.dictamenes.por_determinacion['Sin correspondencia'] || 0));
+    setText('dictNota', d.dictamenes.nota_concordancia);
 
-    setText('dictTotal', n(d.dictamenes.total));
-    setText('dictLinks', n(d.dictamenes.link_rows));
-    setText('dictLinked', n(d.dictamenes.distinct_dictamenes_linked));
-    setText('dictTemporalFail', n(d.dictamenes.links_failing_strict_temporal_or_date_control));
-
-    chart('chartDictamenRecommendations', {
-      title: { text: 'Recomendación normalizada en dictámenes', left: 'center' },
-      tooltip: { trigger: 'item' },
+    chart('chartDictamenDeterminacion', {
+      title: { text: 'Firmeza del vínculo dictamen–resolución', left: 'center' },
+      tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
       legend: { type: 'scroll', bottom: 0 },
       series: [{
         type: 'pie',
         radius: ['38%', '68%'],
         center: ['50%', '46%'],
-        data: d.dictamenes.recommendations.map(x => ({name:x.label, value:x.value}))
+        data: Object.entries(d.dictamenes.por_determinacion)
+          .map(([k, v]) => ({ name: k, value: v }))
       }]
     });
 
-    // Las doce métricas del informe de agosto venían bajo una sola etiqueta,
-    // como si fallaran por el mismo motivo. Se clasifican por CAUSA, porque
-    // «no calculable» y «no calculado todavía» son cosas distintas y sólo una
-    // de las dos es un límite del corpus.
-    //
-    // Contrastado contra la edición vigente el 23/09/2026: una ya está
-    // resuelta —y de hecho se publica en la pestaña de Votos, de modo que el
-    // panel se contradecía con el resto del sitio—.
-    const MOTIVO = {
-      resuelto: {
-        etiqueta: 'YA RESUELTO', clase: 'ok',
-        nota: 'Calculado en la edición vigente. Ver la pestaña «Votos y decisividad».'
-      },
-      instrumento: {
-        etiqueta: 'MEDIRÍA LA HERRAMIENTA', clase: 'warning',
-        nota: 'Se puede calcular, pero el extractor sólo reconoce ponencia, adhesión y '
-            + 'disidencia, y «adhesión» significa acuerdo. El resultado describiría la '
-            + 'expresión regular, no la conducta del juzgador.'
-      },
-      sin_dato: {
-        etiqueta: 'SIN DATO EN EL CORPUS', clase: 'warning',
-        nota: 'El texto de las resoluciones no registra este hecho. No es que se haya '
-            + 'perdido en la extracción: no está escrito en el documento.'
-      },
-      bloqueado: {
-        etiqueta: 'BLOQUEADO', clase: 'warning',
-        nota: 'Exige saber quién podía votar, quién estaba presente y qué mayoría regía. '
-            + '655 de 1.670 resoluciones tienen quórum incompleto por extracción.'
-      },
-      pendiente: {
-        etiqueta: 'PENDIENTE DE TRABAJO', clase: 'neutral',
-        nota: 'Hacible: el vínculo dictamen-resolución existe en 1.202 casos. Falta '
-            + 'extraer la recomendación del dictamen para poder compararla.'
-      }
-    };
-    const CLASIFICACION = {
-      'total_votos_identificables': ['resuelto', '9.956 votos · 110 integrantes'],
-      'total_votos_mayoria': ['instrumento', 'daría 9.949'],
-      'total_votos_minoria': ['instrumento', 'daría 7'],
-      'total_disidencias (mínimo verificado: 1)': ['instrumento', 'daría 7'],
-      'agreement_with_majority_rate': ['instrumento', 'daría 99,93 %'],
-      'dissent_rate': ['instrumento', 'daría 0,070 %'],
-      'total_abstenciones': ['sin_dato', 'el esquema no tiene la categoría'],
-      'abstention_rate': ['sin_dato', 'el esquema no tiene la categoría'],
-      'total_ausencias': ['sin_dato', 'el texto no declara ausencias'],
-      'total_votos_pivotal': ['bloqueado', ''],
-      'pivotal_vote_rate': ['bloqueado', ''],
-      'concordance_rate dictamen-resolución': ['pendiente', '']
-    };
-    const ORDEN = ['resuelto', 'pendiente', 'bloqueado', 'sin_dato', 'instrumento'];
-
+    // Las doce métricas que el portal mostraba bajo una sola etiqueta,
+    // `NO_DETERMINABLE`, como si todas fallaran por el mismo motivo. Se
+    // agrupan por CAUSA, porque «no calculable» y «no calculado todavía» no
+    // son lo mismo. La clasificación y los valores vienen ya calculados en el
+    // JSON: antes estaban fijos aquí y habían envejecido —decían «110
+    // integrantes» cuando tras la fusión son 50—.
     const nd = document.getElementById('ndMetrics');
-    if (nd) {
-      const metricas = d.non_determinable_metrics.slice()
-        .sort((a, b) => ORDEN.indexOf((CLASIFICACION[a] || ['instrumento'])[0])
-                      - ORDEN.indexOf((CLASIFICACION[b] || ['instrumento'])[0]));
+    if (nd && d.metricas_indeterminables) {
+      const { causas, orden, metricas } = d.metricas_indeterminables;
+      const ordenadas = metricas.slice()
+        .sort((a, b) => orden.indexOf(a.causa) - orden.indexOf(b.causa));
       let ultimo = null;
-      nd.innerHTML = metricas.map(x => {
-        const [clave, valor] = CLASIFICACION[x] || ['instrumento', ''];
-        const m = MOTIVO[clave];
-        const cabecera = clave !== ultimo
-          ? `<div class="nd-group"><span class="status-badge ${m.clase}">${m.etiqueta}</span>
-             <p>${esc(m.nota)}</p></div>` : '';
-        ultimo = clave;
-        return cabecera + `<div class="nd-card"><span>${esc(x)}</span>
-          <strong>${valor ? esc(valor) : 'NO_DETERMINABLE'}</strong></div>`;
+      nd.innerHTML = ordenadas.map(x => {
+        const c = causas[x.causa];
+        const cabecera = x.causa !== ultimo
+          ? `<div class="nd-group"><span class="status-badge ${c.clase}">${esc(c.etiqueta)}</span>
+             <p>${esc(c.nota)}</p></div>` : '';
+        ultimo = x.causa;
+        return cabecera + `<div class="nd-card"><span>${esc(x.metrica)}</span>
+          <strong>${x.valor ? esc(x.valor) : 'NO_DETERMINABLE'}</strong></div>`;
       }).join('');
     }
 
-    // La cola auditada sustituye a la original: traducida y contrastada contra
-    // la edición vigente. Si no estuviera, se cae a la original para no dejar
-    // la sección vacía.
+    // La cola de revisión traducida y contrastada. Ya no hay reserva en
+    // inglés: el archivo original en inglés sigue descargable como fuente
+    // primaria, pero no se pinta. Si esto falla, se dice que falló en vez de
+    // rellenar la tabla con texto que el visitante no puede leer.
     const review = document.getElementById('reviewRows');
     if (review) {
-      fetch('data/analysis/cola-revision-auditada.json')
-        .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      fetch(base + 'cola-revision-auditada.json')
+        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(a => pintarCola(a, review))
-        .catch(() => {
-          review.innerHTML = d.review_queue.filter(x =>
-            String(x.priority).startsWith('P0')).slice(0, 12).map(x => `<tr>
-            <td>—</td><td><span class="priority-chip">${esc(x.priority)}</span></td>
-            <td>${esc(x.category)}</td><td>${esc(x.case_id || '—')}</td>
-            <td>${esc(x.risk_reason || '—')}</td></tr>`).join('');
+        .catch(e => {
+          review.innerHTML = `<tr><td colspan="5">No se pudo cargar la cola de
+            revisión: ${esc(e.message)}</td></tr>`;
         });
     }
 
-    const diss = d.verified_cases.dissent;
-    setText('dissentDecision', `${diss.decision} · causa ${diss.case_id}`);
-    setText('dissentFinding', diss.finding);
-
-    const split = d.verified_cases.split_vote;
-    setText('splitDecision', `${split.decision} · causa ${split.case_id}`);
-    setText('splitFinding', split.finding);
+    // Lo único del corpus que verificó una persona leyendo las resoluciones.
+    const hv = d.hallazgos_verificados_por_persona.casos;
+    const dis = hv.find(x => x.tipo === 'Disidencia verificada');
+    const div = hv.find(x => x.tipo === 'Votación dividida');
+    if (dis) {
+      setText('dissentDecision', `${dis.resolucion} · causa ${dis.causa}`);
+      setText('dissentFinding', dis.hallazgo);
+    }
+    if (div) {
+      setText('splitDecision', `${div.resolucion} · causa ${div.causa}`);
+      setText('splitFinding', div.hallazgo);
+    }
+    setText('hvProcedencia', d.hallazgos_verificados_por_persona.procedencia);
 
     const dec = document.getElementById('decisivenessRows');
     if (dec) {
-      dec.innerHTML = d.decisiveness_cases.map(x => `<tr>
-        <td>${esc(x.decision)}</td>
-        <td>${esc(x.case_id)}</td>
-        <td>${esc(x.aligned_votes)}</td>
-        <td>${esc(x.without_rivas)}</td>
-        <td>${esc(x.rule)}</td>
-        <td><span class="status-badge ok">${esc(x.classification)}</span></td>
+      dec.innerHTML = d.decisividad.casos.map(x => `<tr>
+        <td>${esc(x.resolucion)}</td>
+        <td>${esc(x.causa)}</td>
+        <td>${esc(x.votos_alineados)}</td>
+        <td>${esc(x.sin_el_integrante)}</td>
+        <td>${esc(x.regla)}</td>
+        <td><span class="status-badge ok">${esc(x.clasificacion)}</span></td>
       </tr>`).join('');
     }
+    setText('decProcedencia', d.decisividad.procedencia);
   }
 
   load().catch(err => {
-    console.error('No se pudo cargar el informe independiente:', err);
-    setText('indStatus', 'ERROR CARGANDO INFORME');
-    setText('indNote', 'No se pudo abrir data/analysis/rivas_jem_20260824.json');
+    console.error('No se pudo cargar el análisis consolidado:', err);
+    setText('indStatus', 'ERROR CARGANDO EL ANÁLISIS');
+    setText('indNote', 'No se pudo abrir data/analysis/analisis-vigente.json');
   });
 })();

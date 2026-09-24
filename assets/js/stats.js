@@ -3,12 +3,29 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const state = { docs: [], causes: [], sourceChartsLoaded: false };
 
-  document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => {
+  function irA(nombre) {
+    const boton = document.querySelector(`.tab[data-tab="${nombre}"]`);
+    if (!boton) return false;
     document.querySelectorAll('.tab,.tab-panel').forEach((x) => x.classList.remove('active'));
-    b.classList.add('active');
-    $('#tab-' + b.dataset.tab)?.classList.add('active');
+    boton.classList.add('active');
+    $('#tab-' + nombre)?.classList.add('active');
     setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
-  }));
+    return true;
+  }
+
+  document.querySelectorAll('.tab').forEach((b) =>
+    b.addEventListener('click', () => irA(b.dataset.tab)));
+
+  // Enlaces dentro del contenido que saltan a otra pestaña, para poder derivar
+  // al visitante a la herramienta correcta —del filtro de metadatos al índice
+  // BM25— en vez de dejarlo creyendo que buscó en el texto.
+  document.querySelectorAll('[data-ir-a]').forEach((a) =>
+    a.addEventListener('click', (e) => {
+      if (irA(a.dataset.irA)) {
+        e.preventDefault();
+        document.querySelector('.stats-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }));
 
   function chart(id, opt) {
     const el = document.getElementById(id);

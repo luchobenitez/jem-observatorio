@@ -37,7 +37,7 @@
 <header class="page-header">
 <p class="eyebrow">Análisis reproducible y límites explícitos</p>
 <h1>Estadísticas y explorador documental</h1>
-<p>El portal separa el corpus documental, los datos editoriales del caso y un informe empírico independiente sobre las actuaciones de Hernán Rivas. Las métricas que el informe no puede establecer con rigor se muestran como <code>NO_DETERMINABLE</code>, no como cero.</p>
+<p>El portal separa el corpus documental, los datos editoriales del caso y el recuento empírico sobre las actuaciones de Hernán Rivas. Todo sale de la misma edición de datos. Las métricas que no se pueden establecer con rigor se muestran como <code>NO_DETERMINABLE</code>, no como cero.</p>
 <div id="engineStatus" class="status-pill">Inicializando…</div>
 <div id="edicionEstado" class="status-pill">Edición: comprobando…</div>
 </header>
@@ -58,7 +58,7 @@ sobre la conducta de ninguna persona. Lo que no puede determinarse aparece como
 <div class="stats-tabs">
 <button class="tab active" data-tab="documental">Corpus documental</button>
 <button class="tab" data-tab="rivas">Datos del caso</button>
-<button class="tab" data-tab="independiente">Informe independiente</button>
+<button class="tab" data-tab="independiente">Actuaciones y calidad</button>
 <button class="tab" data-tab="votaciones">Votos y decisividad</button>
 <button class="tab" data-tab="trazabilidad">Trazabilidad</button>
 <button class="tab" data-tab="quorum">Quórum y decisión</button>
@@ -76,7 +76,8 @@ sobre la conducta de ninguna persona. Lo que no puede determinarse aparece como
 </div>
 <div class="chart-grid"><div id="chartTypes" class="chart"></div><div id="chartYears" class="chart"></div></div>
 <div class="search-panel">
-<div class="filter-row"><input id="docSearch" type="search" placeholder="Ej.: Hernán Rivas, recusación, desempate…"><select id="yearFilter"><option value="">Todos los años</option></select><select id="typeFilter"><option value="">Todos los tipos</option></select></div>
+<div class="filter-row"><input id="docSearch" type="search" placeholder="Buscar por carátula o nombre de archivo…"><select id="yearFilter"><option value="">Todos los años</option></select><select id="typeFilter"><option value="">Todos los tipos</option></select></div>
+<p class="data-note">Este buscador filtra <strong>metadatos</strong>: carátula, nombre de archivo y número de causa. Para buscar dentro del texto de los documentos, usá la pestaña <a href="#" data-ir-a="busqueda">Buscar en el texto</a>, que consulta un índice BM25 sobre el corpus completo.</p>
 <p class="hint">Hasta 100 coincidencias. Cuando están publicados los Parquet de JEM Silver, DuckDB-WASM consulta el corpus directamente en el navegador.</p>
 <div class="table-wrap"><table><thead><tr><th>Año</th><th>Tipo</th><th>Carátula</th><th>Fragmento OCR</th><th>Calidad</th><th>Documento</th></tr></thead><tbody id="docRows"></tbody></table></div>
 </div>
@@ -90,27 +91,26 @@ sobre la conducta de ninguna persona. Lo que no puede determinarse aparece como
 <div class="kpi"><span>Módulos narrativos</span><strong>8</strong></div>
 </div>
 <div class="chart-grid"><div id="chartSourceDomains" class="chart"></div><div id="chartSourceYears" class="chart"></div></div>
-<div class="data-note">Estas métricas proceden del documento base del portal y su listado de fuentes. Son una capa editorial distinta del informe empírico independiente.</div>
+<div class="data-note">Estas métricas proceden del documento base del portal y su listado de fuentes. Son una capa editorial, distinta del recuento sobre el corpus.</div>
 </div>
 
 <div id="tab-independiente" class="tab-panel">
 <div class="report-banner">
 <div>
 <span class="status-badge warning" id="indStatus">Cargando análisis…</span>
-<h2>Informe empírico independiente · 24/08/2026</h2>
-<p id="indNote">El panel conserva los límites del informe fuente.</p>
+<h2>Actuaciones del integrante y calidad del corpus</h2>
+<p id="indNote">Calculado desde la edición vigente.</p>
 </div>
 <div class="report-links">
-<a href="data/analysis/rivas_jem_20260824.json">Datos del análisis (JSON)</a>
-<a href="data/analysis/review_queue.csv">Cola de revisión (CSV)</a>
+<a href="data/analysis/analisis-vigente.json">Datos del análisis (JSON)</a>
 </div>
 </div>
 
 <div class="kpi-grid">
-<div class="kpi"><span>Actuaciones derivadas de Rivas</span><strong id="indActions">—</strong></div>
-<div class="kpi"><span>Casos válidos distintos</span><strong id="indCases">—</strong></div>
-<div class="kpi"><span>Turnos explícitos “Rivas dijo”</span><strong id="indTurns">—</strong></div>
-<div class="kpi"><span>Disidencias verificadas mínimas</span><strong id="indDissents">—</strong></div>
+<div class="kpi"><span>Actuaciones registradas</span><strong id="indActions">—</strong></div>
+<div class="kpi"><span>Causas en que participó</span><strong id="indCases">—</strong></div>
+<div class="kpi"><span>Ponencias</span><strong id="indPonencias">—</strong></div>
+<div class="kpi"><span>Variantes de OCR fusionadas</span><strong id="indVariantes">—</strong></div>
 </div>
 
 <div class="chart-grid">
@@ -119,16 +119,20 @@ sobre la conducta de ninguna persona. Lo que no puede determinarse aparece como
 </div>
 
 <div class="section-subhead">
-<h2>Cobertura de extracción de votos</h2>
-<p>El informe compara los turnos textuales explícitos de Rivas con las filas derivadas de la tabla de votos.</p>
+<h2>Qué campo fecha mejor una resolución</h2>
+<p>Cada resolución trae dos opiniones sobre su año: la del número —«AI 175/2021»—
+y la de su fecha. Discrepan en una de cada once, así que hace falta un tercero
+para saber cuál creer: el año de la carpeta donde está archivado el PDF, que no
+pasó por el OCR del cuerpo. <strong>Ninguno de los dos está limpio</strong>, y de
+esa diferencia depende cualquier análisis por período.</p>
 </div>
 <div class="chart-grid">
-<div id="chartVoteCoverage" class="chart"></div>
+<div id="chartFechado" class="chart"></div>
 <div class="metric-panel">
-<div class="metric-row"><span>Filas de votos del corpus</span><strong id="indVoteRows">—</strong></div>
-<div class="metric-row"><span>Decisiones con lenguaje de disidencia</span><strong id="indDissentLanguage">—</strong></div>
-<div class="metric-row"><span>Turnos explícitos con fila de voto</span><strong id="indTurnsCovered">—</strong></div>
-<div class="metric-row critical"><span>Turnos explícitos sin fila de voto</span><strong id="indTurnsMissing">—</strong></div>
+<div class="metric-row"><span>Resoluciones comparables</span><strong id="fecComparables">—</strong></div>
+<div class="metric-row"><span>Acierta el año del número</span><strong id="fecNumero">—</strong></div>
+<div class="metric-row critical"><span>Acierta el año de la fecha</span><strong id="fecFecha">—</strong></div>
+<div class="metric-row"><span>Contrastado contra</span><strong id="fecTestigo">—</strong></div>
 </div>
 </div>
 
@@ -137,33 +141,33 @@ sobre la conducta de ninguna persona. Lo que no puede determinarse aparece como
 <p>Estos indicadores son alertas sobre los artefactos derivados; no son resultados jurídicos.</p>
 </div>
 <div class="finding-grid">
-<div class="finding-card"><span>Documentos sin caso válido</span><strong id="qMissingCase">—</strong><small>case_id = None en el snapshot examinado</small></div>
-<div class="finding-card"><span>Decisiones con presentes &lt; votos emitidos</span><strong id="qOrganMismatch">—</strong><small>requieren reconstrucción de integración</small></div>
-<div class="finding-card"><span>Decisiones marcadas quórum inválido</span><strong id="qQuorum">—</strong><small>sobre 1.853 decisiones firmadas</small></div>
-<div class="finding-card"><span>Spans probatorios sin ruta</span><strong id="qEvidencePath">—</strong><small>limitación del snapshot analítico</small></div>
+<div class="finding-card"><span>Documentos sin causa vinculada</span><strong id="qMissingCase">—</strong><small>no se les pudo asociar ningún expediente</small></div>
+<div class="finding-card"><span>Resoluciones con presentes &lt; votos</span><strong id="qOrganMismatch">—</strong><small>era un defecto del pipeline anterior</small></div>
+<div class="finding-card"><span>Resoluciones con quórum incompleto</span><strong id="qQuorum">—</strong><small>por extracción, no por el órgano</small></div>
+<div class="finding-card"><span>Votos sin página de origen</span><strong id="qEvidencePath">—</strong><small>el resto es citable hasta la página</small></div>
 </div>
 
 <div class="section-subhead">
 <h2>Dictámenes y resoluciones</h2>
 </div>
 <div class="kpi-grid">
-<div class="kpi"><span>Dictámenes</span><strong id="dictTotal">—</strong></div>
+<div class="kpi"><span>Documentos de dictamen</span><strong id="dictTotal">—</strong></div>
 <div class="kpi"><span>Relaciones derivadas</span><strong id="dictLinks">—</strong></div>
 <div class="kpi"><span>Dictámenes vinculados distintos</span><strong id="dictLinked">—</strong></div>
-<div class="kpi"><span>Relaciones que fallan control estricto</span><strong id="dictTemporalFail">—</strong></div>
+<div class="kpi"><span>Relaciones sin correspondencia</span><strong id="dictSinCorresp">—</strong></div>
 </div>
 <div class="chart-grid">
-<div id="chartDictamenRecommendations" class="chart"></div>
+<div id="chartDictamenDeterminacion" class="chart"></div>
 <div class="metric-panel">
 <h3>Concordancia jurídica</h3>
 <div class="nd-value">NO_DETERMINABLE</div>
-<p>El informe no considera válido calcular una tasa global por la cardinalidad muchos-a-muchos, problemas temporales y falta de trazabilidad integral.</p>
+<p id="dictNota">—</p>
 </div>
 </div>
 
 <div class="section-subhead">
 <h2>Por qué doce métricas siguen sin calcularse</h2>
-<p>El informe de agosto las agrupaba bajo una sola etiqueta, <code>NO_DETERMINABLE</code>,
+<p>El portal las agrupaba bajo una sola etiqueta, <code>NO_DETERMINABLE</code>,
 como si todas fallaran por el mismo motivo. No es así, y la diferencia importa: una ya
 está resuelta, cinco se pueden calcular pero medirían la herramienta en vez de al juez,
 tres no tienen ningún dato detrás, dos están bloqueadas y una sólo espera trabajo.
@@ -179,7 +183,7 @@ diseñada y sin ejecutar.
 
 <div class="section-subhead">
 <h2>Prioridades de revisión, contrastadas</h2>
-<p>El informe de agosto enumeró 53 problemas. Se muestran <strong>traducidos y
+<p>La auditoría del archivo enumeró 53 problemas. Se muestran <strong>traducidos y
 comprobados uno a uno contra la edición vigente</strong>, porque no todos siguen
 ocurriendo: mostrarlos sin contrastar exageraría el estado actual del archivo, y
 borrar los resueltos ocultaría que ocurrieron.</p>
@@ -196,24 +200,25 @@ borrar los resueltos ocultaría que ocurrieron.</p>
 <option value="VIGENTE">Sólo los que siguen vigentes</option>
 <option value="RESUELTO">Sólo los resueltos</option>
 <option value="MEJORADO">Sólo los mejorados</option>
+<option value="NO_LOCALIZADA">Sólo los no localizados</option>
 </select>
 <select id="colaPrioridad">
 <option value="">Todas las prioridades</option>
-<option value="P0_BLOCKER">Bloqueantes</option>
-<option value="P0_CRITICAL">Críticos</option>
-<option value="P1_URGENT">Urgentes</option>
-<option value="P2_HIGH">Altos</option>
+<option value="Bloqueante">Bloqueantes</option>
+<option value="Crítico">Críticos</option>
+<option value="Urgente">Urgentes</option>
+<option value="Alto">Altos</option>
 </select>
 </div>
 <div class="table-wrap">
-<table><thead><tr><th>Estado</th><th>Prioridad</th><th>Qué señaló el informe</th>
+<table><thead><tr><th>Estado</th><th>Prioridad</th><th>Qué se señaló</th>
 <th>Causa</th><th>Comprobación contra la edición vigente</th></tr></thead>
 <tbody id="reviewRows"></tbody></table>
 </div>
 <div class="data-note">
 <strong>Los seis bloqueantes eran fallos sistémicos del pipeline anterior.</strong>
 Tres están resueltos —trazabilidad, enlace al archivo original y reproducibilidad— y
-tres mejoraron sin cerrarse. El más revelador: el informe halló 40 decisiones cuyo
+tres mejoraron sin cerrarse. El más revelador: se hallaron 40 decisiones cuyo
 texto expresa disidencia sin que se extrajera ninguna. Hoy se extrae en
 <strong id="colaDisResueltas">—</strong> de ellas y faltan
 <strong id="colaDisVigentes">—</strong>. Ese es el margen que la revisión humana debe
@@ -223,7 +228,7 @@ dirimir, y la razón por la que la tasa de disidencia sigue sin publicarse.
 
 <div id="tab-votaciones" class="tab-panel">
 <div class="report-banner compact-banner">
-<div><span class="status-badge neutral">Reconstrucción manual verificada</span><h2>Votos, disidencia y decisividad</h2><p>Esta sección presenta únicamente los casos que el informe examinó individualmente y separa esos hallazgos de las tasas globales no determinables.</p></div>
+<div><span class="status-badge neutral">Reconstrucción manual verificada</span><h2>Votos, disidencia y decisividad</h2><p id="hvProcedencia">Esta sección presenta únicamente los casos examinados uno a uno, y separa esos hallazgos de las tasas globales no determinables.</p></div>
 </div>
 
 <div class="cards two">
@@ -239,7 +244,7 @@ dirimir, y la razón por la que la tasa de disidencia sigue sin publicarse.
 </div>
 </div>
 
-<div class="section-subhead"><h2>Cuatro decisiones examinadas por posible decisividad</h2><p>En las cuatro, la clasificación independiente fue <code>NO_DECISIVO</code>. Esto no permite inferir que nunca existieron votos pivotales en el resto del corpus.</p></div>
+<div class="section-subhead"><h2>Cuatro decisiones examinadas por posible decisividad</h2><p id="decProcedencia">En las cuatro, la clasificación fue <code>No decisivo</code>. Esto no permite inferir que nunca existieron votos pivotales en el resto del corpus.</p></div>
 <div class="table-wrap"><table><thead><tr><th>Decisión</th><th>Causa</th><th>Votos concordantes</th><th>Sin Rivas</th><th>Regla aplicada</th><th>Clasificación</th></tr></thead><tbody id="decisivenessRows"></tbody></table></div>
 
 <div class="data-note strong-note">
@@ -253,9 +258,10 @@ dirimir, y la razón por la que la tasa de disidencia sigue sin publicarse.
 <div id="voteDashboard" hidden>
 <div class="section-subhead">
 <h2>Lo que el corpus completo sí permite contar</h2>
-<p>Esta sección ya no espera una «capa futura». Consulta la edición vigente, que
-cubre el corpus entero. Las cifras de arriba provienen del informe independiente
-del 24/08/2026 y se conservan tal cual; las de aquí abajo salen de los datos.</p>
+<p>Todas las cifras de esta página salen de la misma edición vigente, la que
+consulta el navegador directamente sobre los archivos publicados. Las de arriba
+son los casos que una persona leyó y verificó; las de aquí abajo, el recuento
+sobre el corpus entero. <strong>Distinto alcance, misma fuente.</strong></p>
 </div>
 <div class="kpi-grid">
 <div class="kpi"><span>Votos individuales extraídos</span><strong id="voteTotal">—</strong></div>

@@ -74,30 +74,50 @@ async function registerAndTest(db, virtualName, url) {
   await conn.query(`SELECT * FROM read_parquet('${virtualName}') LIMIT 0`);
 }
 
+// Qué edición consulta la página. Se resuelve una sola vez, de `editions.json`,
+// y la usan todas las pestañas.
+//
+// Antes `en_uso_por_la_interfaz` era un mapa de pestaña a edición y las
+// heredadas apuntaban a la anterior. El propio archivo lo justificaba: «la
+// página lee las dos». Esa era la contradicción de fondo del sitio, y no se
+// arregla renombrando textos: se arregla leyendo una sola edición.
+let EDICION_VIGENTE = null;
+
+async function resolverEdicion(base) {
+  if (EDICION_VIGENTE) return EDICION_VIGENTE;
+  const cfg = await fetch(new URL(CFG.jemSilverBase + 'editions.json', base).href)
+    .then(r => { if (!r.ok) throw new Error('editions.json ' + r.status); return r.json(); });
+  EDICION_VIGENTE = cfg.vigente;
+  if (!EDICION_VIGENTE) throw new Error('editions.json no declara una edición vigente');
+  return EDICION_VIGENTE;
+}
+
 async function loadParquetCorpus(db, base) {
   try {
-    // Preferir la capa pública derivada porque agrega relative_path/download_url
-    // sin modificar la capa JEM Silver.
-    try {
-      activeDocumentFile = 'document_public.parquet';
-      await registerAndTest(
-        db,
-        activeDocumentFile,
-        new URL(CFG.catalogBase + 'document_public.parquet', base).href
-      );
-    } catch (_) {
-      activeDocumentFile = 'document.parquet';
-      await registerAndTest(
-        db,
-        activeDocumentFile,
-        new URL(CFG.jemSilverBase + 'document.parquet', base).href
-      );
-    }
+    await resolverEdicion(base);
+    // El catálogo del portal, derivado de la edición vigente. Agrega
+    // carátula, calidad de OCR y las URL de Hugging Face sin tocar la capa
+    // Silver.
+    //
+    // Antes esto tenía una reserva a `data/jem-silver/document.parquet` —el
+    // corpus del pipeline anterior, con 3.964 documentos— y como el archivo
+    // preferido no existía, la reserva se disparaba siempre. El resultado es
+    // que la primera pestaña contaba 663 documentos menos que la siguiente.
+    // Ya no hay reserva: si el catálogo falta, la pestaña lo dice. Un número
+    // equivocado es peor que un error visible.
+    activeDocumentFile = 'document_public.parquet';
+    await registerAndTest(
+      db,
+      activeDocumentFile,
+      new URL(CFG.catalogBase + 'document_public.parquet', base).href
+    );
 
+    // Las causas salen de la misma edición que todo lo demás. Leerlas del
+    // archivo suelto daba 1.669 donde el corte vigente tiene 2.908.
     await registerAndTest(
       db,
       'causa.parquet',
-      new URL(CFG.jemSilverBase + 'causa.parquet', base).href
+      new URL(CFG.jemSilverBase + EDICION_VIGENTE + '/causa.parquet', base).href
     );
 
     const desc = await conn.query(
@@ -195,7 +215,29 @@ async function loadParquetCorpus(db, base) {
       const sk = type.replaceAll("'","''");
       const wh = [];
 
-      if (term && schema.has('body')) wh.push(`LOWER(body) LIKE LOWER('%${st}%')`);
+      // El catálogo del portal no trae el texto completo: son 53,7 millones de
+      // caracteres y enviarlos al navegador para hacer LIKE sería más lento y
+      // peor que el índice BM25 de la pestaña «Buscar en el texto». Acá se
+      // filtran metadatos —carátula y nombre de archivo—, y la página lo dice
+      // en vez de ignorar el término en silencio, que es lo que pasaba antes
+      // cuando la columna `body` no estaba.
+      const campos = ['caratula', 'filename', 'causa_clave']
+        .filter(c => schema.has(c));
+      if (term) {
+        if (schema.has('body')) {
+          wh.push(`LOWER(body) LIKE LOWER('%${st}%')`);
+        } else if (campos.length) {
+          // Se normalizan los acentos de los dos lados. Los nombres propios
+          // paraguayos los llevan y los nombres de archivo no: «Cárdenas»
+          // bien escrito no encontraba el documento que el archivo guarda como
+          // «CARDENAS», y «Garantías» no encontraba las 218 resoluciones que
+          // lo mencionan.
+          wh.push('(' + campos
+            .map(c => `strip_accents(LOWER(COALESCE(${c},'')))`
+                    + ` LIKE strip_accents(LOWER('%${st}%'))`)
+            .join(' OR ') + ')');
+        }
+      }
       if (year && schema.has('year')) wh.push(`CAST(year AS VARCHAR)='${sy}'`);
       if (type && schema.has('kind')) wh.push(`kind='${sk}'`);
 
@@ -406,8 +448,10 @@ async function loadEdicionVigente(db, base) {
   try {
     const cfg = await fetch(new URL(CFG.jemSilverBase + 'editions.json', base).href)
       .then(r => { if(!r.ok) throw new Error('editions.json '+r.status); return r.json(); });
-    const uso = cfg.en_uso_por_la_interfaz;
-    edicion = (typeof uso === 'string' ? uso : uso?.['tab-trazabilidad']) || cfg.vigente;
+    // Una sola edición para toda la página. Antes esto miraba
+    // `en_uso_por_la_interfaz`, un mapa por pestaña que permitía que unas
+    // leyeran agosto y otras el corte vigente.
+    edicion = cfg.vigente;
     baseEd = cfg.ediciones?.[edicion]?.base;
     if (!baseEd) throw new Error(`la edición ${edicion} no está declarada`);
     // Los parámetros de BM25 se leen de la declaración en vez de repetirse

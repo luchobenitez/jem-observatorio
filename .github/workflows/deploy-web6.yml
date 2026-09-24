@@ -51,6 +51,19 @@ jobs:
       - name: Validate Web6 and local JEM Silver
         run: python scripts/validate_web6.py . --verbose
 
+      # Los dos pasos de arriba miran archivos. Ninguno detecta que el
+      # JavaScript falle al ejecutarse, y eso ya se publicó: una llamada a una
+      # función que no existía hacía que la cola de revisión pintara la reserva
+      # en inglés, con los cuatro contadores en «—», durante días y con el CI
+      # en verde. Este paso abre la página en un navegador real.
+      - name: Install browser for the rendering test
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Test that the page actually renders
+        run: python scripts/probar_pagina.py .
+
       - name: Generate integrity manifest
         run: python scripts/generar_manifest_integridad.py .
 

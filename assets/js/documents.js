@@ -59,11 +59,19 @@ async function initRepository(){
         payload=await fetch(base+'catalogo.json').then(r=>{if(!r.ok)throw 0;return r.json();});
         origen=` · edición ${ed.vigente}`;
       }
-    }catch(_){}
+    }catch(e){
+      throw new Error(`no se pudo leer el catálogo de la edición vigente: ${e.message}`);
+    }
     if(!payload){
-      payload=await fetch(CFG.catalogBase+'documents_manifest.json')
-        .then(r=>{if(!r.ok) throw new Error(`HTTP ${r.status}`);return r.json();});
-      origen=' · catálogo anterior';
+      // Sin reserva al catálogo anterior.
+      //
+      // Había una, a `documents_manifest.json`, con los 3.964 documentos del
+      // pipeline de agosto. Nunca se disparó porque el catálogo vigente carga
+      // bien, pero de haberlo hecho la página habría mostrado 663 documentos
+      // menos sin avisar, igual que pasaba en la pestaña del corpus, donde la
+      // reserva sí se disparaba siempre. Un número equivocado que parece bueno
+      // es peor que un error visible.
+      throw new Error('el catálogo de la edición vigente vino vacío');
     }
     docs=Array.isArray(payload)?payload:(payload.documents||[]);
     const linked=docs.filter(d=>d.view_url||d.download_url).length;

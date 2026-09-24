@@ -52,7 +52,7 @@
 
 <div class="card"><h2>6. Estadísticas en el navegador</h2><p><a href="estadisticas.html">Estadísticas</a> utiliza DuckDB-WASM para consultar los Parquet servidos por GitHub Pages. Al estar en el mismo sitio, las consultas no dependen de la disponibilidad o de las políticas HTTP de un almacenamiento externo.</p></div>
 
-<div class="card"><h2>7. Catálogo documental</h2><p><code>documents_manifest.json</code> es el puente entre las rutas históricas del corpus y Hugging Face. Si un mismo contenido aparece varias veces, el catálogo conserva una ruta canónica y puede registrar las demás como alias.</p></div>
+<div class="card"><h2>7. Catálogo documental</h2><p><code>catalogo.json</code>, dentro de la edición vigente, es el puente entre las rutas del corpus y Hugging Face: da a cada documento su URL de visualización y de descarga. Si un mismo contenido aparece varias veces, el catálogo conserva una ruta canónica y registra las demás como alias.</p></div>
 
 <div class="card"><h2>8. Identificación e integridad</h2><p>Los documentos del inventario se identifican mediante SHA-256. El proyecto también mantiene <code>MANIFEST.sha256</code> para registrar la integridad de los archivos que forman parte de una publicación del portal.</p></div>
 
@@ -100,8 +100,9 @@ afirmaciones del memo anterior y prevalece sobre él donde discrepen.</li>
 como <a href="https://github.com/luchobenitez/jem-observatorio/issues/new?template=correccion.yml"
 rel="noopener">pedido de corrección</a>. Se responde en el mismo hilo. Si la corrección
 procede se aplica en la siguiente edición fechada, y <strong>la edición anterior no se
-borra</strong>: queda con su fecha, para que quien haya citado la cifra vieja pueda seguir
-el rastro.</p>
+borra</strong>: pasa a <code>gobernanza/procedencia/</code> con su fecha, para que quien
+haya citado la cifra vieja pueda seguir el rastro. El portal consulta una sola edición
+—la vigente— de modo que ninguna página mezcle dos recuentos del mismo hecho.</p>
 <div class="data-note"><strong>Pendiente y declarado:</strong> no hay todavía una persona
 designada como responsable del conjunto de datos, ni una licencia de datos adoptada
 —sólo el código lo está, bajo GPL-3.0—. Ambas cosas son decisiones, no archivos, y el
@@ -150,7 +151,7 @@ debe leerse.
 entender qué contiene sin leer esta página.</p>
 <ul>
 <li><a href="data/jem-silver/2026-08-30/datapackage.json">Diccionario de datos</a>
-(Frictionless) — las 142 columnas de las 18 tablas publicadas, con sus vocabularios
+(Frictionless) — las 172 columnas de las 20 tablas publicadas, con sus vocabularios
 controlados.</li>
 <li><a href="ro-crate-metadata.json">RO-Crate</a> — descripción del conjunto y su procedencia.</li>
 <li><a href="codemeta.json">CodeMeta</a> y <a href="CITATION.cff">CITATION.cff</a> — cómo citar

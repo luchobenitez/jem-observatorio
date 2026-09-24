@@ -4,7 +4,7 @@
 `data/catalog/manifest_summary.json` quedó fijado el 2026-08-24, cuando los
 Parquet todavía no estaban en el repositorio, y desde entonces afirma:
 
-    "silver_load_error": "no existe data/jem-silver/document.parquet"
+    "silver_load_error": "no existe data/catalog/document_public.parquet"
 
 El archivo existe. Peor: `validate_web6.py` **exige** que exista, de modo que el
 repositorio sostenía dos afirmaciones contradictorias y ninguna herramienta lo
@@ -55,7 +55,10 @@ def main() -> int:
 
     root = Path(args.root).resolve()
     resumen = root / "data/catalog/manifest_summary.json"
-    silver = root / "data/jem-silver/document.parquet"
+    # El catálogo del portal, derivado de la edición vigente. Sustituye a
+    # `data/jem-silver/document.parquet`, del pipeline anterior, que se
+    # retiró a procedencia al pasar el sitio a una sola edición.
+    silver = root / "data/catalog/document_public.parquet"
     catalogo = root / "data/catalog/documents_manifest.json"
 
     for p in (resumen, catalogo):
@@ -80,7 +83,7 @@ def main() -> int:
             return 2
     else:
         datos["silver_rows"] = None
-        datos["silver_load_error"] = "no existe data/jem-silver/document.parquet"
+        datos["silver_load_error"] = "no existe data/catalog/document_public.parquet"
         oids = set()
 
     docs = json.loads(catalogo.read_text(encoding="utf-8")).get("documents", [])

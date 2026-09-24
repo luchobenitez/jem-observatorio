@@ -1,103 +1,169 @@
 {
-  "_comentario": [
-    "Rutas de los conjuntos de datos que consume la página de estadísticas.",
-    "Cada entrada declara su estado: 'disponible' obliga a que el archivo exista",
-    "y scripts/validate_web6.py detiene el despliegue si no está; 'ausente' declara",
-    "un conjunto previsto que todavía no se publicó, y explica por qué.",
-    "Un conjunto ausente NO debe dibujarse como cero: la interfaz muestra su",
-    "estado, igual que el resto del proyecto trata NO_DETERMINABLE.",
-    "Antes de 2026-09-22 este archivo declaraba rutas como 'data/document.parquet',",
-    "que nunca existieron. Ningún script lo leía, así que el error era invisible."
-  ],
-  "version": 2,
-  "actualizado": "2026-09-22",
-  "parquet": {
-    "document": {
-      "ruta": "data/jem-silver/document.parquet",
-      "estado": "disponible",
-      "filas": 3964
-    },
-    "causa": {
-      "ruta": "data/jem-silver/causa.parquet",
-      "estado": "disponible",
-      "filas": 1669
-    },
-    "link": {
-      "ruta": "data/jem-silver/link.parquet",
-      "estado": "disponible",
-      "filas": 1039
-    },
-    "party": {
-      "ruta": "data/jem-silver/party.parquet",
-      "estado": "disponible",
-      "filas": 6347
-    },
-    "party_conflict": {
-      "ruta": "data/jem-silver/party_conflict.parquet",
-      "estado": "disponible",
-      "filas": 554
-    },
-    "votacion": {
-      "ruta": "data/jem-silver/votacion.parquet",
-      "estado": "ausente",
-      "motivo": "DESCARTADO, no pendiente. Su esquema exigía una columna «rivas_decisivo», que es exactamente la métrica que el proyecto declara NO_DETERMINABLE: publicarla sería inventar la respuesta a una pregunta que el corpus no responde. La pestaña de votos consulta ahora voto.parquet y resolucion.parquet de la edición vigente."
-    },
-    "miembro_voto": {
-      "ruta": "data/jem-silver/miembro_voto.parquet",
-      "estado": "ausente",
-      "motivo": "DESCARTADO junto con votacion.parquet. Su función la cumple entidad.parquet de la edición vigente, que además declara que el OCR fragmenta un mismo nombre en varias entidades."
-    }
+ "_comentario": [
+  "Rutas de los conjuntos de datos que consume la página de estadísticas.",
+  "'disponible' obliga a que el archivo exista y scripts/validate_web6.py",
+  "detiene el despliegue si no está.",
+  "Todo apunta a UNA SOLA edición de la capa Silver. Antes esta sección",
+  "declaraba parquet sueltos del pipeline anterior -document.parquet con",
+  "3.964 filas- junto a la edición vigente, que tiene 4.627."
+ ],
+ "version": 2,
+ "actualizado": "2026-09-24",
+ "parquet": {
+  "alias": {
+   "ruta": "data/jem-silver/2026-08-30/alias.parquet",
+   "estado": "disponible",
+   "filas": 309
   },
-  "silver": {
-    "ediciones": {
-      "ruta": "data/jem-silver/editions.json",
-      "estado": "disponible",
-      "nota": "Declara cada edición fechada con sus tablas, filas y SHA-256. Las entradas «parquet» de arriba son la edición 2026-08-24, que es la que lee hoy el JavaScript."
-    },
-    "catalogo_vigente": {
-      "ruta": "data/jem-silver/2026-08-30/catalogo.json",
-      "estado": "disponible",
-      "nota": "Catálogo del corpus vigente que consume documentos.html: 4.627 documentos con su enlace verificado. Sustituye a documents_manifest.json, que sólo cubría los 3.964 del linaje de agosto."
-    }
+  "campo": {
+   "ruta": "data/jem-silver/2026-08-30/campo.parquet",
+   "estado": "disponible",
+   "filas": 25293
   },
-  "json": {
-    "sources": {
-      "ruta": "data/portal/sources.json",
-      "estado": "disponible"
-    },
-    "timeline": {
-      "ruta": "data/portal/timeline.json",
-      "estado": "disponible"
-    },
-    "exams": {
-      "ruta": "data/portal/exams.json",
-      "estado": "disponible"
-    },
-    "document": {
-      "ruta": "data/portal/document.json",
-      "estado": "disponible"
-    },
-    "causa": {
-      "ruta": "data/portal/causa.json",
-      "estado": "disponible"
-    },
-    "curated_sources": {
-      "ruta": "data/portal/curated_sources.json",
-      "estado": "disponible"
-    }
+  "causa": {
+   "ruta": "data/jem-silver/2026-08-30/causa.parquet",
+   "estado": "disponible",
+   "filas": 2908
   },
-  "analysis": {
-    "rivas_2026_08_24": {
-      "ruta": "data/analysis/rivas_jem_20260824.json",
-      "estado": "disponible"
-    },
-    "corte_2026_08_30": {
-      "ruta": "data/analysis/jem_full_20260830.json",
-      "estado": "disponible"
-    },
-    "comparacion": {
-      "ruta": "data/analysis/comparacion_snapshots.json",
-      "estado": "disponible"
-    }
+  "documento": {
+   "ruta": "data/jem-silver/2026-08-30/documento.parquet",
+   "estado": "disponible",
+   "filas": 4627
+  },
+  "documento_logico": {
+   "ruta": "data/jem-silver/2026-08-30/documento_logico.parquet",
+   "estado": "disponible",
+   "filas": 4593
+  },
+  "entidad": {
+   "ruta": "data/jem-silver/2026-08-30/entidad.parquet",
+   "estado": "disponible",
+   "filas": 118
+  },
+  "evento": {
+   "ruta": "data/jem-silver/2026-08-30/evento.parquet",
+   "estado": "disponible",
+   "filas": 10662
+  },
+  "fragmento": {
+   "ruta": "data/jem-silver/2026-08-30/fragmento.parquet",
+   "estado": "disponible",
+   "filas": 18141
+  },
+  "fusion_entidad": {
+   "ruta": "data/jem-silver/2026-08-30/fusion_entidad.parquet",
+   "estado": "disponible",
+   "filas": 73
+  },
+  "indice_forma": {
+   "ruta": "data/jem-silver/2026-08-30/indice_forma.parquet",
+   "estado": "disponible",
+   "filas": 116418
+  },
+  "indice_fragmento": {
+   "ruta": "data/jem-silver/2026-08-30/indice_fragmento.parquet",
+   "estado": "disponible",
+   "filas": 18141
+  },
+  "indice_posting": {
+   "ruta": "data/jem-silver/2026-08-30/indice_posting.parquet",
+   "estado": "disponible",
+   "filas": 2781227
+  },
+  "indice_termino": {
+   "ruta": "data/jem-silver/2026-08-30/indice_termino.parquet",
+   "estado": "disponible",
+   "filas": 100643
+  },
+  "metrica_juez": {
+   "ruta": "data/jem-silver/2026-08-30/metrica_juez.parquet",
+   "estado": "disponible",
+   "filas": 50
+  },
+  "procedencia": {
+   "ruta": "data/jem-silver/2026-08-30/procedencia.parquet",
+   "estado": "disponible",
+   "filas": 4893
+  },
+  "relacion": {
+   "ruta": "data/jem-silver/2026-08-30/relacion.parquet",
+   "estado": "disponible",
+   "filas": 2296
+  },
+  "resolucion": {
+   "ruta": "data/jem-silver/2026-08-30/resolucion.parquet",
+   "estado": "disponible",
+   "filas": 1816
+  },
+  "vector": {
+   "ruta": "data/jem-silver/2026-08-30/vector.parquet",
+   "estado": "disponible",
+   "filas": 41405
+  },
+  "vinculo": {
+   "ruta": "data/jem-silver/2026-08-30/vinculo.parquet",
+   "estado": "disponible",
+   "filas": 11145
+  },
+  "voto": {
+   "ruta": "data/jem-silver/2026-08-30/voto.parquet",
+   "estado": "disponible",
+   "filas": 9956
+  },
+  "verificacion_humana": {
+   "ruta": "data/jem-silver/2026-08-30/verificacion_humana.parquet",
+   "estado": "ausente",
+   "motivo": "La doble codificación humana de los votos está diseñada y sin ejecutar. El índice de verificación publicado es 0 %. Este conjunto aparecerá cuando haya votos revisados por dos personas y se pueda calcular kappa."
   }
+ },
+ "silver": {
+  "edicion_vigente": "2026-08-30",
+  "nota": "Todas las tablas del portal salen de esta edición. Las anteriores quedan declaradas en editions.json como procedencia histórica."
+ },
+ "json": {
+  "sources": {
+   "ruta": "data/portal/sources.json",
+   "estado": "disponible"
+  },
+  "timeline": {
+   "ruta": "data/portal/timeline.json",
+   "estado": "disponible"
+  },
+  "exams": {
+   "ruta": "data/portal/exams.json",
+   "estado": "disponible"
+  },
+  "document": {
+   "ruta": "data/portal/document.json",
+   "estado": "disponible"
+  },
+  "causa": {
+   "ruta": "data/portal/causa.json",
+   "estado": "disponible"
+  },
+  "curated_sources": {
+   "ruta": "data/portal/curated_sources.json",
+   "estado": "disponible"
+  }
+ },
+ "analysis": {
+  "analisis_vigente": {
+   "ruta": "data/analysis/analisis-vigente.json",
+   "estado": "disponible"
+  },
+  "corte_vigente": {
+   "ruta": "data/analysis/jem_full_20260830.json",
+   "estado": "disponible"
+  },
+  "cola_revision": {
+   "ruta": "data/analysis/cola-revision-auditada.json",
+   "estado": "disponible"
+  }
+ },
+ "catalogo": {
+  "document_public": {
+   "ruta": "data/catalog/document_public.parquet",
+   "estado": "disponible"
+  }
+ }
 }

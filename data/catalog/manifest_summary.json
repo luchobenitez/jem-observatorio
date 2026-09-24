@@ -13,11 +13,11 @@
     "dictamenes": 2134,
     "sentencia_definitiva": 151
   },
-  "silver_rows": 3964,
+  "silver_rows": 4627,
   "exact_silver_matches": 0,
   "prefix_candidates_not_applied": 0,
   "unmatched_unique_files": 3964,
-  "unmatched_silver_rows": 3964,
+  "unmatched_silver_rows": 0,
   "silver_load_error": null,
   "document_public_parquet_written": false,
   "catalog_hf_oid_populated": 0,
@@ -25,7 +25,7 @@
     "pending_sync": 3964
   },
   "silver_join_note": "El catálogo identifica por SHA-256 del contenido (64 hex) y la capa Silver por hf_oid, que es un OID de blob de Git (SHA-1, 40 hex): no son el mismo espacio de identificadores. El cruce sólo es posible después de que sync_huggingface.py rellene hf_oid en el catálogo desde la API de HuggingFace, cosa que ocurre en CI. Con hf_oid sin rellenar, exact_silver_matches vale 0 por construcción y no por error.",
-  "silver_fields_updated_at_utc": "2026-09-22T23:27:25.372307+00:00",
+  "silver_fields_updated_at_utc": "2026-09-24T09:33:02.520455+00:00",
   "silver_fields_updated_by": "actualizar_resumen_silver/1.0",
   "_nota_campos": "physical_files, unique_sha256, duplicate_copies y categories provienen del recorrido de documentos/ y NO se recalculan aquí: este repositorio no contiene esa carpeta. Los actualiza generar_manifest.py."
 }

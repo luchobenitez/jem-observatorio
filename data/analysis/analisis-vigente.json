@@ -1,0 +1,255 @@
+{
+ "generado": "2026-09-24",
+ "generador": "consolidar_analisis/1.0",
+ "edicion": "2026-08-30",
+ "nota": "Todas las cifras se calculan desde la edición vigente, la misma que consulta el resto del sitio. Los dos hallazgos verificados por persona se conservan del trabajo de lectura manual y están rotulados como tales.",
+ "corpus": {
+  "documentos": 4627,
+  "documentos_accesibles": 4627,
+  "causas": 2908,
+  "resoluciones": 1816,
+  "filas_voto": 9956,
+  "dictamenes": 2111,
+  "documentos_sin_causa": 576
+ },
+ "votos": {
+  "filas": 9956,
+  "con_pagina_de_origen": 9955,
+  "sin_pagina_de_origen": 1,
+  "marcados_disidencia": 7,
+  "resoluciones_con_votacion": 1670,
+  "integrantes_con_voto": 50
+ },
+ "integrante": {
+  "entidad_id": 12,
+  "variantes_ocr_fusionadas": 8,
+  "votos": 1083,
+  "resoluciones": 1078,
+  "causas": 1097,
+  "anio_con_mas_actuaciones": "2021"
+ },
+ "roles": [
+  {
+   "rol": "Adhesión",
+   "filas": 938
+  },
+  {
+   "rol": "Ponente",
+   "filas": 145
+  }
+ ],
+ "actuaciones_por_anio": [
+  {
+   "anio": "2018",
+   "valor": 1
+  },
+  {
+   "anio": "2020",
+   "valor": 172
+  },
+  {
+   "anio": "2021",
+   "valor": 573
+  },
+  {
+   "anio": "2022",
+   "valor": 248
+  },
+  {
+   "anio": "2023",
+   "valor": 88
+  },
+  {
+   "anio": "Sin año",
+   "valor": 1
+  }
+ ],
+ "fechado": {
+  "resoluciones_comparables": 1695,
+  "acierta_anio_de_numero": 1573,
+  "acierta_anio_de_fecha": 1431,
+  "testigo": "año de la carpeta en que está archivado el documento",
+  "nota": "El año del número de resolución y el año de su fecha discrepan en una de cada once resoluciones. Contrastados contra la carpeta de archivo, que no pasó por el OCR del cuerpo, el número acierta más, pero ninguno de los dos está limpio."
+ },
+ "organo": {
+  "quorum": {
+   "Sin dato": 146,
+   "Incompleto por extracción": 655,
+   "Completo": 870,
+   "No determinable": 145
+  },
+  "resoluciones_con_presentes_menores_que_votos": 0
+ },
+ "trazabilidad": {
+  "votos_con_pagina": 9955,
+  "votos_sin_pagina": 1,
+  "cobertura": 0.9999,
+  "documentos_con_enlace_publico": 4627
+ },
+ "dictamenes": {
+  "documentos": 2111,
+  "relaciones_derivadas": 2296,
+  "dictamenes_distintos_vinculados": 1743,
+  "por_determinacion": {
+   "Confirmada": 842,
+   "Ambigua": 660,
+   "Sin correspondencia": 419,
+   "Probable": 360,
+   "No determinable": 15
+  },
+  "concordancia": "NO_DETERMINABLE",
+  "nota_concordancia": "No se calcula una tasa global: la cardinalidad es muchos a muchos y falta extraer la recomendación del dictamen para poder compararla."
+ },
+ "metricas_indeterminables": {
+  "causas": {
+   "resuelto": {
+    "etiqueta": "YA RESUELTO",
+    "clase": "ok",
+    "nota": "Calculado en la edición vigente. Ver la pestaña «Votos y decisividad»."
+   },
+   "instrumento": {
+    "etiqueta": "MEDIRÍA LA HERRAMIENTA",
+    "clase": "warning",
+    "nota": "Se puede calcular, pero el extractor sólo reconoce ponencia, adhesión y disidencia, y «adhesión» significa acuerdo. El resultado describiría la expresión regular, no la conducta del juzgador."
+   },
+   "sin_dato": {
+    "etiqueta": "SIN DATO EN EL CORPUS",
+    "clase": "warning",
+    "nota": "El texto de las resoluciones no registra este hecho. No es que se haya perdido en la extracción: no está escrito en el documento."
+   },
+   "bloqueado": {
+    "etiqueta": "BLOQUEADO",
+    "clase": "warning",
+    "nota": "Exige saber quién podía votar, quién estaba presente y qué mayoría regía. 655 de 1.670 resoluciones con votación tienen quórum incompleto por extracción."
+   },
+   "pendiente": {
+    "etiqueta": "PENDIENTE DE TRABAJO",
+    "clase": "neutral",
+    "nota": "Hacible: el vínculo dictamen-resolución existe con determinación firme en 1.202 casos. Falta extraer la recomendación del dictamen para poder compararla."
+   }
+  },
+  "orden": [
+   "resuelto",
+   "pendiente",
+   "bloqueado",
+   "sin_dato",
+   "instrumento"
+  ],
+  "metricas": [
+   {
+    "metrica": "Total de votos identificables",
+    "causa": "resuelto",
+    "valor": "9.956 votos · 50 integrantes"
+   },
+   {
+    "metrica": "Votos con la mayoría",
+    "causa": "instrumento",
+    "valor": "daría 9.949"
+   },
+   {
+    "metrica": "Votos en minoría",
+    "causa": "instrumento",
+    "valor": "daría 7"
+   },
+   {
+    "metrica": "Total de disidencias",
+    "causa": "instrumento",
+    "valor": "daría 7"
+   },
+   {
+    "metrica": "Tasa de acuerdo con la mayoría",
+    "causa": "instrumento",
+    "valor": "daría 99,93%"
+   },
+   {
+    "metrica": "Tasa de disidencia",
+    "causa": "instrumento",
+    "valor": "daría 0,070%"
+   },
+   {
+    "metrica": "Total de abstenciones",
+    "causa": "sin_dato",
+    "valor": "el esquema no tiene la categoría"
+   },
+   {
+    "metrica": "Tasa de abstención",
+    "causa": "sin_dato",
+    "valor": "el esquema no tiene la categoría"
+   },
+   {
+    "metrica": "Total de ausencias",
+    "causa": "sin_dato",
+    "valor": "el texto no declara ausencias"
+   },
+   {
+    "metrica": "Total de votos decisivos",
+    "causa": "bloqueado",
+    "valor": ""
+   },
+   {
+    "metrica": "Tasa de voto decisivo",
+    "causa": "bloqueado",
+    "valor": ""
+   },
+   {
+    "metrica": "Concordancia dictamen-resolución",
+    "causa": "pendiente",
+    "valor": ""
+   }
+  ]
+ },
+ "hallazgos_verificados_por_persona": {
+  "procedencia": "Lectura manual de las resoluciones citadas durante el trabajo de análisis. No proviene de extracción automática.",
+  "casos": [
+   {
+    "tipo": "Disidencia verificada",
+    "resolucion": "AI 738/2021",
+    "causa": "94/2020",
+    "hallazgo": "Disidencia explícita verificable de Rivas: votó por el inicio del enjuiciamiento, mientras la resolución rechazó el enjuiciamiento de oficio."
+   },
+   {
+    "tipo": "Votación dividida",
+    "resolucion": "SD 35/2022",
+    "causa": "311/2021",
+    "hallazgo": "El texto registra a Rivas adhiriendo a la absolución en una votación dividida; la tabla derivada no reconstruye adecuadamente esa intervención."
+   }
+  ]
+ },
+ "decisividad": {
+  "procedencia": "Reconstrucción manual caso por caso, contrastada contra la regla de mayoría vigente en cada fecha.",
+  "casos": [
+   {
+    "resolucion": "AI 592/2021",
+    "causa": "181/2020",
+    "votos_alineados": "Al menos 7",
+    "sin_el_integrante": "Al menos 6",
+    "regla": "Ley 3759/2009: cinco votos coincidentes",
+    "clasificacion": "No decisivo"
+   },
+   {
+    "resolucion": "AI 710/2021",
+    "causa": "148/1/2016",
+    "votos_alineados": "6",
+    "sin_el_integrante": "5",
+    "regla": "Ley 3759/2009 por régimen transitorio",
+    "clasificacion": "No decisivo"
+   },
+   {
+    "resolucion": "AI 402/2022",
+    "causa": "81/2022",
+    "votos_alineados": "6",
+    "sin_el_integrante": "5",
+    "regla": "Ley 6814/2021: mayoría simple",
+    "clasificacion": "No decisivo"
+   },
+   {
+    "resolucion": "AI 5/2023",
+    "causa": "122/2022",
+    "votos_alineados": "6",
+    "sin_el_integrante": "5",
+    "regla": "Ley 6814/2021: mayoría simple",
+    "clasificacion": "No decisivo"
+   }
+  ]
+ }
+}

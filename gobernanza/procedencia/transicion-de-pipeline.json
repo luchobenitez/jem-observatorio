@@ -1,0 +1,52 @@
+{
+ "metadata": {
+  "anterior": "2026-08-24",
+  "actual": "2026-09-23",
+  "generador": "exportar_observatorio/1.0",
+  "nota": "Registro histórico de procedencia, no una vista del portal. El sitio publica un solo análisis sobre una sola edición; este archivo conserva qué cambió al reemplazarse el pipeline anterior, para que la transición quede auditable sin presentarle al visitante dos juegos de cifras del mismo hecho."
+ },
+ "comparacion": [
+  {
+   "metrica": "Documentos únicos",
+   "snapshot_2026_08_24": 3964,
+   "corte_vigente": 4627
+  },
+  {
+   "metrica": "Causas",
+   "snapshot_2026_08_24": 1669,
+   "corte_vigente": 2908
+  },
+  {
+   "metrica": "Filas de voto",
+   "snapshot_2026_08_24": 8355,
+   "corte_vigente": 9956
+  },
+  {
+   "metrica": "Votos marcados como disidencia",
+   "snapshot_2026_08_24": 0,
+   "corte_vigente": 7
+  },
+  {
+   "metrica": "Evidencia con ruta de archivo",
+   "snapshot_2026_08_24": 0,
+   "corte_vigente": 9955
+  }
+ ],
+ "metricas_que_siguen_indeterminables": [
+  "Tasa de acuerdo con la mayoría (requiere validación humana)",
+  "Tasa de disidencia (7 casos detectados: puede ser práctica del órgano o debilidad del detector)",
+  "Tasa de abstención (no se extraen abstenciones)",
+  "Ausencias de integrantes (el texto no las declara)",
+  "Decisividad del voto (requiere las anteriores)",
+  "Precisión de los vínculos causa–documento (Fase 7)",
+  "CER y WER del OCR (Fase 6)"
+ ],
+ "metricas_que_dejaron_de_serlo": [
+  "Procedencia por documento: 100.0 % de los blobs",
+  "Evidencia citable por página: 99.99 % de los votos",
+  "Persistencia del identificador de origen: medida y desagregada",
+  "Índice FAIR: ocho dimensiones calculadas con escala declarada",
+  "Relación dictamen–resolución: 62.43 % de los dictámenes",
+  "Estado del quórum por resolución: medido"
+ ]
+}
