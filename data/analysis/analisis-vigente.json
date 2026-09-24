@@ -95,12 +95,8 @@
  ],
  "actuaciones_por_anio": [
   {
-   "anio": "2018",
-   "valor": 1
-  },
-  {
    "anio": "2020",
-   "valor": 172
+   "valor": 173
   },
   {
    "anio": "2021",
@@ -108,11 +104,11 @@
   },
   {
    "anio": "2022",
-   "valor": 248
+   "valor": 249
   },
   {
    "anio": "2023",
-   "valor": 88
+   "valor": 87
   },
   {
    "anio": "Sin año",
@@ -128,10 +124,10 @@
  },
  "organo": {
   "quorum": {
-   "Completo": 870,
-   "No determinable": 145,
+   "Sin dato": 146,
    "Incompleto por extracción": 655,
-   "Sin dato": 146
+   "Completo": 870,
+   "No determinable": 145
   },
   "resoluciones_con_presentes_menores_que_votos": 0
  },
@@ -404,12 +400,8 @@
   ],
   "actuaciones_por_anio": [
    {
-    "anio": "2018",
-    "valor": 1
-   },
-   {
     "anio": "2020",
-    "valor": 172
+    "valor": 173
    },
    {
     "anio": "2021",
@@ -417,11 +409,11 @@
    },
    {
     "anio": "2022",
-    "valor": 248
+    "valor": 249
    },
    {
     "anio": "2023",
-    "valor": 88
+    "valor": 87
    },
    {
     "anio": "Sin año",

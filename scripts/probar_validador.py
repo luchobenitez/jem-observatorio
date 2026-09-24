@@ -98,6 +98,38 @@ def puente_a_una_pestana_inexistente(root: Path) -> str:
         "estadisticas.html?periodo=1#tab-inventada"), encoding="utf-8")
     return "que no existe en estadisticas.html"
 
+
+def cifra_movil_escrita_a_mano(root: Path) -> str:
+    """Una cifra del corpus escrita en el HTML, que el filtro no podría cambiar.
+
+    Con el filtro puesto la página mostraría el total junto a cifras recortadas
+    y nada fallaría a la vista: el visitante leería dos alcances distintos en
+    la misma pantalla sin saberlo.
+    """
+    import json as _j
+    alc = _j.loads((root / "data/analysis/analisis-vigente.json")
+                   .read_text(encoding="utf-8"))["filtro_periodo"]["alcance"]
+    total = f"{alc['documentos']['todo']:,}".replace(",", ".")
+    p = root / "estadisticas.html"
+    p.write_text(p.read_text(encoding="utf-8").replace(
+        "</main>", f"<p>El corpus tiene {total} documentos.</p></main>"),
+        encoding="utf-8")
+    return "escrito a mano"
+
+
+def vuelve_el_ingles_a_la_interfaz(root: Path) -> str:
+    """Reaparece un código del informe original en una página en castellano.
+
+    Es lo que el sitio publicó durante días sin que nadie lo notara: una
+    llamada a una función que no existía hacía que la cola de revisión pintara
+    la reserva en inglés.
+    """
+    p = root / "estadisticas.html"
+    p.write_text(p.read_text(encoding="utf-8").replace(
+        '<option value="Bloqueante">', '<option value="P0_BLOCKER">'),
+        encoding="utf-8")
+    return "en texto visible de una página en castellano"
+
 def resumen_que_niega_el_parquet(root: Path) -> str:
     p = root / RESUMEN
     r = json.loads(p.read_text(encoding="utf-8"))
@@ -346,6 +378,8 @@ def ruta_absoluta_inexistente(root: Path) -> str:
 PRUEBAS = [
     ("un conjunto «disponible» que falta",       falta_un_disponible),
     ("un puente que no puede cumplirse",         puente_que_no_puede_cumplirse),
+    ("una cifra móvil escrita a mano",           cifra_movil_escrita_a_mano),
+    ("vuelve el inglés a la interfaz",           vuelve_el_ingles_a_la_interfaz),
     ("un puente a una pestaña inexistente",      puente_a_una_pestana_inexistente),
     ("filas declaradas que no cuadran",          filas_que_no_cuadran),
     ("un conjunto «ausente» que ya existe",      ausente_que_ya_existe),

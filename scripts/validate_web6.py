@@ -290,6 +290,78 @@ def revisar_coherencia_resumen(root: Path, errores: list, verbose: bool):
                 f"document.parquet tiene {reales:,}")
 
 
+# Códigos del informe original en inglés. No deben aparecer en texto visible
+# ni en los valores de un `<option>`, que es texto que el visitante elige.
+#
+# El portal los mostró durante días: una llamada a una función inexistente hacía
+# que la cola de revisión pintara la reserva en inglés, y el resultado fue
+# `SYSTEMIC_TRACEABILITY_FAILURE` en una página en castellano. El CSV original
+# sigue descargable como fuente primaria; lo que no vuelve es a la interfaz.
+INGLES_PROHIBIDO = re.compile(
+    r"SYSTEMIC_[A-Z_]+|P[0-2]_[A-Z]+|[A-Z]+_FAILURE|REQUIRES_[A-Z_]+"
+    r"|OCR_LOW_QUALITY|EMPTY_OR_TRUNCATED")
+
+
+def revisar_ingles_visible(root: Path, errores: list, verbose: bool):
+    """Ningún código en inglés en lo que el visitante lee."""
+    revisadas = 0
+    for pagina in sorted(root.glob("*.html")):
+        texto = pagina.read_text(encoding="utf-8", errors="replace")
+        visible = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", texto, flags=re.S)
+        # Los `value` de un <option> cuentan: son la elección del visitante.
+        valores = " ".join(re.findall(r'<option\s+value="([^"]*)"', visible))
+        visible = re.sub(r"<[^>]+>", " ", visible) + " " + valores
+        for m in set(INGLES_PROHIBIDO.findall(visible)):
+            errores.append(f"{pagina.name}: «{m}» en texto visible de una página en castellano")
+        revisadas += 1
+    if verbose:
+        print(f"  ok  {revisadas} páginas sin códigos en inglés visibles")
+
+
+def revisar_cifras_fijas(root: Path, errores: list, avisos: list, verbose: bool):
+    """Ninguna cifra que el filtro mueve puede estar escrita a mano en el HTML.
+
+    El portal calcula todo en vivo, de modo que el interruptor de período
+    recalcula cada número. Una cifra escrita a mano se quedaría quieta: con el
+    filtro puesto, la página mostraría 4.627 documentos junto a 1.034 votos
+    recortados, y nada fallaría a la vista.
+
+    Es el mismo fallo que el sitio ya tuvo con dos ediciones a la vez, en otra
+    forma. Por eso se comprueba en vez de confiar en que nadie lo escriba.
+    """
+    ruta = root / "data" / "analysis" / "analisis-vigente.json"
+    if not ruta.is_file():
+        avisos.append("No existe analisis-vigente.json; no se buscan cifras fijas")
+        return
+    try:
+        alcance = json.loads(ruta.read_text(encoding="utf-8"))["filtro_periodo"]["alcance"]
+    except Exception as e:
+        errores.append(f"analisis-vigente.json no declara el alcance del filtro: {e}")
+        return
+
+    moviles = {}
+    for campo, par in alcance.items():
+        for forma in (f"{par['todo']:,}".replace(",", "."), str(par["todo"])):
+            if len(forma) >= 4:          # menos de cuatro dígitos da falsos positivos
+                moviles[forma] = campo
+
+    hallados = 0
+    for pagina in sorted(root.glob("*.html")):
+        texto = pagina.read_text(encoding="utf-8", errors="replace")
+        # Sólo texto visible: los atributos y el JavaScript pueden nombrarlas.
+        visible = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", texto, flags=re.S)
+        visible = re.sub(r"<[^>]+>", " ", visible)
+        for forma, campo in moviles.items():
+            for m in re.finditer(r"(?<![\d.,])" + re.escape(forma) + r"(?![\d.,])", visible):
+                ctx = " ".join(visible[max(0, m.start() - 50):m.end() + 30].split())
+                errores.append(
+                    f"{pagina.name}: «{forma}» ({campo}) escrito a mano. El filtro de "
+                    f"período no puede cambiarlo: …{ctx}…")
+                hallados += 1
+    if verbose and not hallados:
+        print(f"  ok  ninguna de las {len(moviles)//2} cifras móviles está fija en el HTML")
+
+
 def revisar_enlaces_de_filtro(root: Path, errores: list, verbose: bool):
     """Todo enlace que promete una vista recortada debe poder cumplirlo.
 
@@ -585,6 +657,8 @@ def main():
     revisar_coherencia_resumen(root, errors, args.verbose)
     revisar_referencias_html(root, errors, args.verbose)
     revisar_enlaces_de_filtro(root, errors, args.verbose)
+    revisar_cifras_fijas(root, errors, avisos, args.verbose)
+    revisar_ingles_visible(root, errors, args.verbose)
     revisar_html_balanceado(root, errors, args.verbose)
     revisar_ids_js(root, errors, args.verbose)
     revisar_sin_cdn(root, errors, args.verbose)
