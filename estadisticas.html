@@ -178,11 +178,46 @@ diseñada y sin ejecutar.
 </div>
 
 <div class="section-subhead">
-<h2>Prioridades de revisión</h2>
-<p>Se muestran los bloqueadores y casos críticos de la cola de revisión incluida con el informe.</p>
+<h2>Prioridades de revisión, contrastadas</h2>
+<p>El informe de agosto enumeró 53 problemas. Se muestran <strong>traducidos y
+comprobados uno a uno contra la edición vigente</strong>, porque no todos siguen
+ocurriendo: mostrarlos sin contrastar exageraría el estado actual del archivo, y
+borrar los resueltos ocultaría que ocurrieron.</p>
+</div>
+<div class="kpi-grid">
+<div class="kpi"><span>Resueltos</span><strong id="colaResuelto">—</strong></div>
+<div class="kpi"><span>Mejorados</span><strong id="colaMejorado">—</strong></div>
+<div class="kpi"><span>Siguen vigentes</span><strong id="colaVigente">—</strong></div>
+<div class="kpi"><span>No localizados</span><strong id="colaNoLoc">—</strong></div>
+</div>
+<div class="filter-row">
+<select id="colaEstado">
+<option value="">Todos los estados</option>
+<option value="VIGENTE">Sólo los que siguen vigentes</option>
+<option value="RESUELTO">Sólo los resueltos</option>
+<option value="MEJORADO">Sólo los mejorados</option>
+</select>
+<select id="colaPrioridad">
+<option value="">Todas las prioridades</option>
+<option value="P0_BLOCKER">Bloqueantes</option>
+<option value="P0_CRITICAL">Críticos</option>
+<option value="P1_URGENT">Urgentes</option>
+<option value="P2_HIGH">Altos</option>
+</select>
 </div>
 <div class="table-wrap">
-<table><thead><tr><th>Prioridad</th><th>Categoría</th><th>Causa</th><th>Decisión</th><th>Motivo</th></tr></thead><tbody id="reviewRows"></tbody></table>
+<table><thead><tr><th>Estado</th><th>Prioridad</th><th>Qué señaló el informe</th>
+<th>Causa</th><th>Comprobación contra la edición vigente</th></tr></thead>
+<tbody id="reviewRows"></tbody></table>
+</div>
+<div class="data-note">
+<strong>Los seis bloqueantes eran fallos sistémicos del pipeline anterior.</strong>
+Tres están resueltos —trazabilidad, enlace al archivo original y reproducibilidad— y
+tres mejoraron sin cerrarse. El más revelador: el informe halló 40 decisiones cuyo
+texto expresa disidencia sin que se extrajera ninguna. Hoy se extrae en
+<strong id="colaDisResueltas">—</strong> de ellas y faltan
+<strong id="colaDisVigentes">—</strong>. Ese es el margen que la revisión humana debe
+dirimir, y la razón por la que la tasa de disidencia sigue sin publicarse.
 </div>
 </div>
 

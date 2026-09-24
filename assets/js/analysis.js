@@ -158,18 +158,21 @@
       }).join('');
     }
 
+    // La cola auditada sustituye a la original: traducida y contrastada contra
+    // la edición vigente. Si no estuviera, se cae a la original para no dejar
+    // la sección vacía.
     const review = document.getElementById('reviewRows');
     if (review) {
-      const priorityRows = d.review_queue.filter(x =>
-        String(x.priority).startsWith('P0')
-      ).slice(0, 12);
-      review.innerHTML = priorityRows.map(x => `<tr>
-        <td><span class="priority-chip">${esc(x.priority)}</span></td>
-        <td>${esc(x.category)}</td>
-        <td>${esc(x.case_id || '—')}</td>
-        <td>${esc(x.decision_id || '—')}</td>
-        <td>${esc(x.risk_reason || '—')}</td>
-      </tr>`).join('');
+      fetch('data/analysis/cola-revision-auditada.json')
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(a => pintarCola(a, review))
+        .catch(() => {
+          review.innerHTML = d.review_queue.filter(x =>
+            String(x.priority).startsWith('P0')).slice(0, 12).map(x => `<tr>
+            <td>—</td><td><span class="priority-chip">${esc(x.priority)}</span></td>
+            <td>${esc(x.category)}</td><td>${esc(x.case_id || '—')}</td>
+            <td>${esc(x.risk_reason || '—')}</td></tr>`).join('');
+        });
     }
 
     const diss = d.verified_cases.dissent;
