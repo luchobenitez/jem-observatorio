@@ -79,7 +79,10 @@ jobs:
         run: |
           rm -rf _site
           mkdir -p _site
-          cp index.html caso.html estadisticas.html documentos.html fuentes.html metodologia.html .nojekyll MANIFEST.sha256 _site/
+          # TODAS las páginas del repositorio, no una lista escrita a mano.
+          # La lista fija dejó fuera buscador-voto.html: su JavaScript, su
+          # Parquet y su entrada en el menú se publicaron, y la página daba 404.
+          cp *.html .nojekyll MANIFEST.sha256 _site/
           # Metadatos legibles por máquina y marco de gobernanza. Sin
           # desplegarlos, un marco que nadie puede leer no gobierna nada y
           # unos metadatos que no se sirven no describen nada.
@@ -88,6 +91,19 @@ jobs:
           # cuando no encuentra una declaración; el manifiesto, por la misma razón.
           cp favicon.ico site.webmanifest _site/
           cp -r assets data gobernanza _site/
+
+      - name: Check that every page made it into the build
+        shell: bash
+        run: |
+          faltan=0
+          for f in *.html; do
+            if [ ! -f "_site/$f" ]; then echo "FALTA en _site: $f"; faltan=1; fi
+          done
+          for d in assets data gobernanza; do
+            if [ ! -d "_site/$d" ]; then echo "FALTA en _site: $d/"; faltan=1; fi
+          done
+          [ "$faltan" = "0" ] && echo "OK: $(ls _site/*.html | wc -l) páginas en el sitio construido"
+          exit $faltan
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
