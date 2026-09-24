@@ -9,12 +9,40 @@
     document.querySelectorAll('.tab,.tab-panel').forEach((x) => x.classList.remove('active'));
     boton.classList.add('active');
     $('#tab-' + nombre)?.classList.add('active');
+    // La pestaña abierta queda en la dirección, para que se pueda citar la
+    // vista tal como se está viendo, igual que hace el filtro de período.
+    //
+    // Se reconstruye la URL entera en vez de pasar sólo la almohadilla:
+    // `replaceState(null,'','#algo')` descarta la cadena de consulta, y con
+    // ella el `?periodo=1`. El enlace compartido habría perdido el filtro sin
+    // que nada fallara a la vista.
+    const url = new URL(location.href);
+    url.hash = 'tab-' + nombre;
+    history.replaceState(null, '', url);
     setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
     return true;
   }
 
   document.querySelectorAll('.tab').forEach((b) =>
     b.addEventListener('click', () => irA(b.dataset.tab)));
+
+  // La dirección puede abrir una pestaña concreta: `#tab-votaciones`.
+  //
+  // Los paneles ya llevaban ese `id`, de modo que un enlace con almohadilla
+  // parecía funcionar —el navegador saltaba al sitio— pero el panel seguía
+  // oculto y quien llegaba veía la pestaña por defecto. Enlazar a una sección
+  // concreta desde la página del caso exigía que esto funcionara de verdad.
+  const pestanaDelHash = () => (location.hash || '').replace(/^#tab-/, '');
+  if (pestanaDelHash()) irA(pestanaDelHash());
+
+  // Y también cuando cambia estando ya en la página. Navegar de
+  // `estadisticas.html` a `estadisticas.html#tab-votaciones` no recarga nada:
+  // sin esto el enlace no hacía absolutamente nada y quien lo pulsaba se
+  // quedaba mirando la misma pestaña.
+  window.addEventListener('hashchange', () => {
+    const p = pestanaDelHash();
+    if (p) irA(p);
+  });
 
   // Enlaces dentro del contenido que saltan a otra pestaña, para poder derivar
   // al visitante a la herramienta correcta —del filtro de metadatos al índice

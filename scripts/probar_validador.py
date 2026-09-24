@@ -78,6 +78,26 @@ def ausente_sin_motivo(root: Path) -> str:
     return "sin «motivo»"
 
 
+
+def puente_que_no_puede_cumplirse(root: Path) -> str:
+    """caso.html promete una vista recortada y la página destino pierde el filtro.
+
+    El enlace seguiría abriendo y mostraría el corpus entero: prometería un
+    recorte y entregaría otra cosa, sin que nada fallara a la vista.
+    """
+    p = root / "documentos.html"
+    p.write_text(p.read_text(encoding="utf-8").replace(
+        'data-filtro-control', 'data-filtro-desactivado'), encoding="utf-8")
+    return "no tiene control de filtro"
+
+
+def puente_a_una_pestana_inexistente(root: Path) -> str:
+    p = root / "caso.html"
+    p.write_text(p.read_text(encoding="utf-8").replace(
+        "estadisticas.html?periodo=1#tab-votaciones",
+        "estadisticas.html?periodo=1#tab-inventada"), encoding="utf-8")
+    return "que no existe en estadisticas.html"
+
 def resumen_que_niega_el_parquet(root: Path) -> str:
     p = root / RESUMEN
     r = json.loads(p.read_text(encoding="utf-8"))
@@ -325,6 +345,8 @@ def ruta_absoluta_inexistente(root: Path) -> str:
 
 PRUEBAS = [
     ("un conjunto «disponible» que falta",       falta_un_disponible),
+    ("un puente que no puede cumplirse",         puente_que_no_puede_cumplirse),
+    ("un puente a una pestaña inexistente",      puente_a_una_pestana_inexistente),
     ("filas declaradas que no cuadran",          filas_que_no_cuadran),
     ("un conjunto «ausente» que ya existe",      ausente_que_ya_existe),
     ("un «ausente» sin motivo",                  ausente_sin_motivo),

@@ -290,6 +290,44 @@ def revisar_coherencia_resumen(root: Path, errores: list, verbose: bool):
                 f"document.parquet tiene {reales:,}")
 
 
+def revisar_enlaces_de_filtro(root: Path, errores: list, verbose: bool):
+    """Todo enlace que promete una vista recortada debe poder cumplirlo.
+
+    `caso.html` enlaza a `estadisticas.html?periodo=1` y a
+    `documentos.html?periodo=1` para llevar de la narración al archivo. Si esas
+    páginas perdieran el control del filtro, el enlace seguiría abriendo y
+    mostraría el corpus entero: prometería un recorte y entregaría otra cosa,
+    sin que nada fallara a la vista.
+
+    También se comprueba la almohadilla: `#tab-votaciones` sólo abre esa
+    pestaña si el panel existe con ese identificador.
+    """
+    revisados = 0
+    for pagina in sorted(root.glob("*.html")):
+        texto = pagina.read_text(encoding="utf-8", errors="replace")
+        for destino in set(re.findall(r'href="([a-z]+\.html\?periodo=1[^"]*)"', texto)):
+            archivo = destino.split("?")[0]
+            ruta = root / archivo
+            if not ruta.is_file():
+                errores.append(f"{pagina.name} enlaza a {archivo}, que no existe")
+                continue
+            objetivo = ruta.read_text(encoding="utf-8", errors="replace")
+            if "data-filtro-control" not in objetivo:
+                errores.append(
+                    f"{pagina.name} enlaza a «{destino}» pero {archivo} no tiene "
+                    "control de filtro: el enlace promete un recorte que no aplicaría")
+            if "filtro.js" not in objetivo:
+                errores.append(f"{archivo} no carga filtro.js y recibe enlaces con ?periodo=1")
+            if "#tab-" in destino:
+                panel = destino.split("#")[1]
+                if f'id="{panel}"' not in objetivo:
+                    errores.append(
+                        f"{pagina.name} enlaza a «#{panel}», que no existe en {archivo}")
+            revisados += 1
+    if verbose:
+        print(f"  ok  {revisados} enlaces con filtro comprobados")
+
+
 def revisar_referencias_html(root: Path, errores: list, verbose: bool):
     """Ningún HTML debe apuntar a un recurso local inexistente o vacío."""
     revisadas = 0
@@ -546,6 +584,7 @@ def main():
     revisar_editions(root, errors, avisos, args.verbose)
     revisar_coherencia_resumen(root, errors, args.verbose)
     revisar_referencias_html(root, errors, args.verbose)
+    revisar_enlaces_de_filtro(root, errors, args.verbose)
     revisar_html_balanceado(root, errors, args.verbose)
     revisar_ids_js(root, errors, args.verbose)
     revisar_sin_cdn(root, errors, args.verbose)
