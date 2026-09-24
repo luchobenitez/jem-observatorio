@@ -5,7 +5,7 @@
 //
 // El módulo conserva internamente `getJsDelivrBundles()`, que construye URLs
 // del CDN. No se llama: el paquete se arma a mano más abajo con rutas locales.
-import * as duckdb from '../vendor/duckdb/duckdb-duckdb-wasm.esm.js';
+import { abrirBase, registrar } from './duckdb-base.js';
 const P = window.PortalStats;
 if (!P) throw new Error('PortalStats no inicializado');
 const {$, esc, chart} = P;
@@ -40,43 +40,6 @@ function scalarNumber(value, fallback = 0) {
 
 function col(name, fallback='NULL') {
   return schema.has(name) ? name + ` AS ${name}` : `${fallback} AS ${name}`;
-}
-
-/** Paquetes locales. `selectBundle` elige entre ellos según lo que el
- *  navegador admita: `eh` usa excepciones de WebAssembly y `mvp` es el
- *  respaldo para navegadores que no las tienen. Se sirve uno solo, así que
- *  el coste para quien visita la página no cambia respecto del CDN; lo que
- *  cambia es de quién depende el sitio para funcionar. */
-function paquetesLocales() {
-  const raiz = new URL('../vendor/duckdb/', import.meta.url).href;
-  return {
-    mvp: { mainModule: raiz + 'duckdb-mvp.wasm',
-           mainWorker: raiz + 'duckdb-browser-mvp.worker.js' },
-    eh:  { mainModule: raiz + 'duckdb-eh.wasm',
-           mainWorker: raiz + 'duckdb-browser-eh.worker.js' },
-  };
-}
-
-async function setupDb() {
-  const bundle = await duckdb.selectBundle(paquetesLocales());
-  // El Blob se conserva aunque el worker sea del mismo origen: mantiene una
-  // sola forma de arranque y evita depender de cómo resuelva cada navegador
-  // una ruta relativa dentro de un worker.
-  const workerUrl = URL.createObjectURL(new Blob(
-    [`importScripts("${bundle.mainWorker}");`],
-    {type:'text/javascript'}
-  ));
-  const worker = new Worker(workerUrl);
-  const db = new duckdb.AsyncDuckDB(new duckdb.ConsoleLogger(), worker);
-  await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
-  URL.revokeObjectURL(workerUrl);
-  conn = await db.connect();
-  return db;
-}
-
-async function registerAndTest(db, virtualName, url) {
-  await db.registerFileURL(virtualName, url, duckdb.DuckDBDataProtocol.HTTP, false);
-  await conn.query(`SELECT * FROM read_parquet('${virtualName}') LIMIT 0`);
 }
 
 // Qué edición consulta la página. Se resuelve una sola vez, de `editions.json`,
@@ -174,16 +137,16 @@ async function loadParquetCorpus(db, base) {
     // Ya no hay reserva: si el catálogo falta, la pestaña lo dice. Un número
     // equivocado es peor que un error visible.
     activeDocumentFile = 'document_public.parquet';
-    await registerAndTest(
-      db,
+    await registrar(
+      db, conn,
       activeDocumentFile,
       new URL(CFG.catalogBase + 'document_public.parquet', base).href
     );
 
     // Las causas salen de la misma edición que todo lo demás. Leerlas del
     // archivo suelto daba 1.669 donde el corte vigente tiene 2.908.
-    await registerAndTest(
-      db,
+    await registrar(
+      db, conn,
       'causa.parquet',
       new URL(CFG.jemSilverBase + EDICION_VIGENTE + '/causa.parquet', base).href
     );
@@ -413,7 +376,7 @@ async function loadVotes(db, base, baseEd) {
   if (!baseEd) return;
   try {
     for (const t of ['voto', 'entidad', 'resolucion']) {
-      await registerAndTest(db, `${t}.parquet`,
+      await registrar(db, conn, `${t}.parquet`,
         new URL(baseEd + t + '.parquet', base).href);
     }
   } catch (e) {
@@ -448,7 +411,7 @@ async function loadVotes(db, base, baseEd) {
 
   // Métricas por integrante, ya calculadas con su verificación al lado.
   try {
-    await registerAndTest(db, 'metrica_juez.parquet',
+    await registrar(db, conn, 'metrica_juez.parquet',
       new URL(baseEd + 'metrica_juez.parquet', base).href);
   } catch (e) {
     console.info('Métricas por integrante no disponibles:', e.message);
@@ -564,14 +527,14 @@ async function loadEdicionVigente(db, base) {
   const TABLAS = ['fragmento','documento','resolucion','voto','procedencia','campo','vinculo'];
   try {
     for (const t of TABLAS) {
-      await registerAndTest(db, `${t}.parquet`, new URL(baseEd + t + '.parquet', base).href);
+      await registrar(db, conn, `${t}.parquet`, new URL(baseEd + t + '.parquet', base).href);
     }
     // Las dos tablas de métricas por integrante: la del corpus entero y la
     // del período. Se calculan fuera, donde vive el mapa de fusión, porque
     // reimplementar esa agrupación en SQL del lado del cliente sería tener dos
     // definiciones de «quién es quién» que pueden separarse.
     for (const t of ['metrica_juez', 'metrica_juez_periodo']) {
-      await registerAndTest(db, `${t}.parquet`, new URL(baseEd + t + '.parquet', base).href);
+      await registrar(db, conn, `${t}.parquet`, new URL(baseEd + t + '.parquet', base).href);
     }
   } catch (e) {
     console.info('Edición vigente no disponible:', e.message);
@@ -817,7 +780,7 @@ async function loadIndiceBM25(db, base, baseEd, meta) {
   const archivos = ['indice_termino','indice_posting','indice_fragmento','indice_forma'];
   try {
     for (const a of archivos) {
-      await registerAndTest(db, `${a}.parquet`, new URL(baseEd + a + '.parquet', base).href);
+      await registrar(db, conn, `${a}.parquet`, new URL(baseEd + a + '.parquet', base).href);
     }
   } catch (e) {
     console.info('Índice BM25 no disponible:', e.message);
@@ -995,7 +958,8 @@ function resaltar(texto, palabras) {
 
 (async()=>{
   try {
-    const db = await setupDb();
+    const { db, conn: c } = await abrirBase();
+    conn = c;
     const base = new URL('.', location.href).href;
     await loadParquetCorpus(db, base);
     await loadEdicionVigente(db, base);

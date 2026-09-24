@@ -143,3 +143,27 @@
   background:var(--paper);white-space:nowrap}
 .filtro-periodo-activo [data-filtro-etiqueta]{color:var(--teal);
   border-color:var(--teal)}
+
+/* ---------------------------------------------------------------------------
+   Buscador de voto
+   ---------------------------------------------------------------------------
+   Los selectores llevan etiqueta visible encima, no sólo `placeholder`: quien
+   llega a la página tiene que saber qué está eligiendo antes de desplegarlo,
+   y un `placeholder` desaparece en cuanto hay un valor. */
+.bv-campo{display:flex;flex-direction:column;gap:6px;min-width:0}
+.bv-campo>span{font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);font-weight:800}
+.bv-campo select,.bv-campo input{border:1px solid var(--line);background:var(--white);
+  border-radius:10px;padding:12px 14px;font:inherit;max-width:100%}
+.bv-campo select{min-width:260px}
+.bv-buscar{flex:1}
+.bv-buscar input{width:100%}
+.filter-bar:has(.bv-campo){align-items:flex-end}
+
+/* El nombre del archivo bajo el expediente, en gris y más pequeño. */
+.repo-meta{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.pending-link{color:var(--muted);font-size:13px}
+
+@media(max-width:900px){
+  .bv-campo select{min-width:0;width:100%}
+}

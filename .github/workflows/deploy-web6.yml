@@ -64,6 +64,12 @@ jobs:
       - name: Test that the page actually renders
         run: python scripts/probar_pagina.py .
 
+      # El buscador de voto tiene su propia prueba: comprueba que los
+      # recuentos que muestra coincidan con lo que da la base, no sólo
+      # que la tabla se pinte.
+      - name: Test the vote search page
+        run: python scripts/probar_buscador_voto.py .
+
       - name: Generate integrity manifest
         run: python scripts/generar_manifest_integridad.py .
 

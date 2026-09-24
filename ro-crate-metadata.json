@@ -49,6 +49,9 @@
           "@id": "data/jem-silver/2026-08-30/entidad.parquet"
         },
         {
+          "@id": "data/jem-silver/2026-08-30/entidad_resuelta.parquet"
+        },
+        {
           "@id": "data/jem-silver/2026-08-30/evento.parquet"
         },
         {
@@ -158,6 +161,14 @@
       "description": "Integrante del órgano. Ojo: el OCR fragmenta nombres en varias entidades.",
       "encodingFormat": "application/vnd.apache.parquet",
       "contentSize": "6481"
+    },
+    {
+      "@id": "data/jem-silver/2026-08-30/entidad_resuelta.parquet",
+      "@type": "File",
+      "name": "entidad_resuelta",
+      "description": "",
+      "encodingFormat": "application/vnd.apache.parquet",
+      "contentSize": "3512"
     },
     {
       "@id": "data/jem-silver/2026-08-30/evento.parquet",

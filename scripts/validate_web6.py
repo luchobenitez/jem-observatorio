@@ -59,7 +59,7 @@ REQUIRED_CATALOG = [
     "document_public.parquet",
 ]
 REQUIRED_PAGES = [
-    "index.html","caso.html","estadisticas.html",
+    "index.html","caso.html","estadisticas.html","buscador-voto.html",
     "documentos.html","fuentes.html","metodologia.html"
 ]
 STATS_CONFIG = "data/portal/stats_config.json"
@@ -493,8 +493,7 @@ def revisar_ids_js(root: Path, errores: list, verbose: bool):
     y cierta a ninguna.
     """
     ids_html: set[str] = set()
-    for pagina in REQUIRED_PAGES:
-        p = root / pagina
+    for p in sorted(root.glob("*.html")):
         if p.is_file():
             ids_html |= set(re.findall(r'id="([^"]+)"',
                                        p.read_text(encoding="utf-8", errors="replace")))

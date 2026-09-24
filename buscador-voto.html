@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="application-version" content="0.0.7">
+<meta name="description" content="Buscar los expedientes del JEM en que votó cada integrante, por sentido del voto, con acceso al documento original.">
+<title>Buscador de voto · Observatorio Cívico JEM</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Observatorio Cívico JEM">
+<meta property="og:locale" content="es_PY">
+<meta property="og:image" content="https://abogadomau.com/assets/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:title" content="Buscador de voto · Observatorio Cívico JEM">
+<meta property="og:description" content="Buscar los expedientes del JEM en que votó cada integrante, por sentido del voto, con acceso al documento original.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0A2A4A">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<nav class="site-nav" aria-label="Navegación principal">
+<a class="brand" href="index.html"><img src="assets/img/favicon.svg" alt="" width="36" height="36" aria-hidden="true"><span class="brand-name">Observatorio Cívico <b>JEM</b></span></a>
+<button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+<div class="nav-links">
+<a href="index.html">Inicio</a><a href="caso.html">El caso</a><a href="estadisticas.html">Estadísticas</a><a href="buscador-voto.html">Buscador de voto</a><a href="documentos.html">Documentos</a><a href="fuentes.html">Fuentes</a><a href="metodologia.html">Metodología</a>
+</div>
+</nav>
+
+<header class="page-header">
+  <p class="eyebrow">Consulta</p>
+  <h1>Buscador de voto</h1>
+  <p>
+    Elegí un integrante del Jurado y, si querés, un sentido del voto. Abajo aparecen los
+    expedientes en que votó, con el documento que lo respalda. Todo se calcula en tu
+    navegador sobre los archivos publicados: nada de lo que consultes sale de acá.
+  </p>
+  <p class="status-pill" id="bvEstado">Cargando el corpus…</p>
+</header>
+
+<main>
+<section class="section compact">
+
+  <div data-filtro-control class="filtro-caja"></div>
+
+  <div class="filter-bar">
+    <label class="bv-campo">
+      <span>Integrante</span>
+      <select id="bvIntegrante"><option value="">Cargando…</option></select>
+    </label>
+    <label class="bv-campo">
+      <span>Sentido del voto</span>
+      <select id="bvSentido"><option value="">Todos</option></select>
+    </label>
+    <label class="bv-campo bv-buscar">
+      <span>Filtrar en la lista</span>
+      <input id="bvTexto" type="search" placeholder="Carátula o número de expediente…">
+    </label>
+  </div>
+
+  <p class="result-count" id="bvResumen">—</p>
+
+  <div class="data-note" id="bvAvisoDisidencia" hidden>
+    <strong>La disidencia casi no se detecta.</strong> En todo el corpus hay
+    <strong id="bvDisTotal">—</strong> votos marcados como disidentes, y la auditoría del
+    archivo halló <strong>40 decisiones cuyo texto expresa disidencia sin que se extrajera
+    ninguna</strong>. Un resultado vacío acá significa que el extractor no la encontró,
+    <strong>no que el integrante nunca disintió</strong>.
+  </div>
+
+  <div class="data-note" id="bvSinExpediente" hidden>
+    <strong><span id="bvSinExpedienteN">—</span> de sus votos no aparecen en esta lista.</strong>
+    Están en resoluciones que el extractor no pudo vincular a ninguna causa, de modo que no
+    tienen expediente bajo el que mostrarse. No se perdieron: se cuentan en
+    <a href="estadisticas.html">Estadísticas</a>, pero acá no hay dónde ponerlos.
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Expediente</th>
+        <th>Carátula del documento</th>
+        <th>Votos</th>
+        <th>Sentido</th>
+        <th>Documentos</th>
+      </tr></thead>
+      <tbody id="bvFilas"><tr><td colspan="5">Elegí un integrante para empezar.</td></tr></tbody>
+    </table>
+  </div>
+  <p class="hint" id="bvLimite"></p>
+
+  <div class="data-note">
+    <strong>Qué es la «carátula» acá.</strong> La carátula formal del expediente no está en
+    los datos entregados: el campo viene vacío en <strong>todas</strong> las causas del
+    archivo, sin una sola excepción. Lo que se muestra es el
+    <strong>título del documento</strong>, derivado del nombre del archivo, que en la
+    práctica identifica de quién y de qué trata la causa. Se nombra así para no dar por
+    formal algo que no lo es.
+  </div>
+
+  <div class="data-note">
+    <strong>Ninguno de estos votos fue verificado por una persona.</strong> Salen de una
+    extracción automática sobre documentos digitalizados. El índice de verificación humana
+    publicado en <a href="estadisticas.html">Estadísticas</a> es cero. Leer esta lista como
+    conducta comprobada de un juzgador sería exactamente el error que este portal intenta
+    no cometer: por eso cada fila trae el documento al lado, para que se pueda contrastar.
+  </div>
+
+</section>
+</main>
+
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/filtro.js"></script>
+<script type="module" src="assets/js/buscador-voto.js"></script>
+
+<footer class="site-footer">
+  <div>
+    <strong>Observatorio Cívico JEM</strong>
+    <p>Portal orientado a transparencia, trazabilidad documental y análisis reproducible.</p>
+  </div>
+  <div>
+    <a href="fuentes.html">Fuentes</a><br>
+    <a href="metodologia.html">Metodología y advertencias</a><br>
+    <span>Versión 0.0.7</span>
+  </div>
+</footer>
+
+</body>
+</html>

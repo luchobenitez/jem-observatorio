@@ -390,6 +390,38 @@
       }
     },
     {
+      "name": "entidad_resuelta",
+      "path": "data/jem-silver/2026-08-30/entidad_resuelta.parquet",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "bytes": 3512,
+      "description": "",
+      "schema": {
+        "fields": [
+          {
+            "name": "entidad_id",
+            "type": "integer",
+            "description": "Entidad tal como la reconoció el extractor. Hay 118, y detrás hay unas cincuenta personas: el OCR partió los nombres en variantes."
+          },
+          {
+            "name": "entidad_final",
+            "type": "integer",
+            "description": "Persona a la que corresponde esta entidad después de aplicar el mapa de fusión. Agrupar por este campo da el mismo recuento que metrica_juez."
+          },
+          {
+            "name": "nombre_crudo",
+            "type": "string",
+            "description": "Nombre tal como quedó tras la extracción, con el daño del OCR si lo hubo: «Hemán», «Her nán», «Hernán Davis»."
+          },
+          {
+            "name": "fusionada",
+            "type": "boolean",
+            "description": "Verdadero si esta entidad se unificó con otra. Falso significa que es su propia forma final, no que esté verificada por una persona."
+          }
+        ]
+      }
+    },
+    {
       "name": "evento",
       "path": "data/jem-silver/2026-08-30/evento.parquet",
       "format": "parquet",
