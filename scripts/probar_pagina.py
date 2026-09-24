@@ -194,6 +194,38 @@ def main() -> int:
             if len(filas) < 5:
                 errores.append(f"la cola de revisión pintó {len(filas)} filas")
 
+            # La tabla de documentos, y que sus enlaces lleven al repositorio.
+            #
+            # Esto faltaba, y por eso se publicó rota. `loadParquetCorpus`
+            # lanzaba «yf is not defined» justo después de escribir los KPI:
+            # la prueba veía 4.627 documentos y daba por buena una pestaña que
+            # mostraba nueve filas del documento editorial. El error caía en un
+            # `catch` que lo registraba como `console.info`, invisible.
+            docs = pag.query_selector_all("#docRows tr")
+            if len(docs) < 20:
+                errores.append(f"la tabla de documentos pintó {len(docs)} filas; "
+                               "se esperan las 100 del corpus")
+            enlaces = [a.get_attribute("href") or ""
+                       for a in pag.query_selector_all("#docRows a")]
+            repo = [u for u in enlaces if "huggingface.co" in u]
+            if not repo:
+                errores.append(
+                    f"ninguno de los {len(enlaces)} enlaces de la tabla de documentos "
+                    "lleva al repositorio: no se puede abrir ningún documento")
+            elif len(repo) < len(docs):
+                errores.append(f"{len(repo)} enlaces al repositorio para {len(docs)} filas")
+            # Ver y Descargar no son la misma dirección: una abre el visor y la
+            # otra entrega el archivo.
+            if repo and not any("/blob/" in u for u in repo):
+                errores.append("ningún enlace usa /blob/: el botón «Ver» descargaría")
+            if repo and not any("/resolve/" in u for u in repo):
+                errores.append("ningún enlace usa /resolve/: no se podría descargar")
+
+            motor = pag.query_selector("#engineStatus")
+            if motor and "DuckDB-WASM activo" not in (motor.inner_text() or ""):
+                errores.append(f"el corpus no se cargó desde Parquet: "
+                               f"«{(motor.inner_text() or '')[:60]}»")
+
             errores += probar_filtro(pag, raiz)
             nav.close()
     finally:

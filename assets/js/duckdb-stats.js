@@ -213,6 +213,14 @@ async function loadParquetCorpus(db, base) {
     // acá en vez de quedarse sueltas dentro del arranque porque si no, el
     // interruptor cambiaría las cifras de las demás pestañas y dejaría ésta
     // —la primera que se ve— mostrando el corpus entero.
+    //
+    // Los dos selectores se declaran FUERA: `searchDocs` los usa y, al quedar
+    // dentro, lanzaba «yf is not defined». El error caía en un `catch` que lo
+    // registraba como `console.info`, de modo que no salía como error y la
+    // tabla de documentos se quedaba con las nueve filas del documento
+    // editorial que pinta stats.js. Las pruebas no lo vieron porque
+    // comprobaban los KPI, que se escriben antes del fallo.
+    const yf = $('#yearFilter'), tf = $('#typeFilter');
     panelCorpus = async () => {
     const k = await conn.query(`SELECT
       (SELECT COUNT(*) FROM v_causa) total_causas,
@@ -245,7 +253,6 @@ async function loadParquetCorpus(db, base) {
     $('#kpiDocsLabel').textContent = 'Documentos procesados';
     $('#kpiOcrLabel').textContent = 'Calidad promedio OCR';
 
-    const yf = $('#yearFilter'), tf = $('#typeFilter');
     yf.innerHTML = '<option value="">Todos los años</option>';
     tf.innerHTML = '<option value="">Todos los tipos</option>';
 
@@ -290,7 +297,7 @@ async function loadParquetCorpus(db, base) {
       ));
     }
     };
-    // roto a proposito
+    await panelCorpus();
 
     async function searchDocs() {
       const term = $('#docSearch').value || '';
