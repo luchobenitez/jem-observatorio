@@ -40,6 +40,11 @@
    "estado": "disponible",
    "filas": 118
   },
+  "entidad_resuelta": {
+   "ruta": "data/jem-silver/2026-08-30/entidad_resuelta.parquet",
+   "estado": "disponible",
+   "filas": 118
+  },
   "evento": {
    "ruta": "data/jem-silver/2026-08-30/evento.parquet",
    "estado": "disponible",
@@ -78,7 +83,12 @@
   "metrica_juez": {
    "ruta": "data/jem-silver/2026-08-30/metrica_juez.parquet",
    "estado": "disponible",
-   "filas": 50
+   "filas": 43
+  },
+  "metrica_juez_periodo": {
+   "ruta": "data/jem-silver/2026-08-30/metrica_juez_periodo.parquet",
+   "estado": "disponible",
+   "filas": 30
   },
   "procedencia": {
    "ruta": "data/jem-silver/2026-08-30/procedencia.parquet",

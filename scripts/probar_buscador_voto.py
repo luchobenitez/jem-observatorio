@@ -64,8 +64,23 @@ with sync_playwright() as pw:
     print(f"\n  estado    : {pag.inner_text('#bvEstado')}")
     opciones = pag.eval_on_selector_all("#bvIntegrante option", "e=>e.length")
     print(f"  integrantes en la lista: {opciones - 1}")
-    if opciones - 1 != 50:
-        fallos.append(f"la lista tiene {opciones-1} integrantes, se esperan 50")
+    # El número no se fija a mano: sale de la misma tabla que alimenta el
+    # selector. Escribirlo aquí obligaría a tocar la prueba cada vez que una
+    # fusión o un descarte cambian el recuento, y una prueba que hay que
+    # ajustar a mano acaba ajustándose sin mirar.
+    esperados = c.execute(f"SELECT count(*) FROM '{B}/metrica_juez.parquet' WHERE votos > 0").fetchone()[0]
+    if opciones - 1 != esperados:
+        fallos.append(f"la lista tiene {opciones-1} integrantes y metrica_juez da {esperados}")
+
+    # Ninguna opción puede ser una frase: seis de las siete disidencias del
+    # corpus estaban atribuidas a «Para emitir mi» y similares, y esas
+    # entidades aparecían en el selector como si fueran jueces.
+    import re as _re
+    nombres = pag.eval_on_selector_all("#bvIntegrante option", "e=>e.map(x=>x.textContent)")
+    frases = [x for x in nombres[1:]
+              if _re.search(r"(mi|un|que|para|ante|esta|y con|seguidamente)\s*·", x, _re.I)]
+    if frases:
+        fallos.append(f"el selector ofrece frases como integrantes: {frases[:3]}")
 
     # Elegir Rivas
     pag.select_option("#bvIntegrante", str(RIVAS[0]))

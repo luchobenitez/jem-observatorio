@@ -18,7 +18,7 @@
   "sin_pagina_de_origen": 1,
   "marcados_disidencia": 7,
   "resoluciones_con_votacion": 1670,
-  "integrantes_con_voto": 50
+  "integrantes_con_voto": 49
  },
  "filtro_periodo": {
   "nombre": "Resoluciones con Hernán Rivas",
@@ -124,10 +124,10 @@
  },
  "organo": {
   "quorum": {
-   "Sin dato": 146,
-   "Incompleto por extracción": 655,
    "Completo": 870,
-   "No determinable": 145
+   "No determinable": 145,
+   "Sin dato": 146,
+   "Incompleto por extracción": 655
   },
   "resoluciones_con_presentes_menores_que_votos": 0
  },
@@ -190,7 +190,7 @@
    {
     "metrica": "Total de votos identificables",
     "causa": "resuelto",
-    "valor": "9.956 votos · 50 integrantes"
+    "valor": "9.956 votos · 49 integrantes"
    },
    {
     "metrica": "Votos con la mayoría",
@@ -323,7 +323,7 @@
    "sin_pagina_de_origen": 1,
    "marcados_disidencia": 6,
    "resoluciones_con_votacion": 1078,
-   "integrantes_con_voto": 36
+   "integrantes_con_voto": 35
   },
   "filtro_periodo": {
    "nombre": "Resoluciones con Hernán Rivas",
@@ -493,7 +493,7 @@
     {
      "metrica": "Total de votos identificables",
      "causa": "resuelto",
-     "valor": "7.312 votos · 36 integrantes"
+     "valor": "7.312 votos · 35 integrantes"
     },
     {
      "metrica": "Votos con la mayoría",

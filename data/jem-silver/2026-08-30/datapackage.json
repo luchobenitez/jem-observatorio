@@ -394,7 +394,7 @@
       "path": "data/jem-silver/2026-08-30/entidad_resuelta.parquet",
       "format": "parquet",
       "mediatype": "application/vnd.apache.parquet",
-      "bytes": 3512,
+      "bytes": 3511,
       "description": "",
       "schema": {
         "fields": [
@@ -711,7 +711,7 @@
       "path": "data/jem-silver/2026-08-30/metrica_juez.parquet",
       "format": "parquet",
       "mediatype": "application/vnd.apache.parquet",
-      "bytes": 9883,
+      "bytes": 9612,
       "description": "",
       "schema": {
         "fields": [
@@ -833,7 +833,7 @@
       "path": "data/jem-silver/2026-08-30/metrica_juez_periodo.parquet",
       "format": "parquet",
       "mediatype": "application/vnd.apache.parquet",
-      "bytes": 9284,
+      "bytes": 8999,
       "description": "",
       "schema": {
         "fields": [

@@ -168,7 +168,7 @@
       "name": "entidad_resuelta",
       "description": "",
       "encodingFormat": "application/vnd.apache.parquet",
-      "contentSize": "3512"
+      "contentSize": "3511"
     },
     {
       "@id": "data/jem-silver/2026-08-30/evento.parquet",
@@ -232,7 +232,7 @@
       "name": "metrica_juez",
       "description": "",
       "encodingFormat": "application/vnd.apache.parquet",
-      "contentSize": "9883"
+      "contentSize": "9612"
     },
     {
       "@id": "data/jem-silver/2026-08-30/metrica_juez_periodo.parquet",
@@ -240,7 +240,7 @@
       "name": "metrica_juez_periodo",
       "description": "",
       "encodingFormat": "application/vnd.apache.parquet",
-      "contentSize": "9284"
+      "contentSize": "8999"
     },
     {
       "@id": "data/jem-silver/2026-08-30/procedencia.parquet",
